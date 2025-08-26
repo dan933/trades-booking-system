@@ -7,32 +7,32 @@
     </button>
     <span class="text-lg">Easy Book</span>
   </nav>
-  <div class="nav-drawer bg-primaryColour" [class]="{'active-drawer': activeMenu}">
-    <div class="h-full overflow-auto relative flex flex-col gap-2" style="z-index: 9999;">
+  <div class="nav-drawer" [class]="{'active-drawer': activeMenu}">
+    <div class="bg-primaryColour h-full overflow-auto relative flex flex-col gap-2" style="z-index: 9999;">
       <button class="burger relative left-4" [class]="{'play': activeMenu}" (click)="toggleMenu()" style="top:10px;">
         <span class="bar"></span>
         <span class="bar"></span>
         <span class="bar"></span>
       </button>
-      <a routerLink="/dashboard" class="nav-item text-textColour hover:bg-primaryHover">
+      <a routerLink="/dashboard" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>dashboard</mat-icon>
         <span>
           Dashboard
         </span>
       </a>
-      <a routerLink="/bookings" class="nav-item text-textColour hover:bg-primaryHover">
+      <a routerLink="/bookings" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>event</mat-icon>
         <span>
           Bookings
         </span>
       </a>
-      <a routerLink="/customers" class="nav-item text-textColour hover:bg-primaryHover">
+      <a routerLink="/customers" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>people</mat-icon>
         <span>
           Customers
         </span>
       </a>
-      <a routerLink="/settings" class="nav-item text-textColour hover:bg-primaryHover">
+      <a routerLink="/settings" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>settings</mat-icon>
         <span>
           Settings
@@ -47,6 +47,6 @@
         </button>
       </div>
     </div>
-    <div class="nav-drawer-overlay w-full h-full" (click)="toggleMenu()"></div>
   </div>
+  <div [class]="{'nav-drawer-overlay': true, 'active-overlay': activeMenu}" (click)="toggleMenu()"></div>
 </div>
