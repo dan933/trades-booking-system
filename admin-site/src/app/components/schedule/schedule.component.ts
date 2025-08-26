@@ -1,25 +1,46 @@
-import {Component, ViewChild} from '@angular/core';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatInputModule} from '@angular/material/input';
+import { Component, ViewChild } from '@angular/core';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ScheduleService } from '../../services/schedule/schedule.service';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { NgFor, NgIf } from '@angular/common';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MatDatepicker,
+  MatDatepickerModule,
+} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from '@angular/material/core';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MomentDateAdapter,
+} from '@angular/material-moment-adapter';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import * as moment from 'moment';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogScheduleDetailsComponent } from './dialog-schedule-details/dialog-schedule-details.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
-
 
 export const MY_FORMATS = {
   parse: {
@@ -33,11 +54,9 @@ export const MY_FORMATS = {
   },
 };
 
-
 export interface scheduleDescription {
   name: string;
 }
-
 
 @Component({
   selector: 'app-schedule',
@@ -50,13 +69,11 @@ export interface scheduleDescription {
     MatInputModule,
     MatTableModule,
     MatSortModule,
-    NgFor,
     MatButtonModule,
-    NgIf,
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     {
@@ -64,18 +81,20 @@ export interface scheduleDescription {
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
-    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
   ],
   animations: [
     trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition(
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
+      ),
     ]),
   ],
 })
 export class ScheduleComponent {
-
   scheduleDate = new FormControl(moment());
 
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date> | undefined;
@@ -85,25 +104,24 @@ export class ScheduleComponent {
     'bookingDateString',
     'startTime',
     'endTime',
-    'status'
-    ];
+    'status',
+  ];
 
-  headers:any = {
+  headers: any = {
     id: 'ID',
     customerName: 'Customer Name',
     startTime: 'Start Time',
     endTime: 'End Time',
-    bookingDateString: 'Booking Date'
-  }
-  columnsToDisplayWithExpand  = [...this.displayedColumns, 'expand'];
+    bookingDateString: 'Booking Date',
+  };
+  columnsToDisplayWithExpand = [...this.displayedColumns, 'expand'];
   dataSource!: MatTableDataSource<any>;
   expandedElement: any;
 
   dialogSubscription: Subscription | undefined;
   dialogRef!: MatDialogRef<DialogScheduleDetailsComponent>;
 
-  mapsAddress: string = "";
-
+  mapsAddress: string = '';
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -111,8 +129,7 @@ export class ScheduleComponent {
     private _snackBar: MatSnackBar,
     private scheduleService: ScheduleService,
     public dialog: MatDialog
-  ) {
-  }
+  ) {}
 
   //used to navigate to google maps
   get mapsLink(): string {
@@ -127,8 +144,7 @@ export class ScheduleComponent {
 
   navigateToMaps(address: string) {
     this.mapsAddress = address;
-    window.open(this.mapsLink, "_blank");
-
+    window.open(this.mapsLink, '_blank');
   }
 
   ngOnInit() {
@@ -143,7 +159,7 @@ export class ScheduleComponent {
     let selectedDate = this.scheduleDate.value?.toDate();
     console.log(selectedDate);
     //get the schedule from the schedule service
-    let schedule = await this.scheduleService.getSchedule(selectedDate)
+    let schedule = await this.scheduleService.getSchedule(selectedDate);
 
     this.dataSource = new MatTableDataSource(schedule);
     this.dataSource.sort = this.sort;
@@ -151,34 +167,33 @@ export class ScheduleComponent {
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, {
-      duration: 3000
+      duration: 3000,
     });
   }
 
   openDialog(schedule: any) {
-
     let dialogData = this.generateDialogData(schedule);
 
     this.dialogRef = this.dialog.open(DialogScheduleDetailsComponent, {
       width: '350px',
       maxHeight: '100vh',
-      data: { dialogData, schedule }
+      data: { dialogData, schedule },
     });
 
     this.dialogSubscription = this.dialogRef.afterClosed().subscribe((resp) => {
+      if (!resp) return;
 
-      if(!resp) return;
+      let snackBarMessage = resp?.success
+        ? 'Refund successful'
+        : 'somthing went wrong';
 
-      let snackBarMessage = resp?.success ? "Refund successful" : "somthing went wrong";
-
-      this.openSnackBar(snackBarMessage, "Close");
+      this.openSnackBar(snackBarMessage, 'Close');
 
       this.updateTable();
     });
   }
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   //used for schedule details dialog
   //generates the services table data
@@ -195,18 +210,25 @@ export class ScheduleComponent {
         serviceName: service.selection.name,
         hours: service.hours,
         rate: service.selection.rate,
-        total: total
-      }
+        total: total,
+      };
     });
 
-    return {servicesTableData, grandTotal};
+    return { servicesTableData, grandTotal };
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filterPredicate = (data: any, filter: string) => {
-      const accumulativeString = data.customerName + data.bookingDateString + data.startTime + data.endTime + data.status;
-      return accumulativeString.toLowerCase().includes(filter.trim().toLowerCase());
+      const accumulativeString =
+        data.customerName +
+        data.bookingDateString +
+        data.startTime +
+        data.endTime +
+        data.status;
+      return accumulativeString
+        .toLowerCase()
+        .includes(filter.trim().toLowerCase());
     };
 
     this.dataSource.filter = filterValue;
@@ -222,18 +244,14 @@ export class ScheduleComponent {
     if (isChecked) {
       this.scheduleDate.setValue(null);
       console.log(this.scheduleDate.value);
-      let schedule = await this.scheduleService.getSchedule()
+      let schedule = await this.scheduleService.getSchedule();
       this.dataSource = new MatTableDataSource(schedule);
       this.dataSource.sort = this.sort;
-
     } else {
       this.scheduleDate.setValue(moment());
       console.log(this.scheduleDate.value);
       this.updateTable();
-
     }
-
-
   }
 
   async getScheduleDate() {

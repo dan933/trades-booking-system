@@ -74,16 +74,25 @@ export default {
       //are different to this.customerInformation
       if (
         JSON.stringify(this.customerInformation) !==
-        JSON.stringify(customerDetails) &&
-        !this.IsGuest
+        JSON.stringify(customerDetails)
       ) {
-        this.$refs.customerDetailsRef.toggleLoading(true);
-
         const orgId = this.$route.params.id;
-        await updateCustomerDetails(customerDetails, orgId);
 
-        this.$refs.customerDetailsRef.toggleLoading(false);
-        this.$refs.customerDetailsRef.validateForm();
+        if (this.IsGuest) {
+          //need this for dashboard customer count data
+          //todo api call check check if user with this email exists
+          //if so update their document
+          //if not create them
+
+        } else {
+          this.$refs.customerDetailsRef.toggleLoading(true);
+
+          await updateCustomerDetails(customerDetails, orgId);
+
+          this.$refs.customerDetailsRef.toggleLoading(false);
+          this.$refs.customerDetailsRef.validateForm();
+        }
+
       }
       this.customerInformation = customerDetails;
 
