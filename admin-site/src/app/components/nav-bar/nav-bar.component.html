@@ -1,5 +1,5 @@
 <div class="relative h-full" *ngIf="isUserLoggedIn">
-  <nav class="bg-primaryColour w-full text-textColour p-4 shadow-lg flex flex-wrap gap-3">
+  <nav class="bg-primaryColour text-textColour nav">
     <button class="burger" [class]="{'play': activeMenu}" (click)="toggleMenu()">
       <span class="bar"></span>
       <span class="bar"></span>
@@ -7,41 +7,39 @@
     </button>
     <span class="text-lg">Easy Book</span>
   </nav>
-  <div *ngIf="activeMenu" class="h-screen top-0 bg-primaryColour flex fixed z-[1000]"
-    [style]="{'opacity-30': activeMenu, 'opacity-0': !activeMenu}">
-    <div class="overflow-auto relative flex flex-col gap-2" style="z-index: 9999;">
+  <div class="nav-drawer bg-primaryColour" [class]="{'active-drawer': activeMenu}">
+    <div class="h-full overflow-auto relative flex flex-col gap-2" style="z-index: 9999;">
       <button class="burger relative left-4" [class]="{'play': activeMenu}" (click)="toggleMenu()" style="top:10px;">
         <span class="bar"></span>
         <span class="bar"></span>
         <span class="bar"></span>
       </button>
-      <a routerLink="/dashboard" class="p-4 text-textColour hover:bg-primaryHover text-base flex gap-1">
+      <a routerLink="/dashboard" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>dashboard</mat-icon>
         <span>
           Dashboard
         </span>
       </a>
-      <a routerLink="/bookings" class="p-4 text-textColour hover:bg-primaryHover text-base flex gap-1">
+      <a routerLink="/bookings" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>event</mat-icon>
         <span>
           Bookings
         </span>
       </a>
-      <a routerLink="/customers" class="p-4 text-textColour hover:bg-primaryHover text-base flex gap-1">
+      <a routerLink="/customers" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>people</mat-icon>
         <span>
           Customers
         </span>
       </a>
-      <a routerLink="/settings" class="p-4 text-textColour hover:bg-primaryHover text-base flex gap-1">
+      <a routerLink="/settings" class="nav-item text-textColour hover:bg-primaryHover">
         <mat-icon>settings</mat-icon>
         <span>
           Settings
         </span>
       </a>
       <div class="absolute bottom-0 w-full" *ngIf="isUserLoggedIn">
-        <button (click)="signOut()"
-          class="w-full text-left p-4 text-textColour hover:bg-primaryHover text-base flex gap-1">
+        <button (click)="signOut()" class="w-full text-left logout-button text-textColour hover:bg-primaryHover">
           <mat-icon>logout</mat-icon>
           <span>
             Logout
@@ -49,6 +47,6 @@
         </button>
       </div>
     </div>
-    <div class="w-screen h-full bg-black fixed z-3 opacity-30" (click)="toggleMenu()"></div>
+    <div class="nav-drawer-overlay w-full h-full" (click)="toggleMenu()"></div>
   </div>
 </div>
