@@ -1,4 +1,4 @@
-<div class="relative h-full">
+<div class="relative h-full" *ngIf="isUserLoggedIn">
   <nav class="bg-primaryColour w-full text-textColour p-4 shadow-lg flex flex-wrap gap-3">
     <button class="burger" [class]="{'play': activeMenu}" (click)="toggleMenu()">
       <span class="bar"></span>
@@ -39,7 +39,7 @@
           Settings
         </span>
       </a>
-      <div class="absolute bottom-0 w-full">
+      <div class="absolute bottom-0 w-full" *ngIf="isUserLoggedIn">
         <button (click)="signOut()"
           class="w-full text-left p-4 text-textColour hover:bg-primaryHover text-base flex gap-1">
           <mat-icon>logout</mat-icon>
@@ -51,3 +51,4 @@
     </div>
     <div class="w-screen h-full bg-black fixed z-3 opacity-30" (click)="toggleMenu()"></div>
   </div>
+</div>
