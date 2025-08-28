@@ -68,7 +68,6 @@ export default {
   watch: {
     currentUser(newVal) {
       if (newVal && !this.signInResponse?.IsUserDifferentCredentials) {
-        // console.log(newVal);
         const orgId = this.$route.params.id;
         this.$router.push(`/org/${orgId}/book`);
       }
@@ -106,8 +105,6 @@ export default {
       if (this.signInResponse?.IsGuest) {
         //update store of IsGuest
         this.$store.commit("setIsGuest", true);
-
-        console.log("this.$store.state.IsGuest", this.$store.state.IsGuest);
 
         //redirect to booking page
         this.$router.push(`/org/${orgId}/book`);

@@ -1,1 +1,3 @@
 .firebase/*
+functions/.gitignore
+firebase-debug.log

@@ -53,7 +53,7 @@ import SelectService from "./SelectService.vue";
 import CustomerDetails from "./CustomerDetails.vue";
 import ReviewBooking from "./ReviewBooking.vue";
 import Payment from "./Payment.vue";
-import { updateCustomerDetails } from "../../../services/api/customerService.js";
+import { setGuestDetails, updateCustomerDetails } from "../../../services/api/customerService.js";
 import { createBooking } from "../../../services/api/bookingService";
 import { getOrganisationDoc } from "../../../services/api/organisationServices.js";
 
@@ -79,10 +79,11 @@ export default {
         const orgId = this.$route.params.id;
 
         if (this.IsGuest) {
-          //need this for dashboard customer count data
-          //todo api call check check if user with this email exists
-          //if so update their document
-          //if not create them
+
+          await setGuestDetails(customerDetails, orgId).catch((err) => {
+            console.log("error setting guest details", err)
+          });
+
 
         } else {
           this.$refs.customerDetailsRef.toggleLoading(true);

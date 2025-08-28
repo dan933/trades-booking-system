@@ -12,20 +12,6 @@
         <v-text-field v-model="phoneNumber" label="Phone number" type="tel"
           :rules="[(v) => !!v || 'Phone number is required']"></v-text-field>
         <v-text-field v-if="IsGuest" v-model="email" label="Email" type="email" :rules="emailRules"></v-text-field>
-        <!-- new address format -->
-        <!-- seperate inputs for street address, suburb, state and postcode -->
-        <!-- <v-container fluid style="padding: 0px">
-          <v-textarea name="input-2-1" rows="1" variant="filled" :model-value="address" label="Street Address"
-            autocomplete="street-address" :rules="[(v) => !!v || 'Street Address is required']" auto-grow></v-textarea>
-        </v-container>
-        <v-container class="detail-container">
-          <v-text-field style="width: 150px" label="Suburb" type="suburb"
-            :rules="[(v) => !!v || 'Suburb is required']"></v-text-field>
-          <v-autocomplete style="width: 200px; height: 50px" label="State" autocomplete="country-name"
-            :items="['VIC', 'NSW', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']"></v-autocomplete>
-        </v-container>
-        <v-text-field style="width: 150px; margin-top: 20px" label="Postcode" autocomplete="postal-code"
-          :rules="[(v) => !!v || 'Postcode is required']"></v-text-field> -->
         <v-textarea v-model="address" label="Address" :rules="[(v) => !!v || 'Address is required']"></v-textarea>
         <v-btn color="primary mt-4" type="submit">Next</v-btn>
       </v-form>
@@ -95,7 +81,6 @@ export default {
           addressList: [this.address],
         };
 
-        console.log("line 120", customerDetails);
         this.$emit("storeCustomerDetails", customerDetails);
       }
     },
@@ -110,8 +95,6 @@ export default {
       this.loading = true;
 
       let customer = await this.getCustomer();
-
-      console.log(customer, "customer details");
 
       //if the details exist populate the form
       if (customer) {

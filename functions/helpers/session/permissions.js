@@ -6,7 +6,7 @@ exports.validateFirebaseIdToken = async (req, res, next) => {
   logger.log("req", req);
   logger.log("req", req.headers.guest);
 
-  if (req.headers.guest && req.headers.guest === "true") {
+  if (req?.headers?.guest === "true") {
     logger.log("Guest User");
     next();
     return;
