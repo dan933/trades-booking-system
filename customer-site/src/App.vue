@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <NavBar :nav-functions="navFunctions" :menu-list="menuList" :current-link="currentLink"></NavBar>
+    <NavBar :menu-list="menuList" :current-link="currentLink"></NavBar>
 
     <RouterView></RouterView>
 
@@ -35,12 +35,6 @@ const currentLink = ref('home');
 
 const scrollPosition = ref(0);
 
-const navFunctions = {
-  setCurrentLink(link) {
-    currentLink.value = link;
-  }
-
-}
 
 const handleScroll = () => {
   scrollPosition.value = window.scrollY || window.pageYOffset;

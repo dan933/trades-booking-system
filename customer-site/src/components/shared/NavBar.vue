@@ -1,7 +1,7 @@
 <template>
   <nav :class="`nav ${scrollPosition > 0 ? 'nav-sticky' : ''}`">
     <div class="site-title-container">
-      <a class="site-header" @click="(event) => { handleNavClick('/#home', event) }">Easy Booking</a>
+      <a class="site-header" @click="(event) => { handleNavClick({ name: 'home' }, event) }">Easy Booking</a>
     </div>
     <ul class="nav-links">
       <li @click="(event) => { handleNavClick(menuItem, event) }" v-for="menuItem in menuList" :key="menuItem.name">
@@ -59,10 +59,10 @@ const IsGuest = computed(() => {
 const handleNavClick = async (menuItem, event) => {
   event.preventDefault();
 
-  if (typeof menuItem === "string" && route.path !== '/') {
-    store.commit("updateView", "landing")
-    props.navFunctions.setCurrentLink("home");
-    router.push(menuItem)
+  if (menuItem.name.toLowerCase() === "home" && route.path !== '/') {
+    store.commit("updateView", "landing");
+    router.push("/");
+    logout();
     return;
   }
 
@@ -96,7 +96,7 @@ const logout = (event) => {
   store.commit("setIsGuest", false);
 
   signOut(auth).then(() => {
-    handleNavClick('/', event)
+    handleNavClick({ name: 'home' }, event)
   }).catch((err) => { console.log(err) })
 }
 
@@ -132,9 +132,6 @@ const props = defineProps({
   currentLink: {
     type: String,
     default: 'home'
-  },
-  navFunctions: {
-    type: Object
   }
 
 })
