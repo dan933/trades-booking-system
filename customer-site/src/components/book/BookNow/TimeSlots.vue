@@ -43,6 +43,7 @@ import {
 
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
 
 export default {
   name: "TimeSlots",
@@ -62,7 +63,7 @@ export default {
     initCalendar() {
       const calendarEl = document.getElementById('calendar');
       const calendar = new Calendar(calendarEl, {
-        plugins: [dayGridPlugin],
+        plugins: [dayGridPlugin, timeGridPlugin],
         events: [
           // Your event data here
           { title: 'Event 1', start: '2025-08-29', extendedProps: { description: 'Details for Event 1' } },
@@ -73,24 +74,19 @@ export default {
           console.log('Date clicked:', info);
         },
         views: {
-          dayGridThreeDay: {
-            type: 'dayGrid',
-            duration: { days: 3 },
-            moreLinkClick: () => {
-              console.log('click')
-              return "popover"
-            },
+          timeGridThreeDay: {
+            type: 'timeGrid',
+            duration: { days: 3 }
           },
-          dayGridSevenDay: {
-            type: 'dayGrid',
-            duration: { days: 7 },
-            moreLinkClick: () => {
-              console.log('click')
-              return "popover"
-            },
-          },
+          timeGridSevenDay: {
+            type: 'timeGrid',
+            duration: { days: 7 }
+          }
         },
-        initialView: this.isMobile ? 'dayGridThreeDay' : 'dayGridSevenDay'
+        initialView: this.isMobile ? 'timeGridThreeDay' : 'timeGridSevenDay',
+        slotMinTime: '08:00:00',
+        slotMaxTime: '18:00:00',
+        slotDuration: '00:30:00'
       });
       calendar.render();
     },
