@@ -337,9 +337,28 @@ a {
     padding: 30px;
     border-radius: 5px;
 
-    a {
-      color: black;
+    li {
+      padding: 5px;
+      border-radius: 5px;
+      width: 100%;
+
+      &:hover {
+        color: white;
+        background-color: gray;
+      }
+
+      a {
+        width: 100%;
+        color: inherit;
+
+        &:hover {
+          color: #ffffff !important;
+        }
+      }
     }
+
+
+
   }
 }
 
