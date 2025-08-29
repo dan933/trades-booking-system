@@ -141,6 +141,7 @@ const navigate = (path) => {
       .header-subtitle {
         font-size: 25px;
         margin: 0 0 30px;
+        padding: 0 5px;
         color: rgba(255, 255, 255, 0.8);
         font-family: 'Josefin Sans', sans-serif;
         text-align: center;

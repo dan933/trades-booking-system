@@ -17,6 +17,7 @@
     "firebase-admin": "^11.5.0",
     "firebase-functions": "^4.2.1",
     "firebaseui": "^6.0.2",
+    "fullcalendar": "^6.1.19",
     "v-calendar": "^3.1.2",
     "vite": "^6.3.5",
     "vite-plugin-vuetify": "^2.1.2",

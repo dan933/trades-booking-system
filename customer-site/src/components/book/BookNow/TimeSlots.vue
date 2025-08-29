@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-card flat rounded="0" class="book-now-card">
     <VDatePicker :min-date="tomorrow" :disabled-dates="disabledDates" @dayclick="onCalendarClick" title="Pick a Date">
       <template #default="{ togglePopover }">
@@ -28,13 +28,22 @@
       </v-btn>
     </v-container>
   </v-card>
+</template> -->
+
+<template>
+  <div id="calendar"></div>
 </template>
+
 
 <script>
 import {
   getTimeSlotsForDate,
   getCalendarDatesAvailability,
 } from "../../../services/api/bookingService.js";
+
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+
 export default {
   name: "TimeSlots",
   data: () => ({
@@ -50,8 +59,42 @@ export default {
     availableTimeSlots: null,
   }),
   methods: {
+    initCalendar() {
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new Calendar(calendarEl, {
+        plugins: [dayGridPlugin],
+        events: [
+          // Your event data here
+          { title: 'Event 1', start: '2025-08-29', extendedProps: { description: 'Details for Event 1' } },
+          { title: 'Event 2', start: '2025-08-05', extendedProps: { description: 'Details for Event 2' } }
+        ],
+        eventClick: (info) => {
+          // Handle date click event
+          console.log('Date clicked:', info);
+        },
+        views: {
+          dayGridThreeDay: {
+            type: 'dayGrid',
+            duration: { days: 3 },
+            moreLinkClick: () => {
+              console.log('click')
+              return "popover"
+            },
+          },
+          dayGridSevenDay: {
+            type: 'dayGrid',
+            duration: { days: 7 },
+            moreLinkClick: () => {
+              console.log('click')
+              return "popover"
+            },
+          },
+        },
+        initialView: this.isMobile ? 'dayGridThreeDay' : 'dayGridSevenDay'
+      });
+      calendar.render();
+    },
     async init() {
-
       this.loading = true;
 
       //gets the availability of the timeslots and dates from db
@@ -215,8 +258,16 @@ export default {
   },
   mounted() {
     this.init();
+    this.$nextTick(() => {
+      this.initCalendar();
+    });
+  },
+  beforeUnmount() {
   },
   computed: {
+    isMobile() {
+      return window.innerWidth <= 768;
+    },
     //get yesterdays date
     tomorrow() {
       let tomorrow = new Date();
@@ -231,6 +282,53 @@ export default {
 </script>
 
 <style>
+#calendar {
+  width: 100%;
+  height: 500px;
+  margin-top: 20px;
+  padding: 5px;
+  z-index: 9999;
+}
+
+.fc-day-today {
+  background-color: #f0f8ff !important;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+  background-color: #7d37e1;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fc-header-toolbar {
+  background-color: #7d37e1;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  margin-bottom: 10px !important;
+}
+
+.fc-toolbar-title {
+  color: white !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+.fc-button {
+  background-color: white !important;
+  color: #7d37e1 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 5px 10px !important;
+  margin-top: 5px !important;
+  margin-left: 5px !important;
+}
+
+
 .date-input {
   border-radius: 5px;
   padding: 5px;
