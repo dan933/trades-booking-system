@@ -56,15 +56,16 @@ export default {
 }
 
 .book-section {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   max-width: 800px;
   width: 90%;
-  height: 100%;
-  max-height: 730px;
+  height: 100vh;
   justify-self: center;
   padding-top: 30px;
+
 }
 
 .card {

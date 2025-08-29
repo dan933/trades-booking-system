@@ -1,3 +1,12 @@
+<template>
+  <div class="app-container">
+    <NavBar :nav-functions="navFunctions" :menu-list="menuList" :current-link="currentLink"></NavBar>
+
+    <RouterView></RouterView>
+
+  </div>
+</template>
+
 <script setup>
 import NavBar from "./components/shared/NavBar.vue";
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
@@ -45,7 +54,6 @@ const handleScroll = () => {
       const rect = element.getBoundingClientRect();
       if (rect.top?.toFixed() <= 100 && rect.bottom?.toFixed() >= 100) {
         currentLink.value = section;
-        window.location.hash = `#${section}`;
       }
     }
   }
@@ -62,13 +70,6 @@ onBeforeUnmount(() => {
 
 </script>
 
-<template>
-  <div class="app-container">
-    <NavBar :nav-functions="navFunctions" :menu-list="menuList" :current-link="currentLink"></NavBar>
-    <RouterView></RouterView>
-  </div>
-</template>
-
 <style scoped>
 .app-container {
   display: block;
@@ -80,5 +81,6 @@ onBeforeUnmount(() => {
   background: url("/background-header-landing.png");
   background-repeat: no-repeat;
   background-position: top -300px center;
+
 }
 </style>

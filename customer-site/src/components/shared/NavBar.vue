@@ -8,7 +8,7 @@
         <a :class="`nav-item ${currentLink === menuItem?.name?.toLowerCase?.() && 'active'}`" :href="menuItem.link">{{
           menuItem.name }}</a>
       </li>
-      <li v-if="currentUser" class="logout-item" @click="logout">
+      <li v-if="currentUser || IsGuest" class="logout-item" @click="logout">
         <span class="material-symbols-outlined">logout</span>
         <span class="logout-text">Logout</span>
       </li>
@@ -34,11 +34,14 @@
       </li>
     </ul>
   </div>
+  <button v-if="scrollPosition > 300" @click="scrollToTop" class="scroll-to-top">
+    <span class="material-symbols-outlined">keyboard_arrow_up</span>
+  </button>
 </template>
 
 <script setup>
 import { getAuth, signOut } from "firebase/auth";
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 const activeMobileMenu = ref(false);
@@ -47,6 +50,10 @@ const store = useStore();
 const router = useRouter();
 const currentUser = ref(null);
 let route = useRoute();
+
+const IsGuest = computed(() => {
+  return store.state.IsGuest;
+})
 
 
 const handleNavClick = async (menuItem, event) => {
@@ -75,9 +82,18 @@ const handleScroll = () => {
   scrollPosition.value = window.scrollY || window.pageYOffset;
 };
 
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
+
 const logout = (event) => {
   activeMobileMenu.value = false;
   let auth = getAuth();
+
+  store.commit("setIsGuest", false);
 
   signOut(auth).then(() => {
     handleNavClick('/', event)
@@ -126,10 +142,6 @@ const props = defineProps({
 </script>
 
 <style scoped>
-:global(html) {
-  scroll-behavior: smooth;
-}
-
 .site-header {
   color: #ffffff;
   font-family: 'Rubik', sans-serif;
@@ -151,7 +163,7 @@ a {
 }
 
 .nav {
-  position: sticky;
+  position: fixed;
   top: 0;
   width: 100%;
   max-width: 1920px;
@@ -382,6 +394,29 @@ a {
       line-height: 0;
     }
   }
+}
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #7d37e1;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease;
+}
+
+.scroll-to-top:hover {
+  background-color: #6a2bc4;
 }
 
 @media screen and (min-width: 650px) {

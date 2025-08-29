@@ -1,7 +1,4 @@
-html{
-  scroll-behavior: smooth;
-}
- 
+
 * {
   margin: 0;
   padding: 0;
@@ -11,4 +8,5 @@ html{
 body {
   font-family: 'Rubik', sans-serif;
   line-height: 1.5;
+  scroll-snap-type: none
 } 

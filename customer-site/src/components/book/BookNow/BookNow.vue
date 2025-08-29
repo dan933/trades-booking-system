@@ -186,6 +186,14 @@ export default {
 </script>
 
 <style>
+.v-window__container {
+  overflow: hidden !important;
+}
+
+.v-window-item {
+  overflow: auto !important;
+}
+
 .date-input {
   border-radius: 5px;
   padding: 5px;
