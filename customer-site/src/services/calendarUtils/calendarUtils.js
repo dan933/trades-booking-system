@@ -105,16 +105,95 @@ const CalendarUtils = {
     //todo if mobile view only show 3 days
     //todo if desktop view show 7days
 
-    console.log(slotMinTime);
-    console.log(slotMaxTime);
+    // console.log(slotMinTime);
+    // console.log(slotMaxTime);
 
     if (!openDays?.length) {
       slotMaxTime = "24:00:00";
       slotMinTime = "00:00:00";
     }
 
+    console.log({
+      availabilityDoc: availabilityDoc,
+      bookedAppointments: bookedAppointments,
+    });
+
+    const gapBetween = availabilityDoc?.gapBetween || 1;
+    const openingTimes = availabilityDoc?.openingTimes || {};
+
+    let days = view === "desktop" ? 7 : 3;
+
+    let availableEvents = [];
+    let unavailableEvents = [];
+
+    for (let index = 0; index < days; index++) {
+      let dayToCheck = startDate;
+      let dayIndex = dayToCheck.getDay();
+      dayToCheck = dayToCheck.toISOString();
+      const dateString = dayToCheck.split("T")[0];
+
+      let openingTimeDetails = openingTimes?.[dayIndex];
+
+      if (!openingTimeDetails) {
+        continue;
+      }
+
+      let remainingHours = openingTimeDetails?.start;
+
+      while (
+        typeof remainingHours === "number" &&
+        remainingHours <= openingTimeDetails?.end &&
+        typeof openingTimeDetails?.end === "number"
+      ) {
+        console.log("remaining hours", remainingHours);
+
+        let hasOverlap = bookedAppointments.some((appointment) => {
+          let appointmentStart = new Date(appointment.start);
+          let appointmentEnd = new Date(appointment.end);
+
+          let appointmentStartHour = appointmentStart.getHours();
+          let appointmentEndHour = appointmentEnd.getHours();
+
+          return (
+            appointmentStartHour <= remainingHours &&
+            appointmentEndHour > remainingHours
+          );
+        });
+
+        if (hasOverlap) {
+          remainingHours += gapBetween;
+          continue;
+        } else if (remainingHours < openingTimeDetails?.end) {
+          availableEvents.push({
+            title: "Available",
+            start: `${dateString}T${`${remainingHours}`.padStart(
+              2,
+              "0"
+            )}:00:00`,
+            end: `${dateString}T${`${openingTimeDetails.end}`.padStart(
+              2,
+              "0"
+            )}:00:00`,
+            editable: true,
+            startEditable: true,
+            durationEditable: true,
+            classNames: [],
+          });
+        }
+
+        remainingHours += gapBetween;
+      }
+
+      console.log("remainingHours", remainingHours);
+      console.log("openingTimeDetails", openingTimeDetails);
+
+      startDate.setDate(startDate.getDate() + 1);
+
+      console.log("startDate", startDate);
+    }
+
     return {
-      availableAppointments: null,
+      availableAppointments: availableEvents,
       slotMinTime: slotMinTime,
       slotMaxTime: slotMaxTime,
     };

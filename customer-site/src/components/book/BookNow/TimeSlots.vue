@@ -74,7 +74,7 @@ export default {
     initCalendar() {
       //todo don't return all paginate later
       let bookedAppointments = CalendarUtils.GenerateBookedOutTimes(this.bookingScheduleData);
-      let { availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateAvailableTimes(this.availabilityDoc)
+      let { availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateAvailableTimes(this.availabilityDoc, bookedAppointments, this.isMobile ? "mobile" : "desktop", new Date("2025-09-01"))
 
 
       const calendarEl = document.getElementById('calendar');
@@ -87,7 +87,8 @@ export default {
         allDaySlot: false,
         firstDay: 1,
         events: [
-          ...bookedAppointments
+          ...bookedAppointments,
+          ...availableAppointments
           // Your event data here
           // { editable: false, startEditable: false, durationEditable: false, title: 'Event 1', start: '2025-08-31T12:30' },
         ],
