@@ -32,14 +32,12 @@
           </p>
         </div>
         <div class="content-image">
-          <img src="../../../public/appointments.png" alt="appointments"
-            style="background-size: cover; width: 100%; height: 100%;">
+          <img src="/appointments.png" alt="appointments" style="background-size: cover; width: 100%; height: 100%;">
         </div>
       </section>
       <section class="content-row right">
         <div class="content-image">
-          <img src="../../../public/book-dates.png" alt="appointments"
-            style="background-size: cover; width: 100%; height: 100%;">
+          <img src="/book-dates.png" alt="appointments" style="background-size: cover; width: 100%; height: 100%;">
         </div>
         <div class="content-text">
           <div class="icon">
@@ -75,7 +73,7 @@
           </p>
         </div>
         <div class="content-image">
-          <img src="../../../public/confirmation-booking.png" alt="appointments"
+          <img src="/confirmation-booking.png" alt="appointments"
             style="background-size: cover; width: 100%; height: 100%;">
         </div>
       </section>

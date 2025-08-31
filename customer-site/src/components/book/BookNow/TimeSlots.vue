@@ -32,6 +32,11 @@
 
 <template>
   <div id="calendar"></div>
+  <v-container v-if="loading" class="loading-overlay"></v-container>
+  <v-container v-if="loading" class="loading">
+    <v-progress-circular :width="10" :size="80" indeterminate color="blue"></v-progress-circular>
+    <p>loading schedule...</p>
+  </v-container>
 </template>
 
 
@@ -44,6 +49,8 @@ import {
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import CalendarUtils from "../../../services/calendarUtils/calendarUtils.js";
 
 export default {
   name: "TimeSlots",
@@ -51,44 +58,62 @@ export default {
     loading: false,
     //data that we will get from the db
     availabilityDoc: null,
-    bookingScheduleData: null,
+    bookingScheduleData: [],
     disabledDates: [],
     selectedDate: null,
     availabilityMessage: "",
     IsAvailableDate: false,
     selectedTimeSlot: {},
     availableTimeSlots: null,
+    /**
+     * @type {Calendar}
+     */
+    calendar: null,
   }),
   methods: {
     initCalendar() {
+      //todo don't return all paginate later
+      let bookedAppointments = CalendarUtils.GenerateBookedOutTimes(this.bookingScheduleData);
+      let { availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateAvailableTimes(this.availabilityDoc)
+
+
       const calendarEl = document.getElementById('calendar');
       const calendar = new Calendar(calendarEl, {
-        plugins: [dayGridPlugin, timeGridPlugin],
+        plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+        eventOverlap: false,
+        eventStartEditable: true,
+        durationEditable: true,
+        editable: true,
+        allDaySlot: false,
+        firstDay: 1,
         events: [
+          ...bookedAppointments
           // Your event data here
-          { title: 'Event 1', start: '2025-08-29', extendedProps: { description: 'Details for Event 1' } },
-          { title: 'Event 2', start: '2025-08-05', extendedProps: { description: 'Details for Event 2' } }
+          // { editable: false, startEditable: false, durationEditable: false, title: 'Event 1', start: '2025-08-31T12:30' },
         ],
-        eventClick: (info) => {
-          // Handle date click event
-          console.log('Date clicked:', info);
-        },
+        // eventClick: (info) => {
+        //   // Handle date click event
+        //   console.log('Date clicked:', info);
+        // },
         views: {
           timeGridThreeDay: {
             type: 'timeGrid',
-            duration: { days: 3 }
+            duration: { days: 3 },
+            // dateAlignment: 'week'
           },
           timeGridSevenDay: {
             type: 'timeGrid',
-            duration: { days: 7 }
+            duration: { days: 7 },
           }
         },
-        initialView: this.isMobile ? 'timeGridThreeDay' : 'timeGridSevenDay',
-        slotMinTime: '08:00:00',
-        slotMaxTime: '18:00:00',
-        slotDuration: '00:30:00'
+        initialView: this.isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
+        slotMinTime: slotMinTime,
+        slotMaxTime: slotMaxTime,
       });
+      // calendar.setOption("firstDay", 1)
       calendar.render();
+
+      this.calendar = calendar;
     },
     async init() {
       this.loading = true;
@@ -102,6 +127,12 @@ export default {
         availabilityDoc,
       } = await getCalendarDatesAvailability(this.orgId);
 
+      console.log("bookedOutDates", bookedOutDates)
+      console.log("businessClosedDays", businessClosedDays)
+      console.log("bookMonthsAhead", bookMonthsAhead)
+      console.log("bookedSchedules", bookedSchedules)
+      console.log("availabilityDoc", availabilityDoc)
+
       //set the booking schedule data
       this.bookingScheduleData = bookedSchedules;
 
@@ -109,13 +140,14 @@ export default {
       this.availabilityDoc = availabilityDoc;
 
       // sets the disabled dates
-      this.disabledUnavailableDates(
-        bookedOutDates,
-        businessClosedDays,
-        bookMonthsAhead
-      );
+      // this.disabledUnavailableDates(
+      //   bookedOutDates,
+      //   businessClosedDays,
+      //   bookMonthsAhead
+      // );
 
       this.loading = false;
+      console.log(this.loading)
     },
     async disabledUnavailableDates(
       bookedOutDates,
@@ -252,8 +284,8 @@ export default {
       }
     },
   },
-  mounted() {
-    this.init();
+  async mounted() {
+    await this.init();
     this.$nextTick(() => {
       this.initCalendar();
     });
@@ -278,6 +310,33 @@ export default {
 </script>
 
 <style>
+.loading-overlay {
+  margin-top: 20px;
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  z-index: 3;
+  background-color: rgb(0, 0, 0);
+  opacity: 0.8;
+}
+
+.loading {
+  margin-top: 20px;
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  z-index: 3;
+  color: white;
+}
+
 #calendar {
   width: 100%;
   height: 500px;
@@ -322,6 +381,14 @@ export default {
   padding: 5px 10px !important;
   margin-top: 5px !important;
   margin-left: 5px !important;
+}
+
+.fc-event.unavailable-event {
+  background-color: rgb(174, 164, 164);
+  border-color: #e55656;
+  color: white;
+  opacity: 0.8;
+  cursor: not-allowed;
 }
 
 
