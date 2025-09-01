@@ -73,8 +73,9 @@ export default {
   methods: {
     initCalendar() {
       //todo don't return all paginate later
-      let bookedAppointments = CalendarUtils.GenerateBookedOutTimes(this.bookingScheduleData);
-      let { availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateAvailableTimes(this.availabilityDoc, bookedAppointments, this.isMobile ? "mobile" : "desktop", new Date("2025-09-01"))
+      // let bookedAppointments = CalendarUtils.GenerateBookedOutTimes(this.bookingScheduleData);
+      console.log("this.bookingScheduleData", this.bookingScheduleData)
+      let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(this.bookingScheduleData, this.availabilityDoc, this.isMobile ? "mobile" : "desktop", new Date("2025-09-01"))
 
 
       const calendarEl = document.getElementById('calendar');
@@ -87,8 +88,9 @@ export default {
         allDaySlot: false,
         firstDay: 1,
         events: [
-          ...bookedAppointments,
-          ...availableAppointments
+          // ...bookedAppointments,
+          ...availableAppointments,
+          ...unavailableAppointments
           // Your event data here
           // { editable: false, startEditable: false, durationEditable: false, title: 'Event 1', start: '2025-08-31T12:30' },
         ],
@@ -128,11 +130,11 @@ export default {
         availabilityDoc,
       } = await getCalendarDatesAvailability(this.orgId);
 
-      console.log("bookedOutDates", bookedOutDates)
-      console.log("businessClosedDays", businessClosedDays)
-      console.log("bookMonthsAhead", bookMonthsAhead)
-      console.log("bookedSchedules", bookedSchedules)
-      console.log("availabilityDoc", availabilityDoc)
+      // console.log("bookedOutDates", bookedOutDates)
+      // console.log("businessClosedDays", businessClosedDays)
+      // console.log("bookMonthsAhead", bookMonthsAhead)
+      // console.log("bookedSchedules", bookedSchedules)
+      // console.log("availabilityDoc", availabilityDoc)
 
       //set the booking schedule data
       this.bookingScheduleData = bookedSchedules;
@@ -148,7 +150,6 @@ export default {
       // );
 
       this.loading = false;
-      console.log(this.loading)
     },
     async disabledUnavailableDates(
       bookedOutDates,

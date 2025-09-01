@@ -83,13 +83,12 @@ const CalendarUtils = {
     return events;
   },
   /**
-   *
+   * @param {Array<{bookedTimes: {[hour: number]: boolean}, bookingScheduleDate: {seconds: number; nanoseconds: number}}>} bookedSchedules
    * @param {{bookMonthsAheadLimit:number, gapBetween:number, openingTimes: {[day:string]: {end: number; start:number, open: boolean}}}} availabilityDoc
-   * @param {import("@fullcalendar/core").EventInput[]} bookedAppointments
    * @param {"desktop" | "mobile"} view
    * @param {Date} startDate
    */
-  generateAvailableTimes(availabilityDoc, bookedAppointments, view, startDate) {
+  generateTimeTable(bookedSchedules, availabilityDoc, view, startDate) {
     // Find earliest start time from open days
     const openDays = Object.values(availabilityDoc?.openingTimes).filter(
       (day) => day.open
@@ -98,102 +97,154 @@ const CalendarUtils = {
     let slotMinTime = `${Math.min(...openDays.map((day) => day.start))
       .toString()
       .padStart(2, "0")}:00:00`;
+
     let slotMaxTime = `${Math.max(...openDays.map((day) => day.end))
       .toString()
       .padStart(2, "0")}:00:00`;
-
-    //todo if mobile view only show 3 days
-    //todo if desktop view show 7days
-
-    // console.log(slotMinTime);
-    // console.log(slotMaxTime);
 
     if (!openDays?.length) {
       slotMaxTime = "24:00:00";
       slotMinTime = "00:00:00";
     }
 
-    console.log({
-      availabilityDoc: availabilityDoc,
-      bookedAppointments: bookedAppointments,
-    });
-
     const gapBetween = availabilityDoc?.gapBetween || 1;
-    const openingTimes = availabilityDoc?.openingTimes || {};
+
+    const openingTimes = Object.entries(
+      availabilityDoc?.openingTimes || {}
+    ).reduce((acc, [day, { start, end }]) => {
+      acc.push({ day: +day, start, end });
+      return acc;
+    }, []);
 
     let days = view === "desktop" ? 7 : 3;
 
-    let availableEvents = [];
-    let unavailableEvents = [];
+    let currentDate = new Date(startDate);
+
+    /**
+     * @type {import("@fullcalendar/core").EventInput[]}
+     */
+    const availableSlots = [];
+    /**
+     * @type {import("@fullcalendar/core").EventInput[]}
+     */
+    const unavailableSlots = [];
+
+    console.log({ bookedSchedules });
 
     for (let index = 0; index < days; index++) {
-      let dayToCheck = startDate;
-      let dayIndex = dayToCheck.getDay();
-      dayToCheck = dayToCheck.toISOString();
-      const dateString = dayToCheck.split("T")[0];
+      const dayIndex = currentDate.getDay();
 
-      let openingTimeDetails = openingTimes?.[dayIndex];
+      const dayOpeningTimes = openingTimes.find(
+        (openingTime) => openingTime.day === dayIndex
+      );
 
-      if (!openingTimeDetails) {
-        continue;
+      const currentDateString = currentDate.toISOString().split("T")[0];
+
+      //Get booked schedule for day
+      const bookedScheduleForDay = bookedSchedules.find((bookedSchedule) => {
+        if (typeof bookedSchedule.bookingScheduleDate?.seconds !== "number") {
+          return false;
+        }
+
+        let bookingDate = new Date(
+          bookedSchedule.bookingScheduleDate?.seconds * 1000
+        );
+        let bookingDateString = bookingDate.toISOString().split("T")[0]; //get only the date part
+
+        return bookingDateString === currentDateString;
+      });
+
+      const bookedTimes = bookedScheduleForDay?.bookedTimes || {};
+
+      if (dayOpeningTimes.start > 0) {
+        unavailableSlots.push({
+          title: "Closed",
+          start: `${currentDateString}T00:00:00`,
+          end: `${currentDateString}T${dayOpeningTimes.start
+            .toString()
+            .padStart(2, "0")}:00:00`,
+          editable: false,
+          startEditable: false,
+          durationEditable: false,
+          classNames: ["unavailable-event"],
+        });
       }
 
-      let remainingHours = openingTimeDetails?.start;
-
-      while (
-        typeof remainingHours === "number" &&
-        remainingHours <= openingTimeDetails?.end &&
-        typeof openingTimeDetails?.end === "number"
-      ) {
-        console.log("remaining hours", remainingHours);
-
-        let hasOverlap = bookedAppointments.some((appointment) => {
-          let appointmentStart = new Date(appointment.start);
-          let appointmentEnd = new Date(appointment.end);
-
-          let appointmentStartHour = appointmentStart.getHours();
-          let appointmentEndHour = appointmentEnd.getHours();
-
-          return (
-            appointmentStartHour <= remainingHours &&
-            appointmentEndHour > remainingHours
-          );
+      // After opening hours (end to 24)
+      if (dayOpeningTimes.end < 24) {
+        unavailableSlots.push({
+          title: "Closed",
+          start: `${currentDateString}T${dayOpeningTimes.end
+            .toString()
+            .padStart(2, "0")}:00:00`,
+          end: `${currentDateString}T24:00:00`,
+          editable: false,
+          startEditable: false,
+          durationEditable: false,
+          classNames: ["unavailable-event"],
         });
+      }
 
-        if (hasOverlap) {
-          remainingHours += gapBetween;
-          continue;
-        } else if (remainingHours < openingTimeDetails?.end) {
-          availableEvents.push({
+      /**
+       * @type {import("@fullcalendar/core").EventInput | null}
+       */
+      let event = null;
+      for (
+        let hourIndex = dayOpeningTimes.start;
+        hourIndex < dayOpeningTimes.end;
+
+      ) {
+        if (bookedTimes[hourIndex]) {
+          // Create unavailable event
+          const startHour = hourIndex;
+          while (bookedTimes[hourIndex] && hourIndex < dayOpeningTimes.end) {
+            hourIndex++;
+          }
+
+          unavailableSlots.push({
+            title: "Unavailable",
+            start: `${currentDateString}T${startHour
+              .toString()
+              .padStart(2, "0")}:00:00`,
+            end: `${currentDateString}T${hourIndex
+              .toString()
+              .padStart(2, "0")}:00:00`,
+            editable: false,
+            startEditable: false,
+            durationEditable: false,
+            classNames: ["unavailable-event"],
+          });
+        } else {
+          // Create available event
+          const startHour = hourIndex;
+          while (!bookedTimes[hourIndex] && hourIndex < dayOpeningTimes.end) {
+            hourIndex++;
+          }
+
+          availableSlots.push({
             title: "Available",
-            start: `${dateString}T${`${remainingHours}`.padStart(
-              2,
-              "0"
-            )}:00:00`,
-            end: `${dateString}T${`${openingTimeDetails.end}`.padStart(
-              2,
-              "0"
-            )}:00:00`,
+            start: `${currentDateString}T${startHour
+              .toString()
+              .padStart(2, "0")}:00:00`,
+            end: `${currentDateString}T${hourIndex
+              .toString()
+              .padStart(2, "0")}:00:00`,
             editable: true,
             startEditable: true,
             durationEditable: true,
             classNames: [],
           });
         }
-
-        remainingHours += gapBetween;
       }
 
-      console.log("remainingHours", remainingHours);
-      console.log("openingTimeDetails", openingTimeDetails);
-
-      startDate.setDate(startDate.getDate() + 1);
-
-      console.log("startDate", startDate);
+      currentDate.setDate(currentDate.getDate() + 1);
     }
 
+    console.log({ availableSlots, unavailableSlots });
+
     return {
-      availableAppointments: availableEvents,
+      availableAppointments: availableSlots,
+      unavailableAppointments: unavailableSlots,
       slotMinTime: slotMinTime,
       slotMaxTime: slotMaxTime,
     };
