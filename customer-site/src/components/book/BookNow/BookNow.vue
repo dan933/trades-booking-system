@@ -79,12 +79,13 @@ export default {
         const orgId = this.$route.params.id;
 
         if (this.IsGuest) {
+          this.$refs.customerDetailsRef.toggleLoading(true);
 
           await setGuestDetails(customerDetails, orgId).catch((err) => {
             console.log("error setting guest details", err)
           });
 
-
+          this.$refs.customerDetailsRef.toggleLoading(false);
         } else {
           this.$refs.customerDetailsRef.toggleLoading(true);
 

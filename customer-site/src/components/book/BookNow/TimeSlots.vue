@@ -88,16 +88,13 @@ export default {
         allDaySlot: false,
         firstDay: 1,
         events: [
-          // ...bookedAppointments,
           ...availableAppointments,
           ...unavailableAppointments
-          // Your event data here
-          // { editable: false, startEditable: false, durationEditable: false, title: 'Event 1', start: '2025-08-31T12:30' },
         ],
-        // eventClick: (info) => {
-        //   // Handle date click event
-        //   console.log('Date clicked:', info);
-        // },
+        eventClick: (info) => {
+          // Handle date click event
+          console.log('Date clicked:', info);
+        },
         views: {
           timeGridThreeDay: {
             type: 'timeGrid',

@@ -89,11 +89,14 @@ const getCalendarDatesAvailability = async (orgId) => {
 
   // console.log("bookMonthsAhead", bookMonthsAhead);
 
+  const dateQuery = new Date();
+  dateQuery.setHours(0, 0, 0, 0);
+
   //query the bookedSchedules collection for dates in the future
   //todo paginate based on month selected range
   let bookedSchedulesQuery = query(
     collection(db, `organisations/${orgId}/bookedSchedule`),
-    where("bookingScheduleDate", ">=", new Date())
+    where("bookingScheduleDate", ">=", dateQuery)
   );
 
   let bookedSchedules = await getDocs(bookedSchedulesQuery);

@@ -129,8 +129,6 @@ const CalendarUtils = {
      */
     const unavailableSlots = [];
 
-    console.log({ bookedSchedules });
-
     for (let index = 0; index < days; index++) {
       const dayIndex = currentDate.getDay();
 
@@ -156,9 +154,16 @@ const CalendarUtils = {
 
       const bookedTimes = bookedScheduleForDay?.bookedTimes || {};
 
+      const isToday =
+        currentDateString === new Date().toISOString().split("T")[0];
+
+      const isPast = new Date(currentDateString) < new Date();
+
+      const currentHour = new Date().getHours();
+
       if (dayOpeningTimes.start > 0) {
         unavailableSlots.push({
-          title: "Closed",
+          title: "Unavailable",
           start: `${currentDateString}T00:00:00`,
           end: `${currentDateString}T${dayOpeningTimes.start
             .toString()
@@ -170,7 +175,7 @@ const CalendarUtils = {
         });
       }
 
-      // After opening hours (end to 24)
+      // // After opening hours (end to 24)
       if (dayOpeningTimes.end < 24) {
         unavailableSlots.push({
           title: "Closed",
@@ -185,15 +190,37 @@ const CalendarUtils = {
         });
       }
 
-      /**
-       * @type {import("@fullcalendar/core").EventInput | null}
-       */
-      let event = null;
       for (
         let hourIndex = dayOpeningTimes.start;
         hourIndex < dayOpeningTimes.end;
 
       ) {
+        if (isPast) {
+          let start = hourIndex;
+
+          while (hourIndex < dayOpeningTimes.end) {
+            hourIndex++;
+          }
+
+          if (isToday && currentHour === hourIndex) {
+            hourIndex++;
+          }
+
+          unavailableSlots.push({
+            title: "Unavailable",
+            start: `${currentDateString}T${start
+              .toString()
+              .padStart(2, "0")}:00:00`,
+            end: `${currentDateString}T${hourIndex
+              .toString()
+              .padStart(2, "0")}:00:00`,
+            editable: false,
+            startEditable: false,
+            durationEditable: false,
+            classNames: ["unavailable-event"],
+          });
+        }
+
         if (bookedTimes[hourIndex]) {
           // Create unavailable event
           const startHour = hourIndex;
@@ -214,33 +241,49 @@ const CalendarUtils = {
             durationEditable: false,
             classNames: ["unavailable-event"],
           });
-        } else {
+        } else if (!isPast) {
           // Create available event
           const startHour = hourIndex;
           while (!bookedTimes[hourIndex] && hourIndex < dayOpeningTimes.end) {
             hourIndex++;
           }
 
-          availableSlots.push({
-            title: "Available",
-            start: `${currentDateString}T${startHour
-              .toString()
-              .padStart(2, "0")}:00:00`,
-            end: `${currentDateString}T${hourIndex
-              .toString()
-              .padStart(2, "0")}:00:00`,
-            editable: true,
-            startEditable: true,
-            durationEditable: true,
-            classNames: [],
-          });
+          if (hourIndex - startHour > gapBetween) {
+            availableSlots.push({
+              title: "Available",
+              start: `${currentDateString}T${startHour
+                .toString()
+                .padStart(2, "0")}:00:00`,
+              end: `${currentDateString}T${hourIndex
+                .toString()
+                .padStart(2, "0")}:00:00`,
+              editable: true,
+              startEditable: true,
+              durationEditable: true,
+              classNames: [],
+            });
+          } else {
+            unavailableSlots.push({
+              title: "Unavailable",
+              start: `${currentDateString}T${startHour
+                .toString()
+                .padStart(2, "0")}:00:00`,
+              end: `${currentDateString}T${hourIndex
+                .toString()
+                .padStart(2, "0")}:00:00`,
+              editable: false,
+              startEditable: false,
+              durationEditable: false,
+              classNames: ["unavailable-event"],
+            });
+          }
         }
       }
 
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    console.log({ availableSlots, unavailableSlots });
+    // console.log({ availableSlots, unavailableSlots });
 
     return {
       availableAppointments: availableSlots,
