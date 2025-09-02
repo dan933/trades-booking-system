@@ -72,11 +72,7 @@ export default {
   }),
   methods: {
     initCalendar() {
-      //todo don't return all paginate later
-      // let bookedAppointments = CalendarUtils.GenerateBookedOutTimes(this.bookingScheduleData);
-      console.log("this.bookingScheduleData", this.bookingScheduleData)
-      let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(this.bookingScheduleData, this.availabilityDoc, this.isMobile ? "mobile" : "desktop", new Date("2025-09-01"))
-
+      // let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(this.bookingScheduleData, this.availabilityDoc, this.isMobile ? "mobile" : "desktop", new Date("2025-09-01"))
 
       const calendarEl = document.getElementById('calendar');
       const calendar = new Calendar(calendarEl, {
@@ -87,10 +83,16 @@ export default {
         editable: true,
         allDaySlot: false,
         firstDay: 1,
-        events: [
-          ...availableAppointments,
-          ...unavailableAppointments
-        ],
+        datesSet: async (dateInfo) => {
+          console.log('Week changed:', dateInfo);
+          console.log("line 88", new Date("2025-09-01"));
+          console.log("line 88", new Date(dateInfo.startStr));
+          await this.onCalendarChange(new Date(dateInfo.startStr));
+        },
+        // events: [
+        //   ...availableAppointments,
+        //   ...unavailableAppointments
+        // ],
         eventClick: (info) => {
           // Handle date click event
           console.log('Date clicked:', info);
@@ -107,10 +109,9 @@ export default {
           }
         },
         initialView: this.isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
-        slotMinTime: slotMinTime,
-        slotMaxTime: slotMaxTime,
+        // slotMinTime: slotMinTime,
+        // slotMaxTime: slotMaxTime,
       });
-      // calendar.setOption("firstDay", 1)
       calendar.render();
 
       this.calendar = calendar;
@@ -120,18 +121,9 @@ export default {
 
       //gets the availability of the timeslots and dates from db
       const {
-        bookedOutDates,
-        businessClosedDays,
-        bookMonthsAhead,
         bookedSchedules,
         availabilityDoc,
       } = await getCalendarDatesAvailability(this.orgId);
-
-      // console.log("bookedOutDates", bookedOutDates)
-      // console.log("businessClosedDays", businessClosedDays)
-      // console.log("bookMonthsAhead", bookMonthsAhead)
-      // console.log("bookedSchedules", bookedSchedules)
-      // console.log("availabilityDoc", availabilityDoc)
 
       //set the booking schedule data
       this.bookingScheduleData = bookedSchedules;
@@ -145,6 +137,33 @@ export default {
       //   businessClosedDays,
       //   bookMonthsAhead
       // );
+
+      this.loading = false;
+    },
+    async onCalendarChange(startDate) {
+      this.loading = true;
+
+      const {
+        bookedSchedules,
+        availabilityDoc,
+      } = await getCalendarDatesAvailability(this.orgId, startDate);
+
+
+      let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(bookedSchedules, availabilityDoc, this.isMobile ? "mobile" : "desktop", startDate)
+
+
+      console.log({ unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime, availabilityDoc })
+
+      this.calendar.removeAllEvents();
+      this.calendar.setOption("slotMinTime", slotMinTime);
+      this.calendar.setOption("slotMaxTime", slotMaxTime);
+      this.calendar.addEventSource([
+        ...availableAppointments,
+        ...unavailableAppointments
+      ]);
+      console.log("this.calendar.getEventSources()", this.calendar.getEventSources())
+
+
 
       this.loading = false;
     },

@@ -89,6 +89,7 @@ const CalendarUtils = {
    * @param {Date} startDate
    */
   generateTimeTable(bookedSchedules, availabilityDoc, view, startDate) {
+    console.log("startDate", startDate);
     // Find earliest start time from open days
     const openDays = Object.values(availabilityDoc?.openingTimes).filter(
       (day) => day.open
@@ -119,6 +120,7 @@ const CalendarUtils = {
     let days = view === "desktop" ? 7 : 3;
 
     let currentDate = new Date(startDate);
+    currentDate.setHours(10, 0, 0, 0);
 
     /**
      * @type {import("@fullcalendar/core").EventInput[]}

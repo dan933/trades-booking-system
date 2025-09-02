@@ -70,7 +70,13 @@ const getAppointments = async (
   };
 };
 
-const getCalendarDatesAvailability = async (orgId) => {
+/**
+ * - dateInput is optional if not set date will be current date
+ * @param {string} orgId
+ * @param {Date} dateInput
+ * - returns the booked schedules for the date and the availability document of the organisation
+ */
+const getCalendarDatesAvailability = async (orgId, dateInput) => {
   //Get the companies availability document
   let availabilityDocRef = doc(
     db,
@@ -80,92 +86,22 @@ const getCalendarDatesAvailability = async (orgId) => {
   //get the opperating hours gapBetweenAppointments settings and bookMonthsAhead limit
   let availabilityDoc = await getDoc(availabilityDocRef);
 
-  let { openingTimes, gapBetween, bookMonthsAheadLimit } =
-    availabilityDoc.data();
-
-  // get the date for the bookMonthsAheadLimit
-  let bookMonthsAhead = new Date();
-  bookMonthsAhead.setMonth(bookMonthsAhead.getMonth() + bookMonthsAheadLimit);
-
-  // console.log("bookMonthsAhead", bookMonthsAhead);
-
-  const dateQuery = new Date();
+  const dateQuery = dateInput ? dateInput : new Date();
   dateQuery.setHours(0, 0, 0, 0);
 
-  //query the bookedSchedules collection for dates in the future
-  //todo paginate based on month selected range
+  const endDateQuery = new Date(dateQuery);
+  endDateQuery.setDate(endDateQuery.getDate() + 7);
+
   let bookedSchedulesQuery = query(
     collection(db, `organisations/${orgId}/bookedSchedule`),
-    where("bookingScheduleDate", ">=", dateQuery)
+    where("bookingScheduleDate", ">=", dateQuery),
+    where("bookingScheduleDate", "<", endDateQuery)
   );
 
   let bookedSchedules = await getDocs(bookedSchedulesQuery);
-
   bookedSchedules = bookedSchedules.docs.map((doc) => doc.data());
-  //----------------------------------------------//
 
-  //-------------- Adds the bookedout dates to the booked out dates array --------------//
-
-  let businessClosedDays = [];
-
-  //------------------- Days the business is closed -------------//
-  Object.keys(openingTimes).forEach((day) => {
-    if (!openingTimes[day].open) {
-      businessClosedDays.push(+day);
-    }
-  });
-  //------------------------------------------------------------//
-
-  let bookedOutDates = [];
-
-  bookedSchedules.forEach((schedule) => {
-    //the day of the week 0 is sunday 6 is saturday
-    let scheduleDate = schedule.bookingScheduleDate.toDate();
-
-    let dayOfWeek = scheduleDate.getDay();
-
-    //check business is open that day
-    if (openingTimes[dayOfWeek].open) {
-      //get the start and end times for that day
-      let startTime = openingTimes[dayOfWeek].start;
-      let endTime = openingTimes[dayOfWeek].end;
-
-      //get the number of timeslots taken for that day
-      let numberOfSlotsTakenForTheDay = Object.keys(schedule.bookedTimes).map(
-        (key) => {
-          if (
-            !schedule.bookedTimes[+key] &&
-            gapBetweenCheck(+key, gapBetween, schedule.bookedTimes) &&
-            +key < endTime
-          ) {
-            return false;
-          } else {
-            return true;
-          }
-        }
-      );
-
-      //filter the booked out slots
-      numberOfSlotsTakenForTheDay = numberOfSlotsTakenForTheDay.filter(
-        (booking) => booking
-      );
-
-      //Get the available hours for that day
-      let availableHours = endTime - startTime;
-
-      //Check if the business is booked out for that day
-      let IsBookedOut = numberOfSlotsTakenForTheDay.length >= availableHours;
-
-      //If the business is Booked out for that day
-      if (IsBookedOut) {
-        bookedOutDates.push(scheduleDate);
-      }
-    }
-  });
   return {
-    bookedOutDates,
-    businessClosedDays,
-    bookMonthsAhead,
     bookedSchedules,
     availabilityDoc: availabilityDoc.data(),
   };
