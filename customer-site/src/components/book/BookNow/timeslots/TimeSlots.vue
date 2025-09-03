@@ -37,6 +37,8 @@
     <v-progress-circular :width="10" :size="80" indeterminate color="blue"></v-progress-circular>
     <p>loading schedule...</p>
   </v-container>
+  <TimeSlotDialog v-if="dialogOpenStatus" :toggleDialog="toggleDialog" :selectedEvent="selectedEvent">
+  </TimeSlotDialog>
 </template>
 
 
@@ -44,18 +46,21 @@
 import {
   getTimeSlotsForDate,
   getCalendarDatesAvailability,
-} from "../../../services/api/bookingService.js";
+} from "../../../../services/api/bookingService.js";
 
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import CalendarUtils from "../../../services/calendarUtils/calendarUtils.js";
+import CalendarUtils from "../../../../services/calendarUtils/calendarUtils.js";
+import TimeSlotDialog from "./TimeSlotDialog.vue";
 
 export default {
   name: "TimeSlots",
   data: () => ({
+    dialogOpenStatus: false,
     loading: false,
+    selectedEvent: null,
     //data that we will get from the db
     availabilityDoc: null,
     bookingScheduleData: [],
@@ -70,12 +75,21 @@ export default {
      */
     calendar: null,
   }),
+  components: {
+    TimeSlotDialog
+  },
   methods: {
+    toggleDialog(status) {
+      this.dialogOpenStatus = status;
+    },
     initCalendar() {
       // let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(this.bookingScheduleData, this.availabilityDoc, this.isMobile ? "mobile" : "desktop", new Date("2025-09-01"))
 
       const calendarEl = document.getElementById('calendar');
       const calendar = new Calendar(calendarEl, {
+        locale: 'en-AU',
+        dayHeaderFormat: { day: 'numeric', month: 'numeric', weekday: 'short' },
+        timeZone: "Australia/Melbourne",
         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
         eventOverlap: false,
         eventStartEditable: true,
@@ -84,18 +98,27 @@ export default {
         allDaySlot: false,
         firstDay: 1,
         datesSet: async (dateInfo) => {
-          console.log('Week changed:', dateInfo);
-          console.log("line 88", new Date("2025-09-01"));
-          console.log("line 88", new Date(dateInfo.startStr));
           await this.onCalendarChange(new Date(dateInfo.startStr));
         },
-        // events: [
-        //   ...availableAppointments,
-        //   ...unavailableAppointments
-        // ],
         eventClick: (info) => {
-          // Handle date click event
-          console.log('Date clicked:', info);
+          const event = info.event;
+          let selectedEvent = {
+            title: event.title,
+            startHour: new Date(event.start).getUTCHours(),
+            endHour: new Date(event.end).getUTCHours(),
+            scheduleDate: new Date(event.start).toISOString().split('T')[0],
+            id: event.id,
+            classNames: event.classNames
+          }
+
+
+
+          if (selectedEvent?.title === "Available") {
+            console.log({ selectedEvent })
+            this.selectedEvent = selectedEvent;
+            this.toggleDialog(true)
+          }
+
         },
         views: {
           timeGridThreeDay: {
@@ -263,18 +286,18 @@ export default {
       // console.log(this.selectedDate, "line 193");
 
       //add the booking start time to the selected date
-      let bookingStartTime = this.selectedDate;
-      bookingStartTime.setHours(
-        this.selectedTimeSlot.time.split(":")[0],
-        this.selectedTimeSlot.time.split(":")[1]
-      );
+      // let bookingStartTime = this.selectedDate;
+      // bookingStartTime.setHours(
+      //   this.selectedTimeSlot.time.split(":")[0],
+      //   this.selectedTimeSlot.time.split(":")[1]
+      // );
 
-      let bookingTimeSlotData = {
-        date: this.selectedDate,
-        timeslot: this.selectedTimeSlot,
-      };
+      // let bookingTimeSlotData = {
+      //   date: this.selectedDate,
+      //   timeslot: this.selectedTimeSlot,
+      // };
 
-      this.$emit("storeSelectedTimeSlotData", bookingTimeSlotData);
+      // this.$emit("storeSelectedTimeSlotData", bookingTimeSlotData);
     },
     goToSelectServices() {
       //todo check if timeslot is still availbale
@@ -313,12 +336,6 @@ export default {
   computed: {
     isMobile() {
       return window.innerWidth <= 768;
-    },
-    //get yesterdays date
-    tomorrow() {
-      let tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      return tomorrow;
     },
     orgId() {
       return this.$route.params.id;
@@ -407,6 +424,10 @@ export default {
   color: white;
   opacity: 0.8;
   cursor: not-allowed;
+}
+
+.fc-event.available {
+  cursor: pointer;
 }
 
 

@@ -259,10 +259,10 @@ const CalendarUtils = {
               end: `${currentDateString}T${hourIndex
                 .toString()
                 .padStart(2, "0")}:00:00`,
-              editable: true,
-              startEditable: true,
-              durationEditable: true,
-              classNames: [],
+              editable: false,
+              startEditable: false,
+              durationEditable: false,
+              classNames: ["available"],
             });
           } else {
             unavailableSlots.push({

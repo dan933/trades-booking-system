@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import TimeSlots from "./TimeSlots.vue";
+import TimeSlots from "./timeslots/TimeSlots.vue";
 import SelectService from "./SelectService.vue";
 import CustomerDetails from "./CustomerDetails.vue";
 import ReviewBooking from "./ReviewBooking.vue";
