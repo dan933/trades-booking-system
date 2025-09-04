@@ -3,7 +3,7 @@
         <v-card width="900" max-width="100%" prepend-icon="mdi-clock" :title="`Schedule: ${timeTitle}`">
             <template v-slot:text>
                 <div class="range-container">
-                    <div class="range-btn-start">
+                    <div class="range-btn">
                         <label>Start Time</label>
                         <v-btn icon="mdi-minus" @click="decreaseStartHour" size="small"
                             :disabled="disableStartHourDecrease"></v-btn>
@@ -11,7 +11,7 @@
                         <v-btn icon="mdi-plus" @click="increaseStartHour" size="small"
                             :disabled="disableIncreaseStartHour"></v-btn>
                     </div>
-                    <div class="range-btn-end">
+                    <div class="range-btn">
                         <label>End Time</label>
                         <v-btn icon="mdi-minus" @click="decreaseEndHour" size="small"
                             :disabled="disableEndHourDecrease"></v-btn>
@@ -20,6 +20,23 @@
                             :disabled="disableEndHourIncrease"></v-btn>
                     </div>
                 </div>
+                <p>{{ JSON.stringify(servicesDoc) }}</p>
+                <div class="services-container" v-if="services?.length">
+                    <div class="service" v-for="service in services" :key="service.id">
+                        <div class="range-btn">
+                            <div class="service-info">
+                                <div class="service-price">${{ service.rate }}/hour</div>
+                                <label>{{ service.name }}</label>
+                            </div>
+                            <v-btn style="margin-left: auto;" icon="mdi-minus" @click="decreaseStartHour" size="small"
+                                :disabled="disableStartHourDecrease"></v-btn>
+                            <span>0</span>
+                            <v-btn icon="mdi-plus" @click="increaseStartHour" size="small"
+                                :disabled="disableIncreaseStartHour"></v-btn>
+                        </div>
+                    </div>
+                </div>
+
 
             </template>
             <template v-slot:actions>
@@ -77,6 +94,10 @@ const props = defineProps({
     selectedEvent: {
         type: Object,
         default: () => { }
+    },
+    servicesDoc: {
+        type: Object,
+        default: () => { }
     }
 });
 
@@ -93,6 +114,14 @@ const onSubmit = () => {
 }
 
 const eventForm = ref({ ...props.selectedEvent });
+const services = ref(
+    props.servicesDoc?.services?.map((service) => {
+        return {
+            ...service,
+            hours: 0
+        }
+    })
+);
 
 const disableStartHourDecrease = computed(() => {
     return eventForm.value.startHour <= props.selectedEvent.startHour;
@@ -151,8 +180,7 @@ const timeTitle = computed(() => {
         align-items: center;
     }
 
-    .range-btn-start,
-    .range-btn-end {
+    .range-btn {
         width: 100%;
         max-width: 260px;
         padding: 5px;
@@ -164,14 +192,45 @@ const timeTitle = computed(() => {
     }
 }
 
-.range-btn-start,
-.range-btn-end {
+.range-btn {
     display: flex;
+    /* justify-content: space-between; */
     align-items: center;
     gap: 1rem;
+    min-height: 100px;
+    height: 100%;
     padding: 1rem;
     background: #f5f5f5;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.services-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 2rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    justify-items: center;
+}
+
+.service {
+    width: 100%;
+    max-width: 300px;
+    height: 100%;
+}
+
+.service-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.service-price {
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 500;
 }
 </style>

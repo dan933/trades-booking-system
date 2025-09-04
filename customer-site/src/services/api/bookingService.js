@@ -84,7 +84,10 @@ const getCalendarDatesAvailability = async (orgId, dateInput) => {
   );
 
   //get the opperating hours gapBetweenAppointments settings and bookMonthsAhead limit
-  let availabilityDoc = await getDoc(availabilityDocRef);
+  let availabilityDocPromise = await getDoc(availabilityDocRef);
+
+  const servicesRef = doc(db, `organisations/${orgId}/availability/services`);
+  const servicesDocPromise = await getDoc(servicesRef);
 
   const dateQuery = dateInput ? dateInput : new Date();
   dateQuery.setHours(0, 0, 0, 0);
@@ -98,12 +101,31 @@ const getCalendarDatesAvailability = async (orgId, dateInput) => {
     where("bookingScheduleDate", "<", endDateQuery)
   );
 
-  let bookedSchedules = await getDocs(bookedSchedulesQuery);
-  bookedSchedules = bookedSchedules.docs.map((doc) => doc.data());
+  let bookedSchedulesPromise = await getDocs(bookedSchedulesQuery);
+
+  let [availabilityDocResult, bookedSchedulesResult, servicesDocResult] =
+    await Promise.allSettled([
+      availabilityDocPromise,
+      bookedSchedulesPromise,
+      servicesDocPromise,
+    ]);
+
+  let bookedSchedules = [];
+
+  if (bookedSchedulesResult?.status === "fulfilled") {
+    bookedSchedules = bookedSchedulesResult.value.docs.map((doc) => doc.data());
+  }
 
   return {
     bookedSchedules,
-    availabilityDoc: availabilityDoc.data(),
+    availabilityDoc:
+      availabilityDocResult.status === "fulfilled"
+        ? availabilityDocResult.value.data()
+        : null,
+    servicesDoc:
+      servicesDocResult.status === "fulfilled"
+        ? servicesDocResult.value.data()
+        : null,
   };
 };
 

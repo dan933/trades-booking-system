@@ -37,7 +37,8 @@
     <v-progress-circular :width="10" :size="80" indeterminate color="blue"></v-progress-circular>
     <p>loading schedule...</p>
   </v-container>
-  <TimeSlotDialog v-if="dialogOpenStatus" :toggleDialog="toggleDialog" :selectedEvent="selectedEvent">
+  <TimeSlotDialog v-if="dialogOpenStatus" :toggleDialog="toggleDialog" :selectedEvent="selectedEvent"
+    :servicesDoc="servicesDoc">
   </TimeSlotDialog>
 </template>
 
@@ -61,8 +62,8 @@ export default {
     dialogOpenStatus: false,
     loading: false,
     selectedEvent: null,
-    //data that we will get from the db
     availabilityDoc: null,
+    servicesDoc: null,
     bookingScheduleData: [],
     disabledDates: [],
     selectedDate: null,
@@ -169,7 +170,10 @@ export default {
       const {
         bookedSchedules,
         availabilityDoc,
+        servicesDoc
       } = await getCalendarDatesAvailability(this.orgId, startDate);
+
+      this.servicesDoc = servicesDoc;
 
 
       let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(bookedSchedules, availabilityDoc, this.isMobile ? "mobile" : "desktop", startDate)
@@ -184,16 +188,12 @@ export default {
         ...availableAppointments,
         ...unavailableAppointments
       ]);
-      console.log("this.calendar.getEventSources()", this.calendar.getEventSources())
-
-
 
       this.loading = false;
     },
     async disabledUnavailableDates(
       bookedOutDates,
       businessClosedDays,
-      bookMonthsAhead
     ) {
       // Add 1 to get correct day for vuetify calendar
       let closedDays = businessClosedDays.map((item) => item + 1);
