@@ -64,7 +64,7 @@
             </template>
             <template v-slot:actions>
                 <div class="action-container">
-                    <v-btn :disabled="!totalPrice" class="ms-auto submit-btn" color="primary" text="Submit"
+                    <v-btn :disabled="!totalPrice" class="ms-auto submit-btn" color="primary" text="Next"
                         @click="() => onSubmit()"></v-btn>
                     <v-btn class="ms-auto" text="Cancel" color="error" @click="() => onCancel()"></v-btn>
                 </div>
@@ -138,7 +138,29 @@ const onCancel = () => {
 }
 
 const onSubmit = () => {
-    props.onSubmit(props.event);
+    const bookingTimeSlotData = {
+        date: eventForm.value.scheduleDate,
+        timeslot: eventForm.value.startHour,
+    };
+
+    const selectedServices = services.value.reduce((acc, service) => {
+        if (!service.hours) return acc;
+
+        acc.push({
+            selection: {
+                name: service.name,
+                rate: service.rate,
+                id: service.id,
+            },
+            hours: service.hours
+        })
+
+        return acc;
+    }, [])
+
+    props.onSubmit(bookingTimeSlotData, selectedServices);
+
+    onCancel()
 }
 
 const eventForm = ref({ ...props.selectedEvent });

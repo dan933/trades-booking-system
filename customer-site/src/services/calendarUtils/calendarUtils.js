@@ -250,13 +250,21 @@ const CalendarUtils = {
             hourIndex++;
           }
 
-          if (hourIndex - startHour > gapBetween) {
+          // Check if there's a booked slot ahead and leave gap
+          const availableEnd = bookedTimes[hourIndex]
+            ? hourIndex - gapBetween
+            : hourIndex;
+
+          if (
+            availableEnd > startHour &&
+            availableEnd - startHour >= gapBetween
+          ) {
             availableSlots.push({
               title: "Available",
               start: `${currentDateString}T${startHour
                 .toString()
                 .padStart(2, "0")}:00:00`,
-              end: `${currentDateString}T${hourIndex
+              end: `${currentDateString}T${availableEnd
                 .toString()
                 .padStart(2, "0")}:00:00`,
               editable: false,
@@ -264,13 +272,23 @@ const CalendarUtils = {
               durationEditable: false,
               classNames: ["available"],
             });
-          } else {
+          }
+
+          // Add gap as unavailable if there's a booked slot ahead
+          if (
+            bookedTimes[hourIndex] &&
+            availableEnd < hourIndex &&
+            availableEnd < dayOpeningTimes.end
+          ) {
             unavailableSlots.push({
               title: "Unavailable",
-              start: `${currentDateString}T${startHour
+              start: `${currentDateString}T${availableEnd
                 .toString()
                 .padStart(2, "0")}:00:00`,
-              end: `${currentDateString}T${hourIndex
+              end: `${currentDateString}T${Math.min(
+                hourIndex,
+                dayOpeningTimes.end
+              )
                 .toString()
                 .padStart(2, "0")}:00:00`,
               editable: false,

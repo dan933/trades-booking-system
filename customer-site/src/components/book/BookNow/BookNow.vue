@@ -8,17 +8,12 @@
       <v-window-item :key="`card-timeslots`" :value="1" class="window-container">
         <TimeSlots @storeSelectedTimeSlotData="storeSelectedTimeSlotData" :orgDoc="orgDoc"></TimeSlots>
       </v-window-item>
-
-      <v-window-item :key="`card-add-services`" :value="2" class="window-container">
-        <SelectService ref="selectServiceRef" :selectedDateTimeSlot="selectedDateTimeSlot"
-          @storeSelectedServices="storeSelectedServices"></SelectService>
-      </v-window-item>
-      <v-window-item :key="`review-booking`" :value="3" class="window-container">
+      <v-window-item :key="`review-booking`" :value="2" class="window-container">
         <ReviewBooking @confirmDetails="confirmDetails" :orgDoc="orgDoc" :selectedDateTimeSlot="selectedDateTimeSlot"
           :selectedServices="selectedServices" :customerInformation="customerInformation" ref="reviewBookingRef">
         </ReviewBooking>
       </v-window-item>
-      <v-window-item :key="`payment`" :value="4" class="window-container">
+      <v-window-item :key="`payment`" :value="3" class="window-container">
         <Payment :orgDoc="orgDoc" :selectedDateTimeSlot="selectedDateTimeSlot" :selectedServices="selectedServices"
           :customerInformation="customerInformation" ref="paymentRef" @submitBooking="submitBooking"></Payment>
       </v-window-item>
@@ -101,17 +96,11 @@ export default {
       this.onboarding += 1;
     },
 
-    storeSelectedTimeSlotData(bookingTimeSlotData) {
+    storeSelectedTimeSlotData(bookingTimeSlotData, selectedServices) {
       this.selectedServices = [];
-      if (this.$refs.selectServiceRef) {
-        this.$refs.selectServiceRef.reset();
-      }
       this.selectedDateTimeSlot = bookingTimeSlotData;
-      this.onboarding += 1;
-    },
+      this.selectedServices = selectedServices;
 
-    storeSelectedServices(selectedServices) {
-      this.selectedServices = JSON.parse(selectedServices);
       this.onboarding += 1;
     },
 

@@ -233,14 +233,6 @@ const getTimeSlotsForDate = (
   }
 };
 
-const formatDate = (date) => {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
 const getServices = async (orgId) => {
   const servicesRef = doc(db, `organisations/${orgId}/availability/services`);
 
@@ -253,16 +245,14 @@ const getServices = async (orgId) => {
 
 //Creates booking payload to be sent to the server
 const createBookingPayload = (bookingData) => {
-  console.log(bookingData);
+  console.log("bookingData", bookingData);
 
   //get the timeSlot
   let timeSlot = bookingData?.selectedDateTimeSlot;
-
-  //date in yyyy-mm-dd format
-  let bookingDate = formatDate(timeSlot?.date);
+  let bookingDate = timeSlot?.date;
 
   //get the start hour
-  let startHour = timeSlot?.date.getHours();
+  let startHour = timeSlot?.timeslot;
 
   //add the userId to customer information
   let payload = bookingData;

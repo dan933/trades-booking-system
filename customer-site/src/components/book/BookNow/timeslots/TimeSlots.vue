@@ -6,7 +6,7 @@
     <p>loading schedule...</p>
   </v-container>
   <TimeSlotDialog v-if="dialogOpenStatus" :toggleDialog="toggleDialog" :selectedEvent="selectedEvent"
-    :servicesDoc="servicesDoc" :orgDoc="orgDoc">
+    :servicesDoc="servicesDoc" :orgDoc="orgDoc" :onSubmit="storeSelectedTimeSlotData">
   </TimeSlotDialog>
 </template>
 
@@ -26,11 +26,12 @@ import TimeSlotDialog from "./TimeSlotDialog.vue";
 
 export default {
   name: "TimeSlots",
+  emits: ['storeSelectedTimeSlotData'],
   props: {
     orgDoc: {
       type: Object,
       required: true
-    }
+    },
   },
   data: () => ({
     dialogOpenStatus: false,
@@ -59,8 +60,6 @@ export default {
       this.dialogOpenStatus = status;
     },
     initCalendar() {
-      // let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(this.bookingScheduleData, this.availabilityDoc, this.isMobile ? "mobile" : "desktop", new Date("2025-09-01"))
-
       const calendarEl = document.getElementById('calendar');
       const calendar = new Calendar(calendarEl, {
         locale: 'en-AU',
@@ -199,13 +198,6 @@ export default {
         outputDate.getMonth(),
         outputDate.getDate()
       );
-      // let endOfDay = new Date(
-      //   outputDate.getFullYear(),
-      //   outputDate.getMonth(),
-      //   outputDate.getDate() + 1
-      // );
-
-      // console.log(startOfDay, endOfDay);
       return startOfDay;
     },
     getOrdinalSuffix(day) {
@@ -253,26 +245,11 @@ export default {
         this.availabilityMessage = `${day}${suffix} ${month} ${year}`;
       }
     },
-    storeSelectedTimeSlotData() {
-      // console.log(this.selectedDate);
-      // console.log(this.selectedTimeSlot);
-      //todo organise data
+    storeSelectedTimeSlotData(bookingTimeSlotData, selectedServices) {
+      console.log({ bookingTimeSlotData, selectedServices })
 
-      // console.log(this.selectedDate, "line 193");
+      this.$emit("storeSelectedTimeSlotData", bookingTimeSlotData, selectedServices);
 
-      //add the booking start time to the selected date
-      // let bookingStartTime = this.selectedDate;
-      // bookingStartTime.setHours(
-      //   this.selectedTimeSlot.time.split(":")[0],
-      //   this.selectedTimeSlot.time.split(":")[1]
-      // );
-
-      // let bookingTimeSlotData = {
-      //   date: this.selectedDate,
-      //   timeslot: this.selectedTimeSlot,
-      // };
-
-      // this.$emit("storeSelectedTimeSlotData", bookingTimeSlotData);
     },
     goToSelectServices() {
       //todo check if timeslot is still availbale
@@ -282,23 +259,6 @@ export default {
     },
   },
   watch: {
-    // disabledDates(newval) {
-    //   // console.log(newval);
-    // },
-    selectedDate(newValue, oldValue) {
-      console.log("newValue", newValue);
-      if (newValue !== null && newValue !== oldValue) {
-        let selectedDate = newValue;
-        selectedDate = this.resetTimeStamp(selectedDate);
-        //todo api call to get available timeslots
-        //This should reduce the chance of 2 or more bookings confilicting
-        this.availableTimeSlots = getTimeSlotsForDate(
-          this.bookingScheduleData,
-          selectedDate,
-          this.availabilityDoc
-        );
-      }
-    },
   },
   async mounted() {
     await this.init();

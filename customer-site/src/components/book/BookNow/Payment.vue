@@ -6,10 +6,12 @@
       <p><strong>Number of Hours:</strong> {{ hoursBooked }}</p>
     </div>
 
-    <div v-show="stripeLoaded && !loading" class="demo-card-info">
+    <div v-show="stripeLoaded && !loading" class="demo-card-info" @click="copyToClipboard">
       <p><strong>Demo Card:</strong> 4242 4242 4242 4242</p>
       <p><strong>Expiry:</strong> Any future date | <strong>CVC:</strong> Any 3 digits</p>
+      <p class="copy-hint">Click to copy card number</p>
     </div>
+
 
     <StripeElements v-show="stripeLoaded && !loading" v-slot="{ elements, instance }" ref="elms" :stripe-key="stripeKey"
       :instance-options="instanceOptions" :elements-options="elementsOptions">
@@ -66,6 +68,17 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+
+    const copyToClipboard = async () => {
+      try {
+        await navigator.clipboard.writeText('4242424242424242');
+        // Optional: show success feedback
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    };
+
+
     const stripeKey = ref(import.meta.env.VITE_APP_STRIPE_TEST_PUBLISHABLE_KEY); // test key
     const instanceOptions = ref({
       // https://stripe.com/docs/js/initializing#init_stripe_js-options
@@ -132,6 +145,7 @@ export default defineComponent({
       submitForm,
       toggleLoading,
       updateErrorMessage,
+      copyToClipboard,
     };
   },
 });
@@ -200,5 +214,27 @@ export default defineComponent({
   column-gap: 5px;
   flex-wrap: wrap;
   justify-content: space-between;
+}
+
+.demo-card-info {
+  background-color: #f0f8ff;
+  border: 1px solid #d1ecf1;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #0c5460;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.demo-card-info:hover {
+  background-color: #e6f3ff;
+}
+
+.copy-hint {
+  font-size: 12px;
+  font-style: italic;
+  margin-top: 5px;
 }
 </style>
