@@ -94,10 +94,20 @@ const logout = async (event) => {
   let auth = getAuth();
 
   store.commit("setIsGuest", false);
+  store.commit("setCustomer", null);
+  store.commit("setBookingRequest", null);
+  localStorage.clear();
+  sessionStorage.clear();
 
-  await signOut(auth).then(() => {
-    handleNavClick({ name: 'home' }, event)
-  }).catch((err) => { console.log(err) })
+  await signOut(auth).catch((err) => {
+    console.log("error signing out", err)
+  });
+
+  // Clear any cached auth state
+  currentUser.value = null;
+
+  handleNavClick({ name: 'home' }, event);
+
 }
 
 onMounted(() => {

@@ -39,7 +39,6 @@ export default {
     selectedEvent: null,
     availabilityDoc: null,
     servicesDoc: null,
-    orgDoc: null,
     bookingScheduleData: [],
     disabledDates: [],
     selectedDate: null,
