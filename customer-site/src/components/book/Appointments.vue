@@ -117,14 +117,15 @@ export default {
 
 .appointment-section {
   margin-top: 10px;
-  display: flex;
+  display: block;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   text-align: center;
   width: 100%;
   min-height: 600px;
-  padding: 20px;
+  padding: 10px;
+  overflow: auto;
 }
 
 .table {
