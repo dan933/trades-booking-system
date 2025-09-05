@@ -117,9 +117,8 @@ const CalendarUtils = {
     }, []);
 
     let days = view === "desktop" ? 7 : 3;
-
     let currentDate = new Date(startDate);
-    currentDate.setHours(10, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
 
     /**
      * @type {import("@fullcalendar/core").EventInput[]}
@@ -137,7 +136,15 @@ const CalendarUtils = {
         (openingTime) => openingTime.day === dayIndex
       );
 
-      const currentDateString = currentDate.toISOString().split("T")[0];
+      console.log("currentDate", currentDate);
+
+      let currentDateString = new Date(currentDate);
+      currentDateString =
+        currentDateString.getFullYear() +
+        "-" +
+        String(currentDateString.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(currentDateString.getDate()).padStart(2, "0");
 
       //Get booked schedule for day
       const bookedScheduleForDay = bookedSchedules.find((bookedSchedule) => {

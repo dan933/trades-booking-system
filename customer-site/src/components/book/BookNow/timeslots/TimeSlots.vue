@@ -72,6 +72,8 @@ export default {
         allDaySlot: false,
         firstDay: 1,
         datesSet: async (dateInfo) => {
+          // console.log("dateInfo.startStr", new Date(dateInfo.startStr))
+          // console.log("dateInfo.startStr", dateInfo.startStr)
           await this.onCalendarChange(new Date(dateInfo.startStr));
         },
         eventClick: (info) => {
