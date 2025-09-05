@@ -75,7 +75,6 @@ export default {
       });
     },
     register() {
-      console.log(this.registrationForm);
       if (this.registrationForm) {
         let newUser = {
           email: this.userRegister.email,

@@ -57,8 +57,6 @@ router.beforeEach(async (to, from, next) => {
   //The organisation id from the previous page
   let org = from.params.id || to.params.id;
 
-  // console.log("org", org);
-
   if (to.name === "Auth" && (IsLoggedIn || IsGuest))
     next({ path: `/org/${org}/book` });
   if (to.name === "Book" && !IsLoggedIn && !IsGuest)

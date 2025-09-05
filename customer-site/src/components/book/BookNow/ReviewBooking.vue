@@ -115,8 +115,6 @@ export default {
         total: this.total,
       };
 
-      console.log(bookingObject, "bookingObject");
-
       this.$store.commit("updateBooking", bookingObject);
     },
     confirmBooking() {
@@ -151,8 +149,6 @@ export default {
       }, 0);
     },
     bookingDate() {
-      console.log("this.selectedDateTimeSlot", this.selectedDateTimeSlot)
-
       const [year, month, day] = this.selectedDateTimeSlot?.date?.split("-");
 
       return `${day}/${month}/${year}`;
@@ -164,8 +160,6 @@ export default {
       let totalHours = this.selectedServices.reduce((acc, curr) => {
         return (acc += curr.hours);
       }, 0);
-
-      console.log("totalHours", totalHours);
 
       const startTimeSlotHour = `${this.selectedDateTimeSlot.timeslot}`.padStart(2, "0");
 

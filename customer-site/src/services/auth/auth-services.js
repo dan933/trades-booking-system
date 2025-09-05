@@ -139,7 +139,6 @@ var authService = {
 
     try {
       const response = await sendPasswordResetEmail(auth, email);
-      console.log("reset resposne", response);
       return true;
     } catch (error) {
       console.log(error.code);

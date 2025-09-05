@@ -119,7 +119,6 @@ export default {
     },
     currentUser() {
       let user = getAuth().currentUser;
-      console.log(user, "user");
       return user;
     },
   },

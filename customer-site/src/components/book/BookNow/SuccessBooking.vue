@@ -77,7 +77,6 @@ export default {
   methods: {
     async sendConfirmationEmail() {
       let bookingData = this.$store.state.bookingRequest;
-      console.log("bookingRequest", bookingData);
       const orgId = this.$route.params.id;
       await sendBookingConfirmationEmail(bookingData, orgId);
     },

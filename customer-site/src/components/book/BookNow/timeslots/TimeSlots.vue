@@ -89,7 +89,6 @@ export default {
 
 
           if (selectedEvent?.title === "Available") {
-            console.log({ selectedEvent })
             this.selectedEvent = selectedEvent;
             this.toggleDialog(true)
           }
@@ -152,9 +151,6 @@ export default {
 
       let { unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime } = CalendarUtils.generateTimeTable(bookedSchedules, availabilityDoc, this.isMobile ? "mobile" : "desktop", startDate)
 
-
-      console.log({ unavailableAppointments, availableAppointments, slotMinTime, slotMaxTime, availabilityDoc })
-
       this.calendar.removeAllEvents();
       this.calendar.setOption("slotMinTime", slotMinTime);
       this.calendar.setOption("slotMaxTime", slotMaxTime);
@@ -190,7 +186,6 @@ export default {
       });
     },
     resetTimeStamp(inputDate) {
-      // console.log(inputDate);
       let outputDate = new Date(inputDate);
 
       let startOfDay = new Date(
@@ -246,8 +241,6 @@ export default {
       }
     },
     storeSelectedTimeSlotData(bookingTimeSlotData, selectedServices) {
-      console.log({ bookingTimeSlotData, selectedServices })
-
       this.$emit("storeSelectedTimeSlotData", bookingTimeSlotData, selectedServices);
 
     },

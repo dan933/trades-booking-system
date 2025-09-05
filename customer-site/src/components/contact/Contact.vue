@@ -73,12 +73,8 @@ export default {
       this.formError = false;
     },
     async submitForm() {
-      console.log("this.valid", this.valid);
-
       if (this.valid) {
         this.formSending = true;
-
-        console.log("valid");
 
         const formData = {
           name: this.name,

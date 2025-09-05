@@ -30,8 +30,8 @@
           <div class="service-item-container">
             <v-autocomplete v-model="service.selection" style="width: 200px; height: 50px" label="Service"
               :items="services" :item-title="(item) => {
-                  return item?.name ? `${item.name}` : '';
-                }
+                return item?.name ? `${item.name}` : '';
+              }
                 " :item-value="(item) => item" :rules="[(v) => !!v || 'service required']"></v-autocomplete>
             <v-text-field v-model.number="service.hours" style="width: 130px" type="number" label="Hours"
               @input="() => roundToWholeHour(index)" step="1" min="0" hide-details="auto" :rules="[
@@ -128,9 +128,7 @@ export default {
       }
     },
     removeServiceItem(index) {
-      console.log("index", index);
       this.selectedServices.splice(index, 1);
-      console.log(this.selectedServices);
     },
   },
   async mounted() {

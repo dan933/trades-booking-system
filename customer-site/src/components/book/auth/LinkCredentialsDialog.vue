@@ -124,8 +124,6 @@ export default {
         this.signInResponse
       );
 
-      console.log(response, "line 142");
-
       if (response?.IsSameToExistingEmailSignIn) {
         this.IsSignedIn = true;
       } else {
@@ -143,8 +141,6 @@ export default {
         };
 
         const response = await authService.linkAccounts(this.signInResponse);
-
-        console.log(response, "line 158");
 
         if (response?.IsError) {
           this.message = response?.message;
