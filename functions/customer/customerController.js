@@ -96,6 +96,16 @@ exports.setGuestDetails = async (req, res) => {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         isGuest: true,
       });
+  } else {
+    //Update existing user
+    const userDoc = resp.docs[0];
+    await userDoc.ref.update({
+      firstName: body.firstName,
+      lastName: body.lastName,
+      phoneNumber: body.phoneNumber,
+      addressList: body.addressList,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
   }
 
   res.send({ message: "guest set" });
