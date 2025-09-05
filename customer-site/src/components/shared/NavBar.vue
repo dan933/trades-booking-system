@@ -89,13 +89,13 @@ const scrollToTop = () => {
   });
 };
 
-const logout = (event) => {
+const logout = async (event) => {
   activeMobileMenu.value = false;
   let auth = getAuth();
 
   store.commit("setIsGuest", false);
 
-  signOut(auth).then(() => {
+  await signOut(auth).then(() => {
     handleNavClick({ name: 'home' }, event)
   }).catch((err) => { console.log(err) })
 }
