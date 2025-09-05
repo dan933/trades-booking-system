@@ -57,7 +57,7 @@ const IsGuest = computed(() => {
 
 
 const handleNavClick = async (menuItem, event) => {
-  event.preventDefault();
+  event?.preventDefault?.();
 
   if (menuItem.name.toLowerCase() === "home" && route.path !== '/') {
     store.commit("updateView", "landing");
