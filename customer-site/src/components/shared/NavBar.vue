@@ -91,24 +91,38 @@ const scrollToTop = () => {
 
 const logout = async (event) => {
   activeMobileMenu.value = false;
-  let auth = getAuth();
 
-  store.commit("setIsGuest", false);
-  store.commit("setCustomer", null);
-  store.commit("setBookingRequest", null);
-  localStorage.clear();
-  sessionStorage.clear();
+  try {
+    const auth = getAuth();
 
-  await signOut(auth).catch((err) => {
-    console.log("error signing out", err)
-  });
+    // Clear store state
+    store.commit("setIsGuest", false);
+    store.commit("setCustomer", null);
+    store.commit("setBookingRequest", null);
 
-  // Clear any cached auth state
-  currentUser.value = null;
+    // Clear storage
+    localStorage.clear();
+    sessionStorage.clear();
 
-  handleNavClick({ name: 'home' }, event);
+    // Sign out from Firebase
+    await signOut(auth);
 
+    // Clear Firebase persistence
+    await auth.setPersistence('none');
+
+    // Clear auth state
+    currentUser.value = null;
+
+    // Force reload to clear all cached tokens
+    window.location.href = '/';
+
+  } catch (err) {
+    console.error('Logout error:', err);
+    // Force reload even if logout fails
+    window.location.href = '/';
+  }
 }
+
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
