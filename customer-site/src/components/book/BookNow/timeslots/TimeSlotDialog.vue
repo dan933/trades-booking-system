@@ -4,19 +4,32 @@
             <template v-slot:text>
                 <div class="timeslot-information">
                     <h2>{{ bookingTimeString }}</h2>
-                    <h2>Price: {{ bookingPriceString }}</h2>
+                    <div class="price-row">
+                        <span>Price:</span>
+                        <span>{{ bookingPriceString }}</span>
+                    </div>
+                    <div class="price-row" v-if="gstPriceString">
+                        <span>GST:</span>
+                        <span>{{ gstPriceString }}</span>
+                    </div>
+                    <div class="price-row" v-if="totalIncludingGstPriceString">
+                        <span>Total:</span>
+                        <span>{{ totalIncludingGstPriceString }}</span>
+                    </div>
                 </div>
-                <div class="range-container">
+                <div class="services-container" v-if="services?.length">
                     <div class="range-btn">
                         <label>Start Time</label>
+
                         <v-btn icon="mdi-minus" @click="decreaseStartHour" size="small"
                             :disabled="disableStartHourDecrease"></v-btn>
+
                         <span>{{ hourKeys[eventForm.startHour] }}</span>
+
                         <v-btn icon="mdi-plus" @click="increaseStartHour" size="small"
                             :disabled="disableIncreaseStartHour"></v-btn>
                     </div>
                     <div class="range-btn">
-
                         <label>End Time</label>
                         <v-btn icon="mdi-minus" @click="decreaseEndHour" size="small"
                             :disabled="disableEndHourDecrease"></v-btn>
@@ -25,9 +38,6 @@
                         <v-btn icon="mdi-plus" @click="increaseEndHour" size="small"
                             :disabled="disableEndHourIncrease"></v-btn>
                     </div>
-                </div>
-                <p>{{ JSON.stringify(servicesDoc) }}</p>
-                <div class="services-container" v-if="services?.length">
                     <div class="service" v-for="service in services" :key="service.id">
                         <div class="range-btn">
                             <div class="service-info">
@@ -44,12 +54,18 @@
                         </div>
                     </div>
                 </div>
-
+                <div v-if="!services?.length" class="no-services-message">
+                    <v-icon size="48" color="#ccc">mdi-alert-circle-outline</v-icon>
+                    <h3>Sorry, no services available</h3>
+                    <p>This organization hasn't set up any services yet. Please contact them directly to make a
+                        booking.</p>
+                </div>
 
             </template>
             <template v-slot:actions>
                 <div class="action-container">
-                    <v-btn class="ms-auto submit-btn" color="primary" text="Submit" @click="() => onSubmit()"></v-btn>
+                    <v-btn :disabled="!totalPrice" class="ms-auto submit-btn" color="primary" text="Submit"
+                        @click="() => onSubmit()"></v-btn>
                     <v-btn class="ms-auto" text="Cancel" color="error" @click="() => onCancel()"></v-btn>
                 </div>
             </template>
@@ -106,6 +122,10 @@ const props = defineProps({
     servicesDoc: {
         type: Object,
         default: () => { }
+    },
+    orgDoc: {
+        type: Object,
+        default: () => { }
     }
 });
 
@@ -141,9 +161,26 @@ const bookingTimeString = computed(() => {
     return `Booking Time: ${startTime} - ${endTime}`;
 });
 
-const bookingPriceString = computed(() => {
+const totalPrice = computed(() => {
     const totalPrice = services.value?.reduce((acc, service) => acc + Math.round(service.rate * service.hours), 0);
-    return totalPrice.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' });
+    return totalPrice;
+})
+
+const bookingPriceString = computed(() => {
+    return totalPrice.value.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' });
+});
+
+const gstPriceString = computed(() => {
+    if (!props.orgDoc?.gst) return false;
+    const gstPrice = Math.round(totalPrice.value * 0.1)
+    return gstPrice.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' });
+});
+
+const totalIncludingGstPriceString = computed(() => {
+    if (!props.orgDoc?.gst) return false;
+    const gstAmount = Math.round(totalPrice.value * 0.1);
+    const finalTotal = Math.round(totalPrice.value + gstAmount);
+    return finalTotal.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' });
 });
 
 const disableStartHourDecrease = computed(() => {
@@ -231,6 +268,17 @@ const disableIncreaseServiceHours = computed(() => {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.95;
+    margin: 0.25rem 0;
+}
+
+
 .timeslot-information h2 {
     margin: 0;
     font-size: 1.1rem;
@@ -242,29 +290,22 @@ const disableIncreaseServiceHours = computed(() => {
     margin-bottom: 0.5rem;
 }
 
-.range-container {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    margin: 1rem 0;
-}
-
 @media (max-width: 768px) {
-    .range-container {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: center;
-    }
-
     .range-btn {
         width: 100%;
-        max-width: 260px;
+        max-width: 300px;
         padding: 5px;
     }
 
     .action-container {
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .service {
+        width: 100%;
+        max-width: 260px;
+        height: 100%;
     }
 }
 
@@ -308,5 +349,25 @@ const disableIncreaseServiceHours = computed(() => {
     font-size: 0.875rem;
     color: #666;
     font-weight: 500;
+}
+
+.no-services-message {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #666;
+    background: #f9f9f9;
+    border-radius: 12px;
+    border: 2px dashed #ddd;
+}
+
+.no-services-message h3 {
+    margin: 1rem 0 0.5rem 0;
+    color: #555;
+}
+
+.no-services-message p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 </style>

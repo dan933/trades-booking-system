@@ -6,7 +6,7 @@
       </v-window-item>
 
       <v-window-item :key="`card-timeslots`" :value="1" class="window-container">
-        <TimeSlots @storeSelectedTimeSlotData="storeSelectedTimeSlotData"></TimeSlots>
+        <TimeSlots @storeSelectedTimeSlotData="storeSelectedTimeSlotData" :orgDoc="orgDoc"></TimeSlots>
       </v-window-item>
 
       <v-window-item :key="`card-add-services`" :value="2" class="window-container">

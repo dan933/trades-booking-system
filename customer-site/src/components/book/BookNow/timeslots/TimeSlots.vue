@@ -1,35 +1,3 @@
-<!-- <template>
-  <v-card flat rounded="0" class="book-now-card">
-    <VDatePicker :min-date="tomorrow" :disabled-dates="disabledDates" @dayclick="onCalendarClick" title="Pick a Date">
-      <template #default="{ togglePopover }">
-        <div class="date-input">
-          <v-btn class="text-none text-subtitle-1" color="primary" variant="elevated" @click="togglePopover">
-            Choose Date
-          </v-btn>
-        </div>
-      </template>
-    </VDatePicker>
-    {{ availabilityMessage }}
-    <v-container v-if="IsAvailableDate" class="timeslot-container">
-      <h3>Pick A Timeslot</h3>
-      <v-autocomplete v-model="selectedTimeSlot" :items="availableTimeSlots" :item-title="(item) => {
-        return item?.time
-          ? `${item.time} (available hours ${item.availableHours})`
-          : '';
-      }
-        " :item-value="(item) => item" label="Select a time slot" style="width: 245px"></v-autocomplete>
-      <p v-if="selectedTimeSlot?.availableHours">
-        <strong>This time slot currently has
-          {{ selectedTimeSlot?.availableHours }} hours available.</strong>
-      </p>
-      <v-btn v-if="selectedTimeSlot" class="text-none text-subtitle-1" color="primary" variant="elevated"
-        @click="storeSelectedTimeSlotData">
-        Next
-      </v-btn>
-    </v-container>
-  </v-card>
-</template> -->
-
 <template>
   <div id="calendar"></div>
   <v-container v-if="loading" class="loading-overlay"></v-container>
@@ -38,7 +6,7 @@
     <p>loading schedule...</p>
   </v-container>
   <TimeSlotDialog v-if="dialogOpenStatus" :toggleDialog="toggleDialog" :selectedEvent="selectedEvent"
-    :servicesDoc="servicesDoc">
+    :servicesDoc="servicesDoc" :orgDoc="orgDoc">
   </TimeSlotDialog>
 </template>
 
@@ -58,12 +26,19 @@ import TimeSlotDialog from "./TimeSlotDialog.vue";
 
 export default {
   name: "TimeSlots",
+  props: {
+    orgDoc: {
+      type: Object,
+      required: true
+    }
+  },
   data: () => ({
     dialogOpenStatus: false,
     loading: false,
     selectedEvent: null,
     availabilityDoc: null,
     servicesDoc: null,
+    orgDoc: null,
     bookingScheduleData: [],
     disabledDates: [],
     selectedDate: null,
@@ -170,7 +145,7 @@ export default {
       const {
         bookedSchedules,
         availabilityDoc,
-        servicesDoc
+        servicesDoc,
       } = await getCalendarDatesAvailability(this.orgId, startDate);
 
       this.servicesDoc = servicesDoc;
