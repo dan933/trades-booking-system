@@ -104,7 +104,6 @@ export default defineComponent({
     });
 
     const toggleLoading = (loadingValue) => {
-      console.log("run toggle loading");
       loading.value = loadingValue;
     };
 
@@ -125,7 +124,6 @@ export default defineComponent({
         emit("submitBooking", stripeResponse);
       } else {
         loading.value = false;
-        console.log("stripeResponse", stripeResponse?.error?.message);
         errorMessage.value = stripeResponse?.error?.message;
 
         console.log("errorMessage", errorMessage);

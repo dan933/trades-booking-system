@@ -136,8 +136,6 @@ const CalendarUtils = {
         (openingTime) => openingTime.day === dayIndex
       );
 
-      console.log("currentDate", currentDate);
-
       let currentDateString = new Date(currentDate);
       currentDateString =
         currentDateString.getFullYear() +

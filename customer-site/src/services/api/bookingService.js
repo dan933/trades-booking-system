@@ -192,8 +192,6 @@ const getTimeSlotsForDate = (
       }
     });
 
-    console.log("timeSlotArray", timeSlotArray);
-
     //convert times into time and available hours
     let availableTimes = timeSlotArray.filter(
       (timeSlot) => timeSlot.length > 0
@@ -210,8 +208,6 @@ const getTimeSlotsForDate = (
 
       return timeSlotHours;
     });
-
-    console.log("availableTimes", availableTimes);
 
     return availableTimes;
   } else {
@@ -245,8 +241,6 @@ const getServices = async (orgId) => {
 
 //Creates booking payload to be sent to the server
 const createBookingPayload = (bookingData) => {
-  console.log("bookingData", bookingData);
-
   //get the timeSlot
   let timeSlot = bookingData?.selectedDateTimeSlot;
   let bookingDate = timeSlot?.date;
@@ -273,8 +267,6 @@ const createBookingPayload = (bookingData) => {
     payload.customerInformation.userId = "Guest";
   }
 
-  console.log("payload", payload);
-
   return JSON.stringify(payload);
 };
 
@@ -300,8 +292,6 @@ const createBooking = async (bookingData, orgId) => {
       //if the user is a guest add guest to the payload
       payload.headers.Guest = "true";
     }
-
-    console.log("payload", payload);
 
     const resposne = await fetch(`${apiUrl}/booking/${orgId}/book`, payload);
 
@@ -334,8 +324,6 @@ const sendBookingConfirmationEmail = async (bookingData, orgId) => {
       //if the user is a guest add guest to the payload
       payload.headers.Guest = "true";
     }
-
-    console.log("payload send email", payload);
 
     const resposne = await fetch(
       `${apiUrl}/booking/${orgId}/send-confirmation-email`,
