@@ -30,11 +30,7 @@
         <v-item v-if="selectedDateTimeSlot" :key="`services`" v-slot="{ isSelected, toggle }" :value="2">
           <v-btn :variant="isSelected ? 'outlined' : 'text'" icon="mdi:mdi-briefcase-check" @click="toggle"></v-btn>
         </v-item>
-        <v-item v-if="selectedServices?.length > 0 && selectedServices" :key="`review`" v-slot="{ isSelected, toggle }"
-          :value="3">
-          <v-btn :variant="isSelected ? 'outlined' : 'text'" icon="mdi:mdi-message-draw" @click="toggle"></v-btn>
-        </v-item>
-        <v-item v-if="customerConfirmation" :key="`payment`" v-slot="{ isSelected, toggle }" :value="4">
+        <v-item v-if="customerConfirmation" :key="`payment`" v-slot="{ isSelected, toggle }" :value="3">
           <v-btn :variant="isSelected ? 'outlined' : 'text'" icon="mdi:mdi-credit-card-outline" @click="toggle"></v-btn>
         </v-item>
       </v-item-group>
