@@ -1,33 +1,150 @@
-<div class="container p-5 grid grid-cols-5 gap-4 w-full justify-self-center">
-    <div class="bg-red-700 w-full h-full row-span-2 p-5">
-        <div class="flex justify-between w-full h-[50%]">
-            <div>
-                money icon
+<section class="bg-secondaryColour mt-20">
+    <div [class]="screenWidth >= 1261 ? '': 'hidden'" class="p-5 grid grid-cols-5 gap-4 w-full justify-self-center">
+        <div class="bg-primaryColour shadow-md text-white w-full h-full row-span-4 p-3">
+            <div class="flex flex-col justify-center content-center shadow-md w-full h-[50%] p-2">
+                <p class="text-lg flex">
+                    $500
+                </p>
+                <p class="text-lg">
+                    Monthly revenue
+                </p>
             </div>
-            <div>
-                monthly revenue money amount
+            <div class="flex flex-col justify-center content-center bg-blue-600 shadow-md w-full h-[50%] p-2">
+                <p class="text-lg flex">
+                    $1,000
+                </p>
+                <p class="text-lg">
+                    Total revenue
+                </p>
             </div>
         </div>
-        <div class="flex bg-blue-600  w-full h-[50%]">
-            total revenue
-        </div>
-    </div>
-    <div class="bg-red-700 w-full h-24 col-span-4">
-        Welcome to Easy Book
-    </div>
-    <div class="bg-red-700 w-full h-24">
-        Total customers
-    </div>
-    <div class="bg-red-700 w-full h-24">
-        upcoming bookings
-    </div>
-    <div class="bg-red-700 w-full h-24">
-        completed bookings
-    </div>
-    <div class="bg-red-700 w-full h-24">
-        Total Bookings
-    </div>
-    <div class="bg-red-700 w-full h-80 row-span-5 col-span-5 p-5">
+        <div class="bg-primaryColour shadow-md text-white w-full h-24 col-span-4 row-span-2 p-2">
+            <h2>
+                Welcome to Easy Book
+            </h2>
+            <p class="text-lg">Streamline customer scheduling and payments</p>
 
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-24 row-span-2 flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                person
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Total Customers
+                </p>
+                <p class="text-lg">100</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-24 row-span-2 flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                pending_actions
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Upcoming bookings
+                </p>
+                <p class="text-lg">3</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-24 row-span-2 flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                calendar_check
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Completed bookings
+                </p>
+                <p class="text-lg">3</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-24 row-span-2 flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                book
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Total bookings
+                </p>
+                <p class="text-lg">6</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-full col-span-5 p-5">
+            <div id="chart"></div>
+        </div>
     </div>
-</div>
+    <div [class]="screenWidth < 1261 ? '' : 'hidden'" class="p-5 flex w-full flex-col gap-3 justify-self-center">
+        <div class="bg-primaryColour shadow-md text-white w-full p-2">
+            <h2>
+                Welcome to Easy Book
+            </h2>
+            <p class="text-lg">Streamline customer scheduling and payments</p>
+
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-full p-3">
+            <div class="flex flex-col justify-center content-center shadow-md w-full h-[50%] p-2">
+                <p class="text-lg flex">
+                    $500
+                </p>
+                <p class="text-lg">
+                    Monthly revenue
+                </p>
+            </div>
+            <div class="flex flex-col justify-center content-center bg-blue-600 shadow-md w-full h-[50%] p-2">
+                <p class="text-lg flex">
+                    $1,000
+                </p>
+                <p class="text-lg">
+                    Total revenue
+                </p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                person
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Total Customers
+                </p>
+                <p class="text-lg">100</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                pending_actions
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Upcoming bookings
+                </p>
+                <p class="text-lg">3</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                calendar_check
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Completed bookings
+                </p>
+                <p class="text-lg">3</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full flex p-2 gap-2">
+            <span class="material-symbols-outlined text-4xl">
+                book
+            </span>
+            <div class="flex justify-end flex-col w-full text-right">
+                <p class="font-light text-lg">
+                    Total bookings
+                </p>
+                <p class="text-lg">6</p>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full row-span-10 col-span-5 p-5">
+            <div id="chart-mobile"></div>
+        </div>
+    </div>
+</section>

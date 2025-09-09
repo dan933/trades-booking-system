@@ -1,4 +1,4 @@
-<div class="relative h-full" *ngIf="isUserLoggedIn">
+<div class="fixed top-0 w-full z-[9999]" *ngIf="isUserLoggedIn">
   <nav class="bg-primaryColour text-textColour nav">
     <button class="burger" [class]="{'play': activeMenu}" (click)="toggleMenu()">
       <span class="bar"></span>
