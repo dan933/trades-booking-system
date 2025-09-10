@@ -21,7 +21,7 @@
     },
     {
       "target": "trades-booking-system-52dbc",
-      "public": "admin-site/dist/admin-site",
+      "public": "admin-site/dist/admin-site/browser",
       "ignore": [
         "firebase.json",
         "**/.*",

@@ -29,7 +29,7 @@ import {
   MomentDateAdapter,
 } from '@angular/material-moment-adapter';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import * as moment from 'moment';
+// import * as moment from 'moment';
 import {
   FormBuilder,
   FormControl,
@@ -62,7 +62,6 @@ export interface scheduleDescription {
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.scss'],
-  standalone: true,
   imports: [
     MatSlideToggleModule,
     MatFormFieldModule,
@@ -95,7 +94,8 @@ export interface scheduleDescription {
   ],
 })
 export class ScheduleComponent {
-  scheduleDate = new FormControl(moment());
+  // scheduleDate = new FormControl(moment());
+  scheduleDate = new FormControl(new Date());
 
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date> | undefined;
 
@@ -156,10 +156,12 @@ export class ScheduleComponent {
   }
 
   async updateTable() {
-    let selectedDate = this.scheduleDate.value?.toDate();
+    let selectedDate = this.scheduleDate.value;
     console.log(selectedDate);
     //get the schedule from the schedule service
-    let schedule = await this.scheduleService.getSchedule(selectedDate);
+    let schedule = await this.scheduleService.getSchedule(
+      selectedDate || new Date()
+    );
 
     this.dataSource = new MatTableDataSource(schedule);
     this.dataSource.sort = this.sort;
@@ -248,7 +250,7 @@ export class ScheduleComponent {
       this.dataSource = new MatTableDataSource(schedule);
       this.dataSource.sort = this.sort;
     } else {
-      this.scheduleDate.setValue(moment());
+      this.scheduleDate.setValue(new Date());
       console.log(this.scheduleDate.value);
       this.updateTable();
     }

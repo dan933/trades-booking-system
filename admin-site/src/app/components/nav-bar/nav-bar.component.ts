@@ -8,6 +8,7 @@ import { OrganisationService } from 'src/app/services/organisation/organisation.
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss'],
+  standalone: false,
 })
 export class NavBarComponent implements OnDestroy, OnInit {
   private auth: Auth = inject(Auth);

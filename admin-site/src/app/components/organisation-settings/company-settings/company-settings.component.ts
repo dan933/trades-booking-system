@@ -4,9 +4,10 @@ import { OrganisationService } from 'src/app/services/organisation/organisation.
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-company-settings',
-  templateUrl: './company-settings.component.html',
-  styleUrls: ['./company-settings.component.scss'],
+    selector: 'app-company-settings',
+    templateUrl: './company-settings.component.html',
+    styleUrls: ['./company-settings.component.scss'],
+    standalone: false
 })
 export class CompanySettingsComponent implements OnInit {
   companySettingsForm = this.fb.group({

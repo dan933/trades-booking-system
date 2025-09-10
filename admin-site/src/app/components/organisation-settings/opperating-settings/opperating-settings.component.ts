@@ -10,9 +10,10 @@ export interface opperationTime {
 }
 
 @Component({
-  selector: 'app-opperating-settings',
-  templateUrl: './opperating-settings.component.html',
-  styleUrls: ['./opperating-settings.component.scss']
+    selector: 'app-opperating-settings',
+    templateUrl: './opperating-settings.component.html',
+    styleUrls: ['./opperating-settings.component.scss'],
+    standalone: false
 })
 export class OpperatingSettingsComponent implements OnInit {
   errorMessage: string = '';

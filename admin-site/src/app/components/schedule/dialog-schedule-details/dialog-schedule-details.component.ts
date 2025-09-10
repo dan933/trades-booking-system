@@ -2,9 +2,10 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BookingService } from 'src/app/services/booking/booking.service';
 @Component({
-  selector: 'app-dialog-schedule-details',
-  templateUrl: './dialog-schedule-details.component.html',
-  styleUrls: ['./dialog-schedule-details.component.scss']
+    selector: 'app-dialog-schedule-details',
+    templateUrl: './dialog-schedule-details.component.html',
+    styleUrls: ['./dialog-schedule-details.component.scss'],
+    standalone: false
 })
 export class DialogScheduleDetailsComponent {
   viewType: string = 'overview';

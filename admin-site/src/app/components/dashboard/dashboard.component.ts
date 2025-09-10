@@ -1,16 +1,28 @@
-import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
-// import { Auth } from '@angular/fire/auth';
+import {
+  AfterViewInit,
+  Component,
+  HostListener,
+  NgZone,
+  OnInit,
+} from '@angular/core';
+import { Auth } from '@angular/fire/auth';
+import { DashboardService } from 'src/app/services/dashboard/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  standalone: false,
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
-  // constructor(private auth: Auth) {
-  //   const currentUser = this.auth.currentUser;
-  //   console.log(currentUser);
-  // }
+  currentUser: any;
+  constructor(private dashboardService: DashboardService, private auth: Auth) {
+    this.currentUser = this.auth.currentUser;
+  }
+
+  totalRevenue: string = '';
+  totalRevenueLoading: boolean = false;
+
   //Customer count
   //Revenue
   //upcoming jobs count
@@ -21,7 +33,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   screenWidth: number = 0;
   chart: any;
 
-  ngOnInit() {
+  async ngOnInit() {
     this.screenWidth = window.innerWidth; // Set initial width
   }
 
@@ -120,5 +132,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.renderChart();
+    this.getTotalRevenue();
+  }
+
+  async getTotalRevenue() {
+    this.totalRevenueLoading = true;
+    this.dashboardService
+      .getTotalRevenue()
+      .then((resp) => {
+        console.log('resp', resp);
+        this.totalRevenue = resp;
+      })
+      .finally(() => (this.totalRevenueLoading = false));
   }
 }
