@@ -20,24 +20,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.currentUser = this.auth.currentUser;
   }
 
-  totalRevenue: string = '';
-  totalRevenueLoading: boolean = false;
-
-  //Customer count
-  //Revenue
-  //upcoming jobs count
-  //completed jobs
-  //chart of revenue
-  //todays schedule
-
   screenWidth: number = 0;
-  chart: any;
 
   async ngOnInit() {
     this.screenWidth = window.innerWidth; // Set initial width
   }
 
-  renderChart() {
+  chart: any;
+
+  async renderChart() {
     if (this.chart) {
       this.chart.destroy();
     }
@@ -51,7 +42,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       series: [
         {
           name: 'Revenue',
-          data: [30, 40, 35, 50, 49, 60, 70, 91, 125],
+          data: this.chartData,
         },
       ],
       chart: {
@@ -116,33 +107,111 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    console.log('window.innerWidth', window.innerWidth);
+    // console.log('window.innerWidth', window.innerWidth);
 
     const currentWidth = +this.screenWidth;
 
     this.screenWidth = window.innerWidth;
 
     if (currentWidth < 1261 && window.innerWidth >= 1261) {
-      console.log('render');
+      // console.log('render');
       this.renderChart();
     } else if (currentWidth >= 1261 && window.innerWidth < 1261) {
       this.renderChart();
     }
   }
 
-  ngAfterViewInit() {
-    this.renderChart();
-    this.getTotalRevenue();
-  }
+  totalRevenue: string = '';
+  totalRevenueLoading: boolean = false;
 
   async getTotalRevenue() {
     this.totalRevenueLoading = true;
     this.dashboardService
       .getTotalRevenue()
       .then((resp) => {
-        console.log('resp', resp);
+        // console.log('resp', resp);
         this.totalRevenue = resp;
       })
+      .catch((err) => {
+        console.log('err', err);
+      })
       .finally(() => (this.totalRevenueLoading = false));
+  }
+
+  totalMonthRevenue: string = '';
+  totalMonthRevenueLoading: boolean = false;
+
+  async getCurrentMonthRevenue() {
+    this.totalMonthRevenueLoading = true;
+    this.dashboardService
+      .getCurrentMonthRevenue()
+      .then((resp) => {
+        // console.log('resp', resp);
+        this.totalMonthRevenue = resp;
+      })
+      .catch((err) => {
+        console.log('err', err);
+      })
+      .finally(() => (this.totalMonthRevenueLoading = false));
+  }
+
+  totalCustomers: number | null = null;
+  totalCustomersLoading: boolean = false;
+
+  async getTotalCustomers() {
+    this.totalCustomersLoading = true;
+    this.dashboardService
+      .getTotalCustomers()
+      .then((resp) => {
+        // console.log('resp', resp);
+        this.totalCustomers = resp;
+      })
+      .catch((err) => {
+        console.log('err', err);
+      })
+      .finally(() => (this.totalCustomersLoading = false));
+  }
+
+  chartData: number[] = [];
+  chartDataLoading: boolean = false;
+
+  async getRevenueChartData() {
+    this.chartDataLoading = true;
+    this.chartData = await this.dashboardService.getRevenueChartData();
+    this.chart.updateSeries([
+      {
+        name: 'Revenue',
+        data: this.chartData,
+      },
+    ]);
+    this.chartDataLoading = false;
+  }
+
+  upcomingBookings: number | null = null;
+  upcomingBookingsLoading: boolean = false;
+
+  async getUpcomingBookings() {
+    this.upcomingBookingsLoading = true;
+    this.upcomingBookings = await this.dashboardService.getUpcomingBookings();
+    this.upcomingBookingsLoading = false;
+  }
+
+  pastBookings: number | null = null;
+  pastBookingsLoading: boolean = false;
+
+  async getPastBookings() {
+    this.pastBookingsLoading = true;
+    this.pastBookings = await this.dashboardService.getPastBookings();
+    this.pastBookingsLoading = false;
+  }
+
+  ngAfterViewInit() {
+    this.renderChart();
+    this.getRevenueChartData();
+    this.getTotalRevenue();
+    this.getCurrentMonthRevenue();
+    this.getTotalCustomers();
+    this.getUpcomingBookings();
+    this.getPastBookings();
   }
 }

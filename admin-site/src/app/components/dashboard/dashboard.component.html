@@ -3,7 +3,7 @@
         <div class="bg-primaryColour shadow-md text-white w-full h-full row-span-4 p-3">
             <div class="flex flex-col justify-center content-center shadow-md w-full h-[50%] p-2">
                 <p class="text-lg flex">
-                    $500
+                    {{totalMonthRevenue}}
                 </p>
                 <p class="text-lg">
                     Monthly revenue
@@ -33,7 +33,7 @@
                 <p class="font-light text-lg">
                     Total Customers
                 </p>
-                <p class="text-lg">100</p>
+                <p class="text-lg">{{totalCustomers}}</p>
             </div>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full h-24 row-span-2 flex p-2 gap-2">
@@ -44,7 +44,7 @@
                 <p class="font-light text-lg">
                     Upcoming bookings
                 </p>
-                <p class="text-lg">3</p>
+                <p class="text-lg">{{upcomingBookings}}</p>
             </div>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full h-24 row-span-2 flex p-2 gap-2">
@@ -55,7 +55,7 @@
                 <p class="font-light text-lg">
                     Completed bookings
                 </p>
-                <p class="text-lg">3</p>
+                <p class="text-lg">{{pastBookings || 0}}</p>
             </div>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full h-24 row-span-2 flex p-2 gap-2">
@@ -84,7 +84,7 @@
         <div class="bg-primaryColour shadow-md text-white w-full h-full p-3">
             <div class="flex flex-col justify-center content-center shadow-md w-full h-[50%] p-2">
                 <p class="text-lg flex">
-                    $500
+                    {{totalMonthRevenue}}
                 </p>
                 <p class="text-lg">
                     Monthly revenue
@@ -107,7 +107,7 @@
                 <p class="font-light text-lg">
                     Total Customers
                 </p>
-                <p class="text-lg">100</p>
+                <p class="text-lg">{{totalCustomers}}</p>
             </div>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full flex p-2 gap-2">
@@ -118,7 +118,7 @@
                 <p class="font-light text-lg">
                     Upcoming bookings
                 </p>
-                <p class="text-lg">3</p>
+                <p class="text-lg">{{upcomingBookings || 0}}</p>
             </div>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full flex p-2 gap-2">
@@ -129,7 +129,7 @@
                 <p class="font-light text-lg">
                     Completed bookings
                 </p>
-                <p class="text-lg">3</p>
+                <p class="text-lg">{{pastBookings || 0}}</p>
             </div>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full flex p-2 gap-2">
@@ -140,7 +140,7 @@
                 <p class="font-light text-lg">
                     Total bookings
                 </p>
-                <p class="text-lg">6</p>
+                <p class="text-lg">{{(upcomingBookings || 0) + (pastBookings || 0)}}</p>
             </div>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full row-span-10 col-span-5 p-5">

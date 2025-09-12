@@ -7,6 +7,8 @@ import {
   query,
   getAggregateFromServer,
   sum,
+  count,
+  getDocs,
 } from 'firebase/firestore';
 
 @Injectable({
@@ -44,5 +46,192 @@ export class DashboardService {
     let formattedRevenue = formatter.format(Math.round(totalRevenue / 100));
 
     return formattedRevenue ? formattedRevenue : '-';
+  }
+
+  async getCurrentMonthRevenue() {
+    let userToken = await this.auth.currentUser?.getIdTokenResult();
+    let orgId = userToken?.claims['org'];
+
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    );
+
+    const bookingsCol = collection(
+      this.firestore,
+      `organisations/${orgId}/bookings`
+    );
+
+    const bookingsQuery = query(
+      bookingsCol,
+      where('status', '==', 'paid'),
+      where('bookingDate', '>=', startOfMonth),
+      where('bookingDate', '<=', endOfMonth)
+    );
+
+    const sumAggregateQuery = await getAggregateFromServer(bookingsQuery, {
+      totalRevenue: sum('amount'),
+    }).catch((error) => {
+      console.log('error aggregating current month data', error);
+      return null;
+    });
+
+    // Sep 11, 2025
+
+    const totalRevenue = sumAggregateQuery?.data()?.totalRevenue || 0;
+
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+
+    let formattedRevenue = formatter.format(Math.round(totalRevenue / 100));
+    return formattedRevenue ? formattedRevenue : '-';
+  }
+
+  async getTotalCustomers() {
+    let userToken = await this.auth.currentUser?.getIdTokenResult();
+    let orgId = userToken?.claims['org'];
+
+    const usersCol = collection(this.firestore, `organisations/${orgId}/users`);
+
+    const countAggregateQuery = await getAggregateFromServer(usersCol, {
+      totalUsers: count(),
+    }).catch((error) => {
+      console.log('error counting users');
+      return null;
+    });
+
+    const totalUsers = countAggregateQuery?.data()?.totalUsers || 0;
+    return totalUsers;
+  }
+
+  async getRevenueChartData() {
+    let userToken = await this.auth.currentUser?.getIdTokenResult();
+    let orgId = userToken?.claims['org'];
+
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1); // January 1st
+    const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59); // December 31st
+
+    const bookingsCol = collection(
+      this.firestore,
+      `organisations/${orgId}/bookings`
+    );
+
+    const bookingsQuery = query(
+      bookingsCol,
+      where('status', '==', 'paid'),
+      where('bookingDate', '>=', startOfYear),
+      where('bookingDate', '<=', endOfYear)
+    );
+
+    const bookingsSnapshot = await getDocs(bookingsQuery);
+
+    const bookingData = bookingsSnapshot.docs.map((item) => {
+      const data = item.data();
+      console.log(data);
+      return {
+        id: item.id,
+        amount: data?.['amount'] || 0,
+        bookingDate: typeof data?.['bookingDate']?.seconds
+          ? new Date(data?.['bookingDate']?.seconds * 1000)
+          : null,
+      };
+    });
+
+    let monthlyRevenue = bookingData.reduce<{
+      [month: number]: number;
+    }>((acc, item) => {
+      if (!item?.bookingDate) {
+        return acc;
+      }
+
+      const monthNumber = item.bookingDate.getMonth();
+
+      if (!acc[monthNumber]) {
+        acc[monthNumber] = item.amount / 100;
+      } else {
+        acc[monthNumber] += item.amount / 100;
+      }
+
+      return acc;
+    }, {});
+
+    let chartData = [];
+
+    for (let index = 0; index <= 11; index++) {
+      if (monthlyRevenue[index]) {
+        chartData.push(monthlyRevenue[index]);
+      } else {
+        chartData.push(0);
+      }
+    }
+
+    return chartData;
+  }
+
+  async getUpcomingBookings() {
+    let userToken = await this.auth.currentUser?.getIdTokenResult();
+    let orgId = userToken?.claims['org'];
+
+    const now = new Date();
+
+    const bookingsCol = collection(
+      this.firestore,
+      `organisations/${orgId}/bookings`
+    );
+
+    const bookingsQuery = query(
+      bookingsCol,
+      where('status', '==', 'paid'),
+      where('bookingDate', '>=', now)
+    );
+
+    const countAggregateQuery = await getAggregateFromServer(bookingsQuery, {
+      upcomingBookings: count(),
+    }).catch((error) => {
+      console.log('error counting upcoming bookings');
+      return null;
+    });
+
+    const upcomingCount = countAggregateQuery?.data()?.upcomingBookings || 0;
+    return upcomingCount;
+  }
+
+  async getPastBookings() {
+    let userToken = await this.auth.currentUser?.getIdTokenResult();
+    let orgId = userToken?.claims['org'];
+
+    const now = new Date();
+
+    const bookingsCol = collection(
+      this.firestore,
+      `organisations/${orgId}/bookings`
+    );
+
+    const bookingsQuery = query(
+      bookingsCol,
+      where('status', '==', 'paid'), // or 'paid' depending on your status system
+      where('bookingDate', '<', now)
+    );
+
+    const countAggregateQuery = await getAggregateFromServer(bookingsQuery, {
+      pastBookings: count(),
+    }).catch((error) => {
+      console.log('error counting past bookings');
+      return null;
+    });
+
+    const pastCount = countAggregateQuery?.data()?.pastBookings || 0;
+    return pastCount;
   }
 }
