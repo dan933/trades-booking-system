@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   screenWidth: number = 0;
 
   async ngOnInit() {
-    this.screenWidth = window.innerWidth; // Set initial width
+    this.screenWidth = window.innerWidth;
   }
 
   chart: any;

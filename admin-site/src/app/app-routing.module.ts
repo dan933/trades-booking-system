@@ -5,6 +5,7 @@ import { authGuard } from './services/auth.guard';
 import { ScheduleComponent } from './components/schedule/schedule.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BookingsComponent } from './components/bookings/bookings/bookings.component';
+import { BookingDetailsComponent } from './components/bookings/booking-details/booking-details.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,11 @@ const routes: Routes = [
   {
     path: 'bookings',
     component: BookingsComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'bookings/:id',
+    component: BookingDetailsComponent,
     canActivate: [authGuard],
   },
   {

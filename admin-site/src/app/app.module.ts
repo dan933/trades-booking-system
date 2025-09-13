@@ -18,6 +18,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { DialogScheduleDetailsComponent } from './components/schedule/dialog-schedule-details/dialog-schedule-details.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BookingsComponent } from './components/bookings/bookings/bookings.component';
+import { BookingDetailsComponent } from './components/bookings/booking-details/booking-details.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { BookingsComponent } from './components/bookings/bookings/bookings.compo
     DialogScheduleDetailsComponent,
     DashboardComponent,
     BookingsComponent,
+    BookingDetailsComponent,
   ],
   imports: [
     BrowserModule,

@@ -12,6 +12,8 @@ import {
   limit,
   QueryDocumentSnapshot,
   startAfter,
+  getDoc,
+  doc,
 } from 'firebase/firestore';
 import { DocumentData } from 'node_modules/rxfire/firestore/interfaces';
 
@@ -113,6 +115,27 @@ export class BookingService {
       lastDocument: querySnapshot.docs[querySnapshot.docs.length - 1], // For next page
       hasMore: querySnapshot.docs.length === size, // Check if more pages exist
     };
+  }
+
+  async getBooking(bookingId: string) {
+    const userToken = await this.auth.currentUser?.getIdTokenResult();
+    const orgId = userToken?.claims['org'];
+
+    const bookingDocRef = doc(
+      this.firestore,
+      `organisations/${orgId}/bookings/${bookingId}`
+    );
+
+    const docSnapshot = await getDoc(bookingDocRef);
+
+    if (docSnapshot.exists()) {
+      return {
+        id: docSnapshot.id,
+        ...docSnapshot.data(),
+      };
+    } else {
+      throw new Error('Booking not found');
+    }
   }
 
   convertTo12Hour(hour: number): string {

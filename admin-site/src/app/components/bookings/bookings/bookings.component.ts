@@ -1,4 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { BookingService } from 'src/app/services/booking/booking.service';
 
@@ -13,7 +14,7 @@ export class BookingsComponent implements OnInit {
   startDate: string = new Date().toISOString()?.split('T')[0];
   endDate: string = new Date().toISOString()?.split('T')[0];
 
-  constructor(private bookingService: BookingService) {
+  constructor(private bookingService: BookingService, private router: Router) {
     let endDate = new Date();
     endDate.setDate(endDate.getDate() + 7);
     this.endDate = endDate.toISOString()?.split('T')[0];
@@ -46,6 +47,10 @@ export class BookingsComponent implements OnInit {
     this.lastDocument = bookingsResp.lastDocument;
 
     this.loadingBooking = false;
+  }
+
+  goToDetails(id: string) {
+    this.router.navigate(['/bookings', id]);
   }
 
   ngOnInit(): void {
