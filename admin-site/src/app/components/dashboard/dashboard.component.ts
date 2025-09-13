@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  HostListener,
-  NgZone,
-  OnInit,
-} from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { DashboardService } from 'src/app/services/dashboard/dashboard.service';
 
@@ -47,7 +41,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       ],
       chart: {
         type: 'line',
-        height: this.screenWidth < 1261 ? 300 : 500,
+        height: this.screenWidth < 1261 ? 300 : 400,
         background: 'transparent',
         toolbar: {
           show: false,
@@ -93,6 +87,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           'Jul',
           'Aug',
           'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
         ],
       },
     };

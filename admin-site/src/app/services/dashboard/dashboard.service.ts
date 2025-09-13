@@ -138,7 +138,7 @@ export class DashboardService {
 
     const bookingData = bookingsSnapshot.docs.map((item) => {
       const data = item.data();
-      console.log(data);
+
       return {
         id: item.id,
         amount: data?.['amount'] || 0,

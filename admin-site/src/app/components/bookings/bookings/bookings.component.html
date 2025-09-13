@@ -1,15 +1,29 @@
-<section class="bg-secondaryColour mt-20">
-    <table id="myDataTable" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+<section class="bg-secondaryColour mt-20 w-full table-auto p-5">
+    <table id="myDataTable" class="w-full text-sm text-left rtl:text-right text-gray-500">
+        <thead class="text-xs text-textColour uppercase bg-gray-50 dark:bg-gray-700">
             <tr>
                 <th scope="col" class="px-6 py-3">Date</th>
                 <th scope="col" class="px-6 py-3">Start Time</th>
                 <th scope="col" class="px-6 py-3">End Time</th>
                 <th scope="col" class="px-6 py-3">Amount</th>
+                <th scope="col" class="px-6 py-3"></th>
             </tr>
         </thead>
         <tbody>
-            <!-- Data rows will be populated by DataTables.js or manually -->
+            <tr>
+                <td scope="col" class="px-6 py-3 text-textColour">13/09/2025</td>
+                <td scope="col" class="px-6 py-3 text-textColour">10:23 am</td>
+                <td scope="col" class="px-6 py-3 text-textColour">12:00 pm</td>
+                <td scope="col" class="px-6 py-3 text-textColour">$200</td>
+                <td scope="col" class="px-6 py-3 text-textColour">
+                    <p class="flex">
+                        More info
+                        <span class="material-symbols-outlined">
+                            arrow_drop_down
+                        </span>
+                    </p>
+                </td>
+            </tr>
         </tbody>
     </table>
 </section>

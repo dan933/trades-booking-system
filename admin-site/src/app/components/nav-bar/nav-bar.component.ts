@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Auth, idToken } from '@angular/fire/auth';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { NavigationEnd, Route, Router } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
 import { OrganisationService } from 'src/app/services/organisation/organisation.service';
 
 @Component({
@@ -16,15 +16,25 @@ export class NavBarComponent implements OnDestroy, OnInit {
   idTokenSubscription: Subscription;
 
   isUserLoggedIn: boolean = false;
+  routerSubscription: Subscription;
 
   //get organisation name from firestore
   orgName: string = '';
   activeMenu: boolean = false;
+  currentRoute: string = '';
 
   constructor(
     private organisationService: OrganisationService,
     private router: Router
   ) {
+    this.currentRoute = this.router.url;
+
+    this.routerSubscription = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.currentRoute = event.url;
+      });
+
     this.idTokenSubscription = this.idToken$.subscribe(
       (token: string | null) => {
         //handle idToken changes here. Note, that user will be null if there is no currently logged in user.
@@ -42,6 +52,7 @@ export class NavBarComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     this.idTokenSubscription.unsubscribe();
+    this.routerSubscription.unsubscribe();
   }
 
   toggleMenu() {

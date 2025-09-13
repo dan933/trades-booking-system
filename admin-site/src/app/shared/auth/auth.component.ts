@@ -10,10 +10,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-auth',
-    templateUrl: './auth.component.html',
-    styleUrls: ['./auth.component.scss'],
-    standalone: false
+  selector: 'app-auth',
+  templateUrl: './auth.component.html',
+  styleUrls: ['./auth.component.scss'],
+  standalone: false,
 })
 export class AuthComponent implements OnInit, OnDestroy {
   private auth: Auth = inject(Auth);
@@ -52,7 +52,7 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   async resetPassword(event: Event) {
     event.preventDefault();
-    
+
     if (this.loginForm.get('email')?.valid) {
       this.loading = true;
       try {
@@ -91,7 +91,7 @@ export class AuthComponent implements OnInit, OnDestroy {
           this.loading = false;
 
           //Navigate to home page
-          this.router.navigate(['/schedule']);
+          this.router.navigate(['/dashboard']);
         })
         .catch((error) => {
           console.log(error?.message, error?.code);

@@ -8,6 +8,11 @@ import { BookingsComponent } from './components/bookings/bookings/bookings.compo
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full',
+  },
+  {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [authGuard],

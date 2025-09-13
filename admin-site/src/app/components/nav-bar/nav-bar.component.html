@@ -14,19 +14,22 @@
         <span class="bar"></span>
         <span class="bar"></span>
       </button>
-      <a routerLink="/dashboard" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
+      <a routerLink="/dashboard" (click)="toggleMenu()" class=" mt-2 nav-item text-textColour hover:bg-primaryHover"
+        [class]="currentRoute.includes('dashboard') ? 'bg-primaryHover' : ''">
         <mat-icon>dashboard</mat-icon>
         <span>
           Dashboard
         </span>
       </a>
-      <a routerLink="/bookings" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
+      <a routerLink="/bookings" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover"
+        [class]="currentRoute.includes('bookings') ? 'bg-primaryHover' : ''">
         <mat-icon>event</mat-icon>
         <span>
           Bookings
         </span>
       </a>
-      <a routerLink="/customers" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
+      <a routerLink="/customers" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover"
+        [class]="currentRoute.includes('customers') ? 'bg-primaryHover' : ''">
         <mat-icon>people</mat-icon>
         <span>
           Customers
