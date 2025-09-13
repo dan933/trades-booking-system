@@ -1,16 +1,16 @@
 <section class="bg-secondaryColour mt-20 w-full min-w-fit table-auto p-5">
-    <div class="mb-6 flex flex-wrap gap-4 items-center">
+    <form class="mb-6 flex flex-wrap gap-4 items-center">
         <div class="flex flex-col">
-            <label for="startDate" class="text-textColour text-sm font-medium mb-2">From Date</label>
-            <input id="startDate" type="date"
+            <label for="startDate" class="text-textColour text-sm font-medium mb-2">From</label>
+            <input id="startDate" type="date" [(ngModel)]="startDate" name="startDate"
                 class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div class="flex flex-col">
-            <label for="endDate" class="text-textColour text-sm font-medium mb-2">To Date</label>
-            <input id="endDate" type="date"
+            <label for="endDate" class="text-textColour text-sm font-medium mb-2">To</label>
+            <input id="endDate" type="date" [(ngModel)]="endDate" name="endDate"
                 class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
-    </div>
+    </form>
 
     <table id="myDataTable" class="w-full text-sm text-left rtl:text-right text-gray-500 shadow-md">
         <thead class="text-xs text-textColour uppercase bg-primaryColour">
@@ -20,18 +20,39 @@
                 <th scope="col" class="px-6 py-3">Start Time</th>
                 <th scope="col" class="px-6 py-3">End Time</th>
                 <th scope="col" class="px-6 py-3">Amount</th>
+                <th scope="col" class="px-6 py-3">Status</th>
                 <th scope="col" class="px-6 py-3"></th>
             </tr>
         </thead>
         <tbody>
+            @for (item of bookings; track $index) {
+            <tr>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.firstName ? item.firstName: ''}}
+                    {{item.lastName ? ` ${item.lastName} `: ''}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.formattedDate}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.startTime}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.endTime}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.formattedAmount}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.status}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour flex justify-end w-auto">
+                    <button style="width: 170px;"
+                        class="bg-blue-600 min-w-10 text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
+                        Booking Details
+                        <mat-icon>arrow_right_alt</mat-icon>
+                    </button>
+                </td>
+            </tr>
+            }
             <tr>
                 <td scope="col" class="px-6 py-3 text-textColour w-auto">John Doe</td>
                 <td scope="col" class="px-6 py-3 text-textColour w-auto">13/09/2025</td>
                 <td scope="col" class="px-6 py-3 text-textColour w-auto">10:23 am</td>
                 <td scope="col" class="px-6 py-3 text-textColour w-auto">12:00 pm</td>
                 <td scope="col" class="px-6 py-3 text-textColour w-auto">$200</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">paid</td>
                 <td scope="col" class="px-6 py-3 text-textColour flex justify-end w-auto">
-                    <button class="text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
+                    <button style="width: 170px;"
+                        class="bg-blue-600 min-w-10 text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
                         Booking Details
                         <mat-icon>arrow_right_alt</mat-icon>
                     </button>

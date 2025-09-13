@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Auth, idToken } from '@angular/fire/auth';
+import { Auth } from '@angular/fire/auth';
 import { Firestore } from '@angular/fire/firestore';
 import {
   collection,
@@ -31,7 +31,7 @@ export class DashboardService {
     const sumAggregateQuery = await getAggregateFromServer(bookingsQuery, {
       totalRevenue: sum('amount'),
     }).catch((error) => {
-      console.log('error aggregating data');
+      console.log('error aggregating data', error);
       return null;
     });
 

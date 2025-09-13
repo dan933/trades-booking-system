@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,6 +17,7 @@ import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { DialogScheduleDetailsComponent } from './components/schedule/dialog-schedule-details/dialog-schedule-details.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { BookingsComponent } from './components/bookings/bookings/bookings.component';
 
 @NgModule({
   declarations: [
@@ -24,12 +26,14 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     AuthComponent,
     DialogScheduleDetailsComponent,
     DashboardComponent,
+    BookingsComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FlexLayoutModule,
     AngularMaterialsModule,
+    FormsModule,
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
