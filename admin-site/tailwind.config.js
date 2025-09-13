@@ -9,6 +9,7 @@ module.exports = {
         textColour: "#f2f4fa",
         primaryHover: "#3c4257",
         secondaryHover: "#4a5062",
+        btnPrimary: "#4a5568",
       },
     },
   },

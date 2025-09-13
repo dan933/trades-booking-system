@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
+import { AngularMaterialsModule } from 'src/app/angular-materials/angular-materials.module';
 
 @Component({
   selector: 'app-bookings',
-  imports: [],
+  imports: [AngularMaterialsModule],
   templateUrl: './bookings.component.html',
-  styleUrl: './bookings.component.scss'
+  styleUrl: './bookings.component.scss',
 })
-export class BookingsComponent {
-
-}
+export class BookingsComponent {}

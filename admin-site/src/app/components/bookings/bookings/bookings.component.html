@@ -1,7 +1,21 @@
-<section class="bg-secondaryColour mt-20 w-full table-auto p-5">
-    <table id="myDataTable" class="w-full text-sm text-left rtl:text-right text-gray-500">
-        <thead class="text-xs text-textColour uppercase bg-gray-50 dark:bg-gray-700">
+<section class="bg-secondaryColour mt-20 w-full min-w-fit table-auto p-5">
+    <div class="mb-6 flex flex-wrap gap-4 items-center">
+        <div class="flex flex-col">
+            <label for="startDate" class="text-textColour text-sm font-medium mb-2">From Date</label>
+            <input id="startDate" type="date"
+                class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="flex flex-col">
+            <label for="endDate" class="text-textColour text-sm font-medium mb-2">To Date</label>
+            <input id="endDate" type="date"
+                class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+    </div>
+
+    <table id="myDataTable" class="w-full text-sm text-left rtl:text-right text-gray-500 shadow-md">
+        <thead class="text-xs text-textColour uppercase bg-primaryColour">
             <tr>
+                <th scope="col" class="px-6 py-3">Customer</th>
                 <th scope="col" class="px-6 py-3">Date</th>
                 <th scope="col" class="px-6 py-3">Start Time</th>
                 <th scope="col" class="px-6 py-3">End Time</th>
@@ -11,17 +25,16 @@
         </thead>
         <tbody>
             <tr>
-                <td scope="col" class="px-6 py-3 text-textColour">13/09/2025</td>
-                <td scope="col" class="px-6 py-3 text-textColour">10:23 am</td>
-                <td scope="col" class="px-6 py-3 text-textColour">12:00 pm</td>
-                <td scope="col" class="px-6 py-3 text-textColour">$200</td>
-                <td scope="col" class="px-6 py-3 text-textColour">
-                    <p class="flex">
-                        More info
-                        <span class="material-symbols-outlined">
-                            arrow_drop_down
-                        </span>
-                    </p>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">John Doe</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">13/09/2025</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">10:23 am</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">12:00 pm</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">$200</td>
+                <td scope="col" class="px-6 py-3 text-textColour flex justify-end w-auto">
+                    <button class="text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
+                        Booking Details
+                        <mat-icon>arrow_right_alt</mat-icon>
+                    </button>
                 </td>
             </tr>
         </tbody>
