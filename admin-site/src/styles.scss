@@ -8,6 +8,35 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+.snackbar-success.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: green;
+}
+.custom-snackbar-success.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  color: white;
+}
+.custom-snackbar-success.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: white; /* For action button text */
+}
+
+.snackbar-error.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: red;
+}
+.custom-snackbar-error.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  color: white;
+}
+.custom-snackbar-error.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: white; /* For action button text */
+}
+
+.snackbar-warn.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: yellow;
+}
+.custom-snackbar-warn.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  color: white;
+}
+.custom-snackbar-warn.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: white; /* For action button text */
+}
 
 // In styles.scss or styles.css
 .cdk-overlay-pane {

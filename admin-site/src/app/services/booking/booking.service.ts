@@ -129,9 +129,56 @@ export class BookingService {
     const docSnapshot = await getDoc(bookingDocRef);
 
     if (docSnapshot.exists()) {
+      const data = docSnapshot.data();
+
+      const startHour = data['startHour'];
+      const endHour = data['endHour'];
+
+      let startTime: string = '';
+      let endTime: string = '';
+
+      if (typeof startHour === 'number' && typeof endHour === 'number') {
+        startTime = this.convertTo12Hour(startHour);
+        endTime = this.convertTo12Hour(endHour);
+      }
+
+      if (typeof startHour === 'number' && typeof endHour === 'number') {
+        startTime = this.convertTo12Hour(startHour);
+        endTime = this.convertTo12Hour(endHour);
+      }
+
+      let formattedDate = '';
+
+      const bookingDateSeconds = data?.['bookingDate']?.['seconds'];
+
+      if (bookingDateSeconds) {
+        const bookingDate = new Date(bookingDateSeconds * 1000);
+        formattedDate = bookingDate.toLocaleDateString('en-GB');
+      }
+
+      let formattedAmount: string = '';
+
+      if (typeof data['amount'] === 'number') {
+        data['amount'] = data['amount'] / 100;
+
+        formattedAmount = data['amount'].toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        });
+      }
+
       return {
         id: docSnapshot.id,
-        ...docSnapshot.data(),
+        userId: data['userId'],
+        firstName: data['firstName'],
+        lastName: data['lastName'],
+        startTime,
+        endTime,
+        formattedAmount,
+        formattedDate,
+        address: data?.['address'],
+        // stripeChargeId: data?.['stripeChargeId'],
+        // ...docSnapshot.data(),
       };
     } else {
       throw new Error('Booking not found');
