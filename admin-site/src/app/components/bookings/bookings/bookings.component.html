@@ -2,12 +2,12 @@
     <form class="mb-6 flex flex-wrap gap-4 items-center">
         <div class="flex flex-col">
             <label for="startDate" class="text-textColour text-sm font-medium mb-2">From</label>
-            <input id="startDate" type="date" [(ngModel)]="startDate" name="startDate"
+            <input (change)="getBookings()" id="startDate" type="date" [(ngModel)]="startDate" name="startDate"
                 class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div class="flex flex-col">
             <label for="endDate" class="text-textColour text-sm font-medium mb-2">To</label>
-            <input id="endDate" type="date" [(ngModel)]="endDate" name="endDate"
+            <input (change)="getBookings()" id="endDate" type="date" [(ngModel)]="endDate" name="endDate"
                 class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
     </form>
