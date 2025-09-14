@@ -36,13 +36,26 @@ export class BookingsComponent implements OnInit {
   }[] = [];
 
   async getBookings() {
-    this.loadingBooking = true;
-    const bookingsResp = await this.bookingService.getBookings({
-      start: new Date(this.startDate),
-      end: new Date(this.endDate),
-    });
+    const size = 30;
 
-    this.bookings = bookingsResp.bookings;
+    this.loadingBooking = true;
+    const bookingsResp = await this.bookingService.getBookings(
+      {
+        start: new Date(this.startDate),
+        end: new Date(this.endDate),
+      },
+      size,
+      ...(this.lastDocument ? [this.lastDocument] : [])
+    );
+
+    console.log('this.lastDocument', this.lastDocument);
+
+    if (this.lastDocument) {
+      this.bookings = [...this.bookings, ...bookingsResp.bookings];
+    } else {
+      this.bookings = bookingsResp.bookings;
+    }
+
     this.hasMore = bookingsResp.hasMore;
     this.lastDocument = bookingsResp.lastDocument;
 

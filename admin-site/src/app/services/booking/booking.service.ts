@@ -42,7 +42,7 @@ export class BookingService {
 
   async getBookings(
     dateRange: { start: Date; end: Date },
-    size: number = 30,
+    size: number = 1,
     lastDocument?: QueryDocumentSnapshot<DocumentData>
   ) {
     const userToken = await this.auth.currentUser?.getIdTokenResult();
