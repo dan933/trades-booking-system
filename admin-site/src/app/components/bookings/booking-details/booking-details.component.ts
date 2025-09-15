@@ -30,7 +30,7 @@ export class BookingDetailsComponent implements OnInit {
 
   screenWidth: number = 0;
 
-  durationInSeconds = 2000;
+  durationInSeconds = 6000;
 
   openSnackBar(
     message: string,
@@ -43,31 +43,108 @@ export class BookingDetailsComponent implements OnInit {
     });
   }
 
+  openMaps(address: string | undefined) {
+    // https://www.google.com/maps/place/16+Marlborough+Rd,+Heathmont+VIC+3135
+
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${address}`;
+    window.open(mapsUrl, '_blank');
+  }
+
+  callPhone(phoneNumber: string | undefined) {
+    if (phoneNumber) {
+      // Remove any non-digit characters except +
+      const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+      window.location.href = `tel:${cleanNumber}`;
+    }
+  }
+
+  cancelBookingView = 'cancelButton';
+
+  async cancelBooking(bookingId: string | undefined, isConfirmed?: boolean) {
+    if (!bookingId) {
+      this.openSnackBar('Error finding booking id', 'snackbar-error');
+      return;
+    }
+
+    if (typeof isConfirmed === 'undefined') {
+      this.cancelBookingView = 'confirmation';
+      return;
+    } else if (isConfirmed === false) {
+      this.cancelBookingView = 'cancelButton';
+      return;
+    } else if (isConfirmed === true) {
+      this.cancelBookingView = 'loading';
+
+      await this.bookingService
+        .refundBooking(bookingId)
+        .then(() => {
+          this.openSnackBar('Booking Cancelled', 'snackbar-success');
+          this.cancelBookingView = 'cancelButton';
+        })
+        .catch((error) => {
+          this.openSnackBar(
+            `${error?.message || 'Error Canceling Booking'}`,
+            'snackbar-error'
+          );
+          this.cancelBookingView = 'cancelButton';
+        });
+
+      await this.bookingService
+        .getBooking(this.bookingId)
+        .then((res) => {
+          console.log({ res });
+          this.booking = res;
+        })
+        .catch((error) => {
+          this.openSnackBar(
+            `${error?.message || 'Error Getting Booking'}`,
+            'snackbar-error'
+          );
+        });
+    }
+  }
+
   booking: {
     id: string;
     userId: string;
     firstName: string;
     lastName: string;
+    phoneNumber: string;
     startTime: string;
     endTime: string;
     formattedAmount: string;
     formattedDate: string;
     address: string;
     status?: string;
+    services: {
+      hours: number;
+      name: string;
+      rate: string;
+      total: string;
+    }[];
+    bookingTotal: string;
   } | null = null;
 
   ngOnInit(): void {
-    this.openSnackBar('warn', 'snackbar-error');
-    this.bookingService.getBooking(this.bookingId).then((res) => {
-      this.booking = res;
-    });
+    this.bookingService
+      .getBooking(this.bookingId)
+      .then((res) => {
+        console.log({ res });
+        this.booking = res;
+      })
+      .catch((error) => {
+        this.openSnackBar(
+          `${error?.message || 'Error Getting Booking'}`,
+          'snackbar-error'
+        );
+      });
 
     this.screenWidth = window.innerWidth;
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    console.log('window.innerWidth', window.innerWidth);
+    // console.log('window.innerWidth', window.innerWidth);
 
     this.screenWidth = window.innerWidth;
   }

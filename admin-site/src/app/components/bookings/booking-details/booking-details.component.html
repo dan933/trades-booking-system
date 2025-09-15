@@ -1,18 +1,189 @@
 <section class="bg-secondaryColour mt-20">
-    <div [class]="screenWidth >= 1261 ? '': 'hidden'" class="p-5 grid grid-cols-5 gap-4 w-full justify-self-center">
+    <div [class]="screenWidth >= 1261 ? '': 'hidden'" class="p-5 grid grid-cols-6 gap-4 w-full justify-self-center">
         <div class="bg-primaryColour shadow-md text-white w-full h-full col-span-2 p-3">
-            <h1>Date</h1>
+            <h2>Date:</h2>
+            <h2>{{booking?.formattedDate}} {{booking?.startTime}} - {{booking?.endTime}}</h2>
         </div>
-        <div class="bg-primaryColour shadow-md text-white w-full h-full col-span-3 p-3">
-            <h1>location</h1>
+        <div class="bg-primaryColour shadow-md text-white w-full h-full p-3 flex justify-between flex-col col-span-4">
+            <h2 class="relative top-2">Phone:</h2>
+            <div class="flex flex-wrap gap-3 relative justify-between">
+                <h2 class="relative top-3">{{booking?.phoneNumber}}</h2>
+                <button style="width: 170px;" (click)="callPhone(booking?.phoneNumber)"
+                    class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <mat-icon>phone</mat-icon>
+                    <span>
+                        Call
+                    </span>
+                </button>
+
+            </div>
         </div>
+
+        <div class="bg-primaryColour shadow-md text-white w-full h-full col-span-6 p-3">
+            <h2 class="relative top-2">Location:</h2>
+            <div class="flex flex-wrap gap-3 relative justify-between">
+                <h2 class="relative top-3">{{booking?.address}}</h2>
+                <button style="width: 170px;" (click)="openMaps(booking?.address)"
+                    class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <mat-icon>location_on</mat-icon>
+                    <span>
+                        Open in Maps
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-full col-span-2 p-3">
+            <h2>Customer:</h2>
+            <h2>{{booking?.firstName}} {{booking?.lastName}}</h2>
+        </div>
+        @if(cancelBookingView === "cancelButton"){
+        <div class="bg-primaryColour shadow-md text-white w-full h-full col-span-4 p-3 flex justify-between flex-col">
+            <h2 class="relative top-2">Amount:</h2>
+            <div class="flex flex-wrap gap-3 relative justify-between">
+                <h2 class="relative top-3">{{booking?.bookingTotal}}</h2>
+                @if(booking?.status === "paid"){
+                <button style="width: 170px;" (click)="cancelBooking(booking?.id)"
+                    class="bg-red-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <mat-icon>money_off</mat-icon>
+                    <span>
+                        Cancel Booking
+                    </span>
+                </button>
+                }
+
+                @if(booking?.status === "refunded"){
+                <div>
+                    <h3>Booking Status:</h3>
+                    <div
+                        class="bg-gray-600 text-white px-3 py-3 rounded-full text-sm font-medium flex items-center gap-2 w-fit">
+                        <mat-icon class="text-sm">money_off</mat-icon>
+                        <span>Refunded</span>
+                    </div>
+                </div>
+                }
+
+            </div>
+        </div>
+        }
+
+        @if(cancelBookingView === "confirmation"){
+        <div
+            class=" gap-4 bg-primaryColour shadow-md text-white w-full h-full col-span-4 p-3 flex justify-between flex-col">
+            <h2 class="relative top-2">Are you sure you want to cancel this booking?</h2>
+            <h3>This will cancel the booking and refund the customer.</h3>
+            <div class="flex flex-wrap gap-3 relative justify-between">
+                <button style="width: 170px;" (click)="cancelBooking(booking?.id, false)"
+                    class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <span>
+                        No
+                    </span>
+                </button>
+                <button style="width: 170px;" (click)="cancelBooking(booking?.id, true)"
+                    class="bg-red-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <mat-icon>money_off</mat-icon>
+                    <span>
+                        Yes
+                    </span>
+                </button>
+
+            </div>
+        </div>
+        }
+
+        @if(cancelBookingView === "loading"){
+        <div
+            class="gap-4 bg-primaryColour shadow-md text-white w-full h-full col-span-4 p-3 flex justify-between items-center flex-col">
+            <mat-spinner strokeWidth="5"></mat-spinner>
+        </div>
+
+        }
+
     </div>
     <div [class]="screenWidth < 1261 ? '': 'hidden'" class="p-5 grid grid-cols-1 gap-4 w-full justify-self-center">
         <div class="bg-primaryColour shadow-md text-white w-full h-full p-3">
-            <h1>Date</h1>
+            <h2>Date:</h2>
+            <h2>{{booking?.formattedDate}} {{booking?.startTime}} - {{booking?.endTime}}</h2>
         </div>
         <div class="bg-primaryColour shadow-md text-white w-full h-full p-3">
-            <h1>location</h1>
+            <h2>Customer:</h2>
+            <h2>{{booking?.firstName}} {{booking?.lastName}}</h2>
         </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-full p-3">
+            <h2 class="relative top-2">Location:</h2>
+            <div class="flex flex-wrap gap-3 relative justify-between">
+                <h2 class="relative top-3">{{booking?.address}}</h2>
+                <button style="width: 170px;" (click)="openMaps(booking?.address)"
+                    class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <mat-icon>location_on</mat-icon>
+                    <span>
+                        Open in Maps
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="bg-primaryColour shadow-md text-white w-full h-full p-3 flex justify-between flex-col">
+            <h2 class="relative top-2">Amount:</h2>
+            <div class="flex flex-wrap gap-3 relative justify-between">
+                <h2 class="relative top-3">{{booking?.bookingTotal}}</h2>
+                <button style="width: 170px;" (click)="cancelBooking(booking?.id)"
+                    class="bg-red-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <mat-icon>money_off</mat-icon>
+                    <span>
+                        Cancel Booking
+                    </span>
+                </button>
+
+            </div>
+        </div>
+        @if(booking?.phoneNumber){
+        <div class="bg-primaryColour shadow-md text-white w-full h-full p-3 flex justify-between flex-col">
+            <h2 class="relative top-2">Phone:</h2>
+            <div class="flex flex-wrap gap-3 relative justify-between">
+                <h2 class="relative top-3">{{booking?.phoneNumber}}</h2>
+                <button style="width: 170px;" (click)="callPhone(booking?.phoneNumber)"
+                    class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md">
+                    <mat-icon>phone</mat-icon>
+                    <span>
+                        Call
+                    </span>
+                </button>
+
+            </div>
+        </div>
+        }
+
     </div>
+
+    @if(booking?.services?.length){
+    <div class="p-5 grid grid-cols-1 gap-4 w-full justify-self-center">
+        <table id="myDataTable" class=" w-full text-sm text-left rtl:text-right text-gray-500 shadow-md">
+            <thead class="text-xs text-textColour uppercase bg-primaryColour">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Service</th>
+                    <th scope="col" class="px-6 py-3">Hours</th>
+                    <th scope="col" class="px-6 py-3">Rate</th>
+                    <th scope="col" class="px-6 py-3">Total</th>
+                </tr>
+            </thead>
+            @for (item of booking?.services; track $index) {
+            <tr>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.name}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.hours}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.rate}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.total}}</td>
+            </tr>
+            }
+
+            <tr class="bg-primaryColour">
+                <td scope="col" class="px-6 py-3 text-textColour w-auto"></td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto"></td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto font-bold">Total:</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto font-bold">{{booking?.bookingTotal}}</td>
+            </tr>
+        </table>
+    </div>
+
+    }
+
+
 </section>

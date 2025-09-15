@@ -131,6 +131,55 @@ export class BookingService {
     if (docSnapshot.exists()) {
       const data = docSnapshot.data();
 
+      console.log({ data });
+
+      let bookingTotal = 0;
+
+      const services: {
+        hours: number;
+        name: string;
+        rate: string;
+        total: string;
+      }[] = (data['services'] || []).map(
+        (item: {
+          selection: { rate: number; name: string };
+          hours: number;
+        }) => {
+          //convert to string dollars
+          const formattedAmount = (item?.selection?.rate || 0).toLocaleString(
+            'en-US',
+            {
+              style: 'currency',
+              currency: 'USD',
+            }
+          );
+
+          const total =
+            item?.hours && item?.selection?.rate
+              ? item.hours * item?.selection?.rate
+              : 0;
+
+          bookingTotal += total;
+
+          const formattedTotal = total.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          });
+
+          return {
+            hours: item?.hours,
+            name: item?.selection?.name,
+            rate: formattedAmount,
+            total: formattedTotal,
+          };
+        }
+      );
+
+      const formattedBookingTotal = bookingTotal.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      });
+
       const startHour = data['startHour'];
       const endHour = data['endHour'];
 
@@ -172,11 +221,15 @@ export class BookingService {
         userId: data['userId'],
         firstName: data['firstName'],
         lastName: data['lastName'],
+        phoneNumber: data['phoneNumber'],
+        status: data['status'],
         startTime,
         endTime,
         formattedAmount,
         formattedDate,
         address: data?.['address'],
+        services: services,
+        bookingTotal: formattedBookingTotal,
         // stripeChargeId: data?.['stripeChargeId'],
         // ...docSnapshot.data(),
       };
