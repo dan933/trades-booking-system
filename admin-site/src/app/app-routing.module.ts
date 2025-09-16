@@ -6,6 +6,8 @@ import { ScheduleComponent } from './components/schedule/schedule.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BookingsComponent } from './components/bookings/bookings/bookings.component';
 import { BookingDetailsComponent } from './components/bookings/booking-details/booking-details.component';
+import { CustomersComponent } from './components/customers/customers/customers.component';
+import { CustomerDetailsComponent } from './components/customers/customer-details/customer-details.component';
 
 const routes: Routes = [
   {
@@ -26,6 +28,16 @@ const routes: Routes = [
   {
     path: 'bookings/:id',
     component: BookingDetailsComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'customers',
+    component: CustomersComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'customers/:id',
+    component: CustomerDetailsComponent,
     canActivate: [authGuard],
   },
   {

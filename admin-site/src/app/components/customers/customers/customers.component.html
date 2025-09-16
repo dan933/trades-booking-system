@@ -1,0 +1,28 @@
+<section class="bg-secondaryColour mt-20 w-full min-w-fit table-auto p-5">
+    <div class="mb-6">
+        <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Search by email..."
+            class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-80">
+    </div>
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 shadow-md">
+        <thead class="text-xs text-textColour uppercase bg-primaryColour">
+            <tr>
+                <th scope="col" class="px-6 py-3">Email</th>
+                <th scope="col" class="px-6 py-3">Name</th>
+                <th scope="col" class="px-6 py-3">Phone</th>
+                <th scope="col" class="px-6 py-3">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (item of customers; track $index) {
+            <tr>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.email}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.firstName ? item.firstName: ''}}
+                    {{item.lastName ? ` ${item.lastName} `: ''}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.phone}}</td>
+                <td scope="col" class="px-6 py-3 text-textColour w-auto">{{item.address}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+</section>

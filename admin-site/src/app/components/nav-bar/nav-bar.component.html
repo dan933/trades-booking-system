@@ -1,4 +1,5 @@
-<div class="fixed top-0 w-full z-[9999]" *ngIf="isUserLoggedIn">
+@if(isUserLoggedIn){
+<div class="fixed top-0 w-full z-[9999]">
   <nav class="bg-primaryColour text-textColour nav">
     <button class="burger" [class]="{'play': activeMenu}" (click)="toggleMenu()">
       <span class="bar"></span>
@@ -53,3 +54,4 @@
   </div>
   <div [class]="{'nav-drawer-overlay': true, 'active-overlay': activeMenu}" (click)="toggleMenu()"></div>
 </div>
+}

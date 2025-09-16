@@ -15,6 +15,7 @@ import {
   getDoc,
   doc,
 } from 'firebase/firestore';
+
 import { DocumentData } from 'node_modules/rxfire/firestore/interfaces';
 
 @Injectable({
@@ -42,7 +43,7 @@ export class BookingService {
 
   async getBookings(
     dateRange: { start: Date; end: Date },
-    size: number = 1,
+    size: number = 30,
     lastDocument?: QueryDocumentSnapshot<DocumentData>
   ) {
     const userToken = await this.auth.currentUser?.getIdTokenResult();
