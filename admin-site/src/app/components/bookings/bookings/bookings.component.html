@@ -10,6 +10,14 @@
             <input (change)="getBookings()" id="endDate" type="date" [(ngModel)]="endDate" name="endDate"
                 class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
+        <div class="flex gap-3 ml-4 mt-5">
+            <button type="button" (click)="setWeekView()"
+                class="px-3 py-2 bg-blue-600 text-textColour rounded-lg hover:bg-blue-700">Week</button>
+            <button type="button" (click)="setMonthView()"
+                class="px-3 py-2 bg-blue-600 text-textColour rounded-lg hover:bg-blue-700">Month</button>
+            <button type="button" (click)="setYearView()"
+                class="px-3 py-2 bg-blue-600 text-textColour rounded-lg hover:bg-blue-700">Year</button>
+        </div>
     </form>
 
     <table id="myDataTable" class="w-full text-sm text-left rtl:text-right text-gray-500 shadow-md">
