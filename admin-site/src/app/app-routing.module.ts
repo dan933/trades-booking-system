@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './shared/auth/auth.component';
 import { authGuard } from './services/auth.guard';
-import { ScheduleComponent } from './components/schedule/schedule.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BookingsComponent } from './components/bookings/bookings/bookings.component';
 import { BookingDetailsComponent } from './components/bookings/booking-details/booking-details.component';
@@ -54,7 +53,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    component: ScheduleComponent,
+    component: DashboardComponent,
     canActivate: [authGuard],
   },
 ];

@@ -48,7 +48,7 @@ export class BookingsComponent implements OnInit {
       ...(this.lastDocument ? [this.lastDocument] : [])
     );
 
-    console.log('this.lastDocument', this.lastDocument);
+    // console.log('this.lastDocument', this.lastDocument);
 
     if (this.lastDocument) {
       this.bookings = [...this.bookings, ...bookingsResp.bookings];
@@ -68,9 +68,13 @@ export class BookingsComponent implements OnInit {
 
   setWeekView() {
     const today = new Date();
-    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-    const endOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
-    
+    const startOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay())
+    );
+    const endOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 6)
+    );
+
     this.startDate = startOfWeek.toISOString().split('T')[0];
     this.endDate = endOfWeek.toISOString().split('T')[0];
     this.resetAndGetBookings();
@@ -80,7 +84,7 @@ export class BookingsComponent implements OnInit {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    
+
     this.startDate = startOfMonth.toISOString().split('T')[0];
     this.endDate = endOfMonth.toISOString().split('T')[0];
     this.resetAndGetBookings();
@@ -90,13 +94,14 @@ export class BookingsComponent implements OnInit {
     const today = new Date();
     const startOfYear = new Date(today.getFullYear(), 0, 1);
     const endOfYear = new Date(today.getFullYear(), 11, 31);
-    
+
     this.startDate = startOfYear.toISOString().split('T')[0];
     this.endDate = endOfYear.toISOString().split('T')[0];
     this.resetAndGetBookings();
   }
 
   private resetAndGetBookings() {
+    this.loadingBooking = true;
     this.lastDocument = undefined;
     this.hasMore = true;
     this.getBookings();

@@ -1,4 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { CustomerService } from 'src/app/services/customer/customer.service';
 
@@ -10,7 +11,10 @@ import { CustomerService } from 'src/app/services/customer/customer.service';
 })
 @Injectable({ providedIn: 'root' })
 export class CustomersComponent implements OnInit {
-  constructor(private customerService: CustomerService) {}
+  constructor(
+    private customerService: CustomerService,
+    private router: Router
+  ) {}
 
   customers: {
     id: string;
@@ -40,11 +44,20 @@ export class CustomersComponent implements OnInit {
     this.getCustomers();
   }
 
-  private async getCustomers() {
+  async getCustomers() {
     this.loading = true;
     try {
-      const resp = await this.customerService.getCustomers(30, this.lastDocument, this.searchTerm || undefined);
-      this.customers = resp.customers;
+      const resp = await this.customerService.getCustomers(
+        30,
+        this.lastDocument,
+        this.searchTerm || undefined
+      );
+
+      if (this.lastDocument) {
+        this.customers = [...this.customers, ...resp.customers];
+      } else {
+        this.customers = resp.customers;
+      }
       this.lastDocument = resp?.lastDocument;
       this.hasMore = resp.hasMore;
     } finally {
@@ -52,6 +65,9 @@ export class CustomersComponent implements OnInit {
     }
   }
 
+  goToDetails(customerId: string) {
+    this.router.navigate(['/customers', customerId]);
+  }
   ngOnInit(): void {
     this.getCustomers();
   }

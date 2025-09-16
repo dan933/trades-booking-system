@@ -15,7 +15,6 @@ import { environment } from '../environments/environment';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { DialogScheduleDetailsComponent } from './components/schedule/dialog-schedule-details/dialog-schedule-details.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BookingsComponent } from './components/bookings/bookings/bookings.component';
 import { BookingDetailsComponent } from './components/bookings/booking-details/booking-details.component';
@@ -26,7 +25,6 @@ import { CustomersComponent } from './components/customers/customers/customers.c
     AppComponent,
     NavBarComponent,
     AuthComponent,
-    DialogScheduleDetailsComponent,
     DashboardComponent,
     BookingsComponent,
     BookingDetailsComponent,
