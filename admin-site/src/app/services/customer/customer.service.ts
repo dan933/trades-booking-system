@@ -30,7 +30,20 @@ export class CustomerService {
       doc(this.firestore, `organisations/${orgId}/users/${customerId}`)
     );
 
-    return customerDoc.data();
+    if (!customerDoc.exists()) {
+      throw new Error('Customer not found');
+    }
+
+    const data = customerDoc?.data();
+
+    return {
+      id: customerDoc.id,
+      address: data['addressList']?.[0] || '',
+      email: data['email'] || '',
+      firstName: data['firstName'] || '',
+      lastName: data['lastName'] || '',
+      phoneNumber: data['phoneNumber'] || '',
+    };
   }
 
   async getCustomers(

@@ -44,7 +44,8 @@ export class BookingService {
   async getBookings(
     dateRange: { start: Date; end: Date },
     size: number = 30,
-    lastDocument?: QueryDocumentSnapshot<DocumentData>
+    lastDocument?: QueryDocumentSnapshot<DocumentData>,
+    customerId?: string
   ) {
     const userToken = await this.auth.currentUser?.getIdTokenResult();
     const orgId = userToken?.claims['org'];
@@ -56,6 +57,7 @@ export class BookingService {
 
     const bookingsQuery = query(
       bookingsCol,
+      ...(customerId ? [where('userId', '==', customerId)] : []),
       where('bookingDate', '>=', dateRange.start),
       where('bookingDate', '<=', dateRange.end),
       orderBy('bookingDate', 'desc'),
@@ -68,7 +70,6 @@ export class BookingService {
     return {
       bookings: querySnapshot.docs.map((doc) => {
         let data = doc.data();
-
         const startHour = data['startHour'];
         const endHour = data['endHour'];
 

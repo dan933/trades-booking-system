@@ -1,1 +1,187 @@
-<p>customer-details works!</p>
+<section class="bg-secondaryColour mt-20 w-full min-w-fit table-auto p-5">
+  <div
+    [class]="screenWidth >= 1261 ? '' : 'hidden'"
+    class="p-5 grid grid-cols-6 gap-4 w-full justify-self-center"
+  >
+    <div
+      class="bg-primaryColour shadow-md text-white w-full h-full p-3 col-span-3"
+    >
+      <h2>Customer Name:</h2>
+      <h2 class="truncate">
+        {{ customer?.firstName }} {{ customer?.lastName }}
+      </h2>
+    </div>
+    <div
+      class="bg-primaryColour shadow-md text-white w-full h-full p-3 col-span-3"
+    >
+      <h2 class="relative top-2">Email:</h2>
+      <div class="flex flex-wrap gap-3 relative justify-between">
+        <h2 class="relative top-3 truncate">{{ customer?.email }}</h2>
+        <a
+          [href]="'mailto:' + customer?.email"
+          style="width: 170px"
+          class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md no-underline"
+        >
+          <mat-icon>email</mat-icon>
+          <span>Send Email</span>
+        </a>
+      </div>
+    </div>
+    <div
+      class="bg-primaryColour shadow-md text-white w-full h-full p-3 col-span-3"
+    >
+      <h2 class="relative top-2">Location:</h2>
+      <div class="flex flex-wrap gap-3 relative justify-between">
+        <h2 class="relative top-3">{{ customer?.address }}</h2>
+        <button
+          style="width: 170px"
+          (click)="openMaps(customer?.address)"
+          class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md"
+        >
+          <mat-icon>location_on</mat-icon>
+          <span> Open in Maps </span>
+        </button>
+      </div>
+    </div>
+    @if(customer?.phoneNumber){
+    <div
+      class="bg-primaryColour shadow-md text-white w-full h-full p-3 flex justify-between flex-col col-span-3"
+    >
+      <h2 class="relative top-2">Phone:</h2>
+      <div class="flex flex-wrap gap-3 relative justify-between">
+        <h2 class="relative top-3">{{ customer?.phoneNumber }}</h2>
+        <button
+          style="width: 170px"
+          (click)="callPhone(customer?.phoneNumber)"
+          class="bg-blue-600 hover:bg-primaryColour text-white rounded-lg py-4 flex items-center justify-center gap-2 transition-colors duration-200 shadow-md"
+        >
+          <mat-icon>phone</mat-icon>
+          <span> Call </span>
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  <div
+    [class]="screenWidth < 1261 ? '' : 'hidden'"
+    class="p-5 grid grid-cols-1 gap-4 w-full justify-self-center"
+  ></div>
+
+  <section class="bg-secondaryColour mt-20 w-full min-w-fit table-auto p-5">
+    <form class="mb-6 flex flex-wrap gap-4 items-center">
+      <div class="flex flex-col">
+        <label for="startDate" class="text-textColour text-sm font-medium mb-2"
+          >From</label
+        >
+        <input
+          (change)="getBookings()"
+          id="startDate"
+          type="date"
+          [(ngModel)]="startDate"
+          name="startDate"
+          class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div class="flex flex-col">
+        <label for="endDate" class="text-textColour text-sm font-medium mb-2"
+          >To</label
+        >
+        <input
+          (change)="getBookings()"
+          id="endDate"
+          type="date"
+          [(ngModel)]="endDate"
+          name="endDate"
+          class="px-3 py-2 bg-primaryColour text-textColour border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div class="flex gap-3 ml-4 mt-5">
+        <button
+          type="button"
+          (click)="setWeekView()"
+          class="px-3 py-2 bg-blue-600 text-textColour rounded-lg hover:bg-blue-700"
+        >
+          Week
+        </button>
+        <button
+          type="button"
+          (click)="setMonthView()"
+          class="px-3 py-2 bg-blue-600 text-textColour rounded-lg hover:bg-blue-700"
+        >
+          Month
+        </button>
+        <button
+          type="button"
+          (click)="setYearView()"
+          class="px-3 py-2 bg-blue-600 text-textColour rounded-lg hover:bg-blue-700"
+        >
+          Year
+        </button>
+      </div>
+    </form>
+    <table
+      class="w-full text-sm text-left rtl:text-right text-gray-500 shadow-md border border-gray-600"
+    >
+      <thead class="text-xs text-textColour uppercase bg-primaryColour">
+        <tr>
+          <th scope="col" class="px-6 py-3 border-b border-gray-600">Date</th>
+          <th scope="col" class="px-6 py-3 border-b border-gray-600">
+            Start Time
+          </th>
+          <th scope="col" class="px-6 py-3 border-b border-gray-600">
+            End Time
+          </th>
+          <th scope="col" class="px-6 py-3 border-b border-gray-600">Amount</th>
+          <th scope="col" class="px-6 py-3 border-b border-gray-600">Status</th>
+          <th scope="col" class="px-6 py-3 border-b border-gray-600"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- @for (item of bookings; track $index) {
+                <tr>
+                    <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.firstName ?
+                        item.firstName: ''}}
+                        {{item.lastName ? ` ${item.lastName} `: ''}}</td>
+                    <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.formattedDate}}
+                    </td>
+                    <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.startTime}}
+                    </td>
+                    <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.endTime}}</td>
+                    <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">
+                        {{item.formattedAmount}}
+                    </td>
+                    <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.status}}</td>
+                    <td scope="col" class="px-6 py-3 text-textColour flex justify-end w-auto border-b border-gray-600">
+                        <button style="width: 170px;" (click)="goToDetails(item.id)"
+                            class="bg-blue-600 min-w-10 text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
+                            Booking Details
+                            <mat-icon>arrow_right_alt</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+                } -->
+        <tr>
+          <td scope="col" class="px-6 py-3 text-textColour w-auto">
+            13/09/2025
+          </td>
+          <td scope="col" class="px-6 py-3 text-textColour w-auto">10:23 am</td>
+          <td scope="col" class="px-6 py-3 text-textColour w-auto">12:00 pm</td>
+          <td scope="col" class="px-6 py-3 text-textColour w-auto">$200</td>
+          <td scope="col" class="px-6 py-3 text-textColour w-auto">paid</td>
+          <td
+            scope="col"
+            class="px-6 py-3 text-textColour flex justify-end w-auto"
+          >
+            <button
+              style="width: 170px"
+              class="bg-blue-600 min-w-10 text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour"
+            >
+              Booking Details
+              <mat-icon>arrow_right_alt</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>
