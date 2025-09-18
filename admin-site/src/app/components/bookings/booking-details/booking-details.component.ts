@@ -30,7 +30,7 @@ export class BookingDetailsComponent implements OnInit {
 
   screenWidth: number = 0;
 
-  durationInSeconds = 5000;
+  durationInSeconds = 3;
 
   openSnackBar(
     message: string,

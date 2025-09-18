@@ -15,9 +15,22 @@ export class BookingsComponent implements OnInit {
   endDate: string = new Date().toISOString()?.split('T')[0];
 
   constructor(private bookingService: BookingService, private router: Router) {
-    let endDate = new Date();
-    endDate.setDate(endDate.getDate() + 7);
-    this.endDate = endDate.toISOString()?.split('T')[0];
+    this.setWeekView();
+  }
+
+  get tableData(): string[][] {
+    return this.bookings.map((item) => [
+      (item.firstName || '') + ' ' + (item.lastName || ''),
+      item.formattedDate,
+      item.startTime,
+      item.endTime,
+      item.formattedAmount,
+      item.status,
+    ]);
+  }
+
+  get actionRowData() {
+    return this.bookings.map((item) => item.id);
   }
 
   lastDocument?: QueryDocumentSnapshot<DocumentData>;
@@ -62,17 +75,17 @@ export class BookingsComponent implements OnInit {
     this.loadingBooking = false;
   }
 
-  goToDetails(id: string) {
+  goToDetails = (id?: string) => {
     this.router.navigate(['/bookings', id]);
-  }
+  };
 
   setWeekView() {
     const today = new Date();
     const startOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay())
+      today.setDate(today.getDate() - (today.getDay() - 1))
     );
     const endOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay() + 6)
+      today.setDate(today.getDate() - today.getDay() + 7)
     );
 
     this.startDate = startOfWeek.toISOString().split('T')[0];
@@ -80,13 +93,20 @@ export class BookingsComponent implements OnInit {
     this.resetAndGetBookings();
   }
 
+  private formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   setMonthView() {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-    this.startDate = startOfMonth.toISOString().split('T')[0];
-    this.endDate = endOfMonth.toISOString().split('T')[0];
+    this.startDate = this.formatLocalDate(startOfMonth);
+    this.endDate = this.formatLocalDate(endOfMonth);
     this.resetAndGetBookings();
   }
 
@@ -95,8 +115,8 @@ export class BookingsComponent implements OnInit {
     const startOfYear = new Date(today.getFullYear(), 0, 1);
     const endOfYear = new Date(today.getFullYear(), 11, 31);
 
-    this.startDate = startOfYear.toISOString().split('T')[0];
-    this.endDate = endOfYear.toISOString().split('T')[0];
+    this.startDate = this.formatLocalDate(startOfYear);
+    this.endDate = this.formatLocalDate(endOfYear);
     this.resetAndGetBookings();
   }
 

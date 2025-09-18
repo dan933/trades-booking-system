@@ -20,6 +20,7 @@ import { BookingsComponent } from './components/bookings/bookings/bookings.compo
 import { BookingDetailsComponent } from './components/bookings/booking-details/booking-details.component';
 import { CustomersComponent } from './components/customers/customers/customers.component';
 import { CustomerDetailsComponent } from './components/customers/customer-details/customer-details.component';
+import { TableComponent } from './components/shared/table/table.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { CustomerDetailsComponent } from './components/customers/customer-detail
     BookingDetailsComponent,
     CustomersComponent,
     CustomerDetailsComponent,
+    TableComponent,
   ],
   imports: [
     BrowserModule,

@@ -20,59 +20,8 @@
         </div>
     </form>
 
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 shadow-md border border-gray-600">
-        <thead class="text-xs text-textColour uppercase bg-primaryColour">
-            <tr>
-                <th scope="col" class="px-6 py-3 border-b border-gray-600">Customer</th>
-                <th scope="col" class="px-6 py-3 border-b border-gray-600">Date</th>
-                <th scope="col" class="px-6 py-3 border-b border-gray-600">Start Time</th>
-                <th scope="col" class="px-6 py-3 border-b border-gray-600">End Time</th>
-                <th scope="col" class="px-6 py-3 border-b border-gray-600">Amount</th>
-                <th scope="col" class="px-6 py-3 border-b border-gray-600">Status</th>
-                <th scope="col" class="px-6 py-3 border-b border-gray-600"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (item of bookings; track $index) {
-            <tr>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.firstName ?
-                    item.firstName: ''}}
-                    {{item.lastName ? ` ${item.lastName} `: ''}}</td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.formattedDate}}
-                </td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.startTime}}
-                </td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.endTime}}</td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">
-                    {{item.formattedAmount}}
-                </td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto border-b border-gray-600">{{item.status}}</td>
-                <td scope="col" class="px-6 py-3 text-textColour flex justify-end w-auto border-b border-gray-600">
-                    <button style="width: 170px;" (click)="goToDetails(item.id)"
-                        class="bg-blue-600 min-w-10 text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
-                        Booking Details
-                        <mat-icon>arrow_right_alt</mat-icon>
-                    </button>
-                </td>
-            </tr>
-            }
-            <!-- <tr>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto">John Doe</td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto">13/09/2025</td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto">10:23 am</td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto">12:00 pm</td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto">$200</td>
-                <td scope="col" class="px-6 py-3 text-textColour w-auto">paid</td>
-                <td scope="col" class="px-6 py-3 text-textColour flex justify-end w-auto">
-                    <button style="width: 170px;"
-                        class="bg-blue-600 min-w-10 text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
-                        Booking Details
-                        <mat-icon>arrow_right_alt</mat-icon>
-                    </button>
-                </td>
-            </tr> -->
-        </tbody>
-    </table>
+    <app-table [tableHeaders]="['Customer', 'Date', 'Start Time', 'End Time', 'Amount', 'Status', '']"
+        [tableData]="tableData" [actionRow]="actionRowData" [action]="goToDetails"></app-table>
     @if(hasMore && !loadingBooking){
     <button (click)="getBookings()"
         class="mt-3 mx-auto bg-blue-600 text-textColour px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primaryColour">
