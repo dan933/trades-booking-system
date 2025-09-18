@@ -38,6 +38,20 @@ export class CustomersComponent implements OnInit {
     }, 300);
   }
 
+  get tableData(): (string | { icon: string })[][] {
+    return this.customers.map((item) => [
+      item.email,
+      (item.firstName || '') + ' ' + (item.lastName || ''),
+      item.phone,
+      item.address,
+      '',
+    ]);
+  }
+
+  get actionRowData() {
+    return this.customers.map((item) => item.id);
+  }
+
   private resetAndGetCustomers() {
     this.lastDocument = undefined;
     this.hasMore = true;
@@ -47,8 +61,9 @@ export class CustomersComponent implements OnInit {
   async getCustomers() {
     this.loading = true;
     try {
+      const size = 30;
       const resp = await this.customerService.getCustomers(
-        30,
+        size,
         this.lastDocument,
         this.searchTerm || undefined
       );
@@ -65,9 +80,10 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  goToDetails(customerId: string) {
+  goToDetails = (customerId?: string) => {
     this.router.navigate(['/customers', customerId]);
-  }
+  };
+
   ngOnInit(): void {
     this.getCustomers();
   }

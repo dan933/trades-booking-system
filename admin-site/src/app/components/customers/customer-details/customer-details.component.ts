@@ -1,8 +1,9 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { BookingService } from 'src/app/services/booking/booking.service';
 import { CustomerService } from 'src/app/services/customer/customer.service';
+import { DashboardService } from 'src/app/services/dashboard/dashboard.service';
 
 @Component({
   selector: 'app-customer-details',
@@ -10,24 +11,136 @@ import { CustomerService } from 'src/app/services/customer/customer.service';
   styleUrl: './customer-details.component.scss',
   standalone: false,
 })
-export class CustomerDetailsComponent implements OnInit {
+export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   customerId: string;
 
   constructor(
     private customerService: CustomerService,
     private bookingService: BookingService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private dashboardService: DashboardService
   ) {
     this.customerId = this.route.snapshot.paramMap.get('id')!;
+    this.setMonthView();
+  }
+  ngAfterViewInit(): void {
+    this.renderChart();
+    this.getRevenueChartData(this.customerId);
   }
 
   screenWidth: number = 0;
+  chart: any;
+
+  async renderChart() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    const targetElement = this.screenWidth < 1261 ? '#chart-mobile' : '#chart';
+
+    const options = {
+      theme: {
+        mode: 'dark',
+      },
+      series: [
+        {
+          name: 'Revenue',
+          data: this.chartData,
+        },
+      ],
+      chart: {
+        type: 'line',
+        height: this.screenWidth < 1261 ? 300 : 400,
+        background: 'transparent',
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+          type: 'x',
+          autoScaleYaxis: true,
+          zoomedArea: {
+            fill: {
+              color: '#90CAF9',
+              opacity: 0.4,
+            },
+            stroke: {
+              color: '#0D47A1',
+              opacity: 0.4,
+              width: 1,
+            },
+          },
+        },
+        pan: {
+          enabled: true,
+          type: 'x',
+        },
+        selection: {
+          enabled: true,
+          type: 'x',
+        },
+        events: {
+          beforeMount: function (chartContext: any, config: any) {
+            // Disable passive event listeners warning
+          },
+        },
+      },
+      xaxis: {
+        categories: [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ],
+      },
+    };
+
+    this.chart = new (window as any).ApexCharts(
+      document.querySelector(targetElement),
+      options
+    );
+
+    this.chart.render();
+  }
+
+  chartData: number[] = [];
+  chartDataLoading: boolean = false;
+
+  async getRevenueChartData(userId?: string) {
+    this.chartDataLoading = true;
+    this.chartData = await this.dashboardService.getRevenueChartData(userId);
+    this.chart.updateSeries([
+      {
+        name: 'Revenue',
+        data: this.chartData,
+      },
+    ]);
+    this.chartDataLoading = false;
+  }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     // console.log('window.innerWidth', window.innerWidth);
 
+    const currentWidth = +this.screenWidth;
+
     this.screenWidth = window.innerWidth;
+
+    if (currentWidth < 1261 && window.innerWidth >= 1261) {
+      // console.log('render');
+      this.renderChart();
+    } else if (currentWidth >= 1261 && window.innerWidth < 1261) {
+      this.renderChart();
+    }
   }
 
   customer: {
@@ -46,6 +159,22 @@ export class CustomerDetailsComponent implements OnInit {
   endDate: string = new Date().toISOString()?.split('T')[0];
   lastDocument?: QueryDocumentSnapshot<DocumentData>;
   hasMore: boolean = false;
+
+  get tableData(): (string | { icon: string; color: string })[][] {
+    return this.bookings.map((item) => [
+      item.formattedDate,
+      item.startTime,
+      item.endTime,
+      item.formattedAmount,
+      item.status === 'paid'
+        ? { icon: 'check_circle', color: 'text-green-500' }
+        : { icon: 'refresh', color: 'text-orange-500' },
+    ]);
+  }
+
+  get actionRowData() {
+    return this.bookings.map((item) => item.id);
+  }
 
   bookings: {
     id: string;
@@ -92,26 +221,18 @@ export class CustomerDetailsComponent implements OnInit {
   }
 
   setWeekView() {
-    const today = new Date();
-    const startOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay())
-    );
-    const endOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay() + 6)
-    );
+    const { startOfWeek, endOfWeek } = this.bookingService.getWeekView();
 
-    this.startDate = startOfWeek.toISOString().split('T')[0];
-    this.endDate = endOfWeek.toISOString().split('T')[0];
+    this.startDate = this.bookingService.formatLocalDate(startOfWeek);
+    this.endDate = this.bookingService.formatLocalDate(endOfWeek);
     this.resetAndGetBookings();
   }
 
   setMonthView() {
-    const today = new Date();
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const { startOfMonth, endOfMonth } = this.bookingService.getMonthView();
 
-    this.startDate = startOfMonth.toISOString().split('T')[0];
-    this.endDate = endOfMonth.toISOString().split('T')[0];
+    this.startDate = this.bookingService.formatLocalDate(startOfMonth);
+    this.endDate = this.bookingService.formatLocalDate(endOfMonth);
     this.resetAndGetBookings();
   }
 
@@ -120,10 +241,14 @@ export class CustomerDetailsComponent implements OnInit {
     const startOfYear = new Date(today.getFullYear(), 0, 1);
     const endOfYear = new Date(today.getFullYear(), 11, 31);
 
-    this.startDate = startOfYear.toISOString().split('T')[0];
-    this.endDate = endOfYear.toISOString().split('T')[0];
+    this.startDate = this.bookingService.formatLocalDate(startOfYear);
+    this.endDate = this.bookingService.formatLocalDate(endOfYear);
     this.resetAndGetBookings();
   }
+
+  goToDetails = (id?: string) => {
+    this.router.navigate(['/bookings', id]);
+  };
 
   ngOnInit(): void {
     this.screenWidth = window.innerWidth;
@@ -137,7 +262,7 @@ export class CustomerDetailsComponent implements OnInit {
       .finally(() => {
         this.customerLoading = false;
       });
-    const size = 30;
+
     this.getBookings();
   }
 
@@ -146,11 +271,24 @@ export class CustomerDetailsComponent implements OnInit {
     window.open(mapsUrl, '_blank');
   }
 
-  callPhone(phoneNumber: string | undefined) {
+  async callPhone(phoneNumber: string | undefined) {
     if (phoneNumber) {
+      await navigator.clipboard.writeText(phoneNumber);
       // Remove any non-digit characters except +
       const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
       window.location.href = `tel:${cleanNumber}`;
+    }
+  }
+
+  async onEmailClick(email?: string) {
+    if (email) {
+      try {
+        await navigator.clipboard.writeText(email);
+        window.location.href = `mailto:${email}`;
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+        window.open(`mailto:${email}`, '_blank');
+      }
     }
   }
 }

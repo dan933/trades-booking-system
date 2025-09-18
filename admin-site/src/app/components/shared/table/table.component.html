@@ -1,4 +1,4 @@
-<table class="w-full text-sm text-left rtl:text-right text-gray-500 shadow-md border border-gray-600">
+<table class="text-sm text-left rtl:text-right text-gray-500 shadow-md border border-gray-600">
     <thead class="text-xs text-textColour uppercase bg-primaryColour">
         <tr>
             @for(item of tableHeaders; track $index){
@@ -11,13 +11,22 @@
         <tr>
 
             @for (item of row; track $index; let itemIndex = $index) {
+            @if(typeof item === "string"){
             <td scope="col" class="px-6 py-3 m-10 text-textColour w-auto border-b border-gray-600">{{item}}</td>
+            }
+
+            @if(typeof item === "object" && "icon" in item){
+            <td scope="col"
+                [class]="`px-6 py-3 m-10 text-textColour w-auto border-b border-gray-600 ${item.color ? item.color : ''}`">
+                <mat-icon style="width: 170px;">{{item.icon}}</mat-icon>
+            </td>
+            }
 
             @if(action && row.length - 1 === itemIndex){
             <td scope="col" class="px-6 py-3 text-textColour text-right w-auto border-b border-gray-600">
-                <button style="width: 170px;" (click)="onAction(actionRow?.[rowIndex] || '')"
+                <button style="width: 180px;" (click)="onAction(actionRow?.[rowIndex] || '')"
                     class="bg-blue-600 min-w-10 text-textColour px-4 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-primaryColour">
-                    Booking Details
+                    {{actionLabel}}
                     <mat-icon>arrow_right_alt</mat-icon>
                 </button>
             </td>

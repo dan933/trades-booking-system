@@ -248,4 +248,34 @@ export class BookingService {
       hour12: true,
     });
   }
+
+  /**
+   * -Formats data to local date yyyy-mm-dd
+   */
+  formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  getWeekView() {
+    const today = new Date();
+    const startOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 1)
+    );
+    const endOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 7)
+    );
+
+    return { startOfWeek, endOfWeek };
+  }
+
+  getMonthView() {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    return { startOfMonth, endOfMonth };
+  }
 }

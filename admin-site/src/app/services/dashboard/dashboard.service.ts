@@ -114,7 +114,7 @@ export class DashboardService {
     return totalUsers;
   }
 
-  async getRevenueChartData() {
+  async getRevenueChartData(userId?: string) {
     let userToken = await this.auth.currentUser?.getIdTokenResult();
     let orgId = userToken?.claims['org'];
 
@@ -130,6 +130,7 @@ export class DashboardService {
     const bookingsQuery = query(
       bookingsCol,
       where('status', '==', 'paid'),
+      ...(userId ? [where('userId', '==', userId)] : []),
       where('bookingDate', '>=', startOfYear),
       where('bookingDate', '<=', endOfYear)
     );

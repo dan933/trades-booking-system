@@ -18,14 +18,16 @@ export class BookingsComponent implements OnInit {
     this.setWeekView();
   }
 
-  get tableData(): string[][] {
+  get tableData(): (string | { icon: string; color: string })[][] {
     return this.bookings.map((item) => [
       (item.firstName || '') + ' ' + (item.lastName || ''),
       item.formattedDate,
       item.startTime,
       item.endTime,
       item.formattedAmount,
-      item.status,
+      item.status === 'paid'
+        ? { icon: 'check_circle', color: 'text-green-500' }
+        : { icon: 'refresh', color: 'text-orange-500' },
     ]);
   }
 
@@ -80,33 +82,18 @@ export class BookingsComponent implements OnInit {
   };
 
   setWeekView() {
-    const today = new Date();
-    const startOfWeek = new Date(
-      today.setDate(today.getDate() - (today.getDay() - 1))
-    );
-    const endOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay() + 7)
-    );
+    const { startOfWeek, endOfWeek } = this.bookingService.getWeekView();
 
-    this.startDate = startOfWeek.toISOString().split('T')[0];
-    this.endDate = endOfWeek.toISOString().split('T')[0];
+    this.startDate = this.bookingService.formatLocalDate(startOfWeek);
+    this.endDate = this.bookingService.formatLocalDate(endOfWeek);
     this.resetAndGetBookings();
   }
 
-  private formatLocalDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
   setMonthView() {
-    const today = new Date();
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const { startOfMonth, endOfMonth } = this.bookingService.getMonthView();
 
-    this.startDate = this.formatLocalDate(startOfMonth);
-    this.endDate = this.formatLocalDate(endOfMonth);
+    this.startDate = this.bookingService.formatLocalDate(startOfMonth);
+    this.endDate = this.bookingService.formatLocalDate(endOfMonth);
     this.resetAndGetBookings();
   }
 
@@ -115,8 +102,8 @@ export class BookingsComponent implements OnInit {
     const startOfYear = new Date(today.getFullYear(), 0, 1);
     const endOfYear = new Date(today.getFullYear(), 11, 31);
 
-    this.startDate = this.formatLocalDate(startOfYear);
-    this.endDate = this.formatLocalDate(endOfYear);
+    this.startDate = this.bookingService.formatLocalDate(startOfYear);
+    this.endDate = this.bookingService.formatLocalDate(endOfYear);
     this.resetAndGetBookings();
   }
 
