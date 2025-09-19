@@ -10,7 +10,10 @@ import { Router } from '@angular/router';
 @Injectable({ providedIn: 'root' })
 export class TableComponent {
   @Input() tableHeaders: string[] = [];
-  @Input() tableData: (string | { icon: string; color?: string })[][] = [];
+  @Input() tableData: (
+    | string
+    | { icon: string; color?: string; tooltip?: string }
+  )[][] = [];
   @Input() actionRow?: string[] = [];
   @Input() action?: (id?: string) => void = () => {};
   @Input() actionLabel?: string = 'View';

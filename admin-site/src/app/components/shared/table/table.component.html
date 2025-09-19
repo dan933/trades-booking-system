@@ -16,9 +16,8 @@
             }
 
             @if(typeof item === "object" && "icon" in item){
-            <td scope="col"
-                [class]="`px-6 py-3 m-10 text-textColour w-auto border-b border-gray-600 ${item.color ? item.color : ''}`">
-                <mat-icon style="width: 170px;">{{item.icon}}</mat-icon>
+            <td scope="col" [class]="`px-6 py-3 m-10 w-auto border-b border-gray-600 ${item.color ? item.color : ''}`">
+                <mat-icon [matTooltip]="item?.tooltip || ''" style="width: 170px;">{{item.icon}}</mat-icon>
             </td>
             }
 

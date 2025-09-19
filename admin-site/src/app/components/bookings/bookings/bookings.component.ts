@@ -18,7 +18,10 @@ export class BookingsComponent implements OnInit {
     this.setWeekView();
   }
 
-  get tableData(): (string | { icon: string; color: string })[][] {
+  get tableData(): (
+    | string
+    | { icon: string; color: string; tooltip?: string }
+  )[][] {
     return this.bookings.map((item) => [
       (item.firstName || '') + ' ' + (item.lastName || ''),
       item.formattedDate,
@@ -26,8 +29,8 @@ export class BookingsComponent implements OnInit {
       item.endTime,
       item.formattedAmount,
       item.status === 'paid'
-        ? { icon: 'check_circle', color: 'text-green-500' }
-        : { icon: 'refresh', color: 'text-orange-500' },
+        ? { icon: 'check_circle', color: 'text-green-500', tooltip: 'Paid' }
+        : { icon: 'refresh', color: 'text-orange-500', tooltip: 'Refunded' },
     ]);
   }
 
