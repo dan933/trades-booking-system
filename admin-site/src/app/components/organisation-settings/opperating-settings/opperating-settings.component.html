@@ -1,63 +1,121 @@
-<div class="settings-page-container">
-  <h1>Opperating Settings</h1>
-  <form *ngIf="!loading" class="settings-form" [formGroup]="timeSpanForm">
-    <div class="row-container">
-
-      <mat-form-field style="width:250px;">
-        <mat-label>Gap Between</mat-label>
-        <input matInput type="number" (keypress)="numericOnly($event)" formControlName="gapBetweenAppointments">
-        <mat-hint>Number of hours between appointments</mat-hint>
-        <mat-error *ngIf="timeSpanForm.get('gapBetweenAppointments')?.hasError('required')">Gap Between is
-          required.</mat-error>
-        <mat-error *ngIf="timeSpanForm.get('gapBetweenAppointments')?.hasError('min')">Gap Between should be a positive
-          number.</mat-error>
-      </mat-form-field>
-
-      <mat-form-field style="width:250px;">
-        <mat-label>Months Ahead</mat-label>
-        <input matInput type="number" (keypress)="numericOnly($event)" formControlName="bookMonthsAheadLimit">
-        <mat-hint>Number of months in advance the customer can book</mat-hint>
-        <mat-error *ngIf="timeSpanForm.get('bookMonthsAheadLimit')?.hasError('required')">Months Ahead is
-          required.</mat-error>
-        <mat-error *ngIf="timeSpanForm.get('bookMonthsAheadLimit')?.hasError('min')">Months Ahead should be a positive
-          number.</mat-error>
-      </mat-form-field>
-    </div>
-  </form>
-  <form *ngIf="!loading" class="settings-form" [formGroup]="openingHoursForm">
-    <div formArrayName="openingTimes">
-      <div class="day-card" *ngFor="let dayControl of openingTimes.controls; let i = index" [formGroupName]="i">
-
-        <mat-checkbox style="margin-right:10px" formControlName="checked">{{dayControl.value.dayName}}</mat-checkbox>
-
-        <mat-form-field style="margin-bottom: 20px; width: 120px;">
-          <mat-label>From</mat-label>
-          <mat-select formControlName="from">
-            <mat-option *ngFor="let option of timeOptions" [value]="option">
-              {{option.label}}
-            </mat-option>
-          </mat-select>
+<div class="bg-secondaryColour min-h-screen p-6">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-textColour mb-8">Operating Settings</h1>
+    @if(!loading){
+    <!-- Time Settings Form -->
+    <div class="bg-primaryColour rounded-lg shadow-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold text-textColour mb-4">Appointment Settings</h2>
+      <form [formGroup]="timeSpanForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <mat-form-field class="w-full">
+          <mat-label>Gap Between Appointments</mat-label>
+          <input matInput type="number" (keypress)="numericOnly($event)" formControlName="gapBetweenAppointments">
+          <mat-hint class="w-full text-textColour">Hours between appointments</mat-hint>
+          @if(timeSpanForm.get('gapBetweenAppointments')?.hasError('required')){
+          <mat-error>
+            Gap Between is required
+          </mat-error>
+          }
+          @if(timeSpanForm.get('gapBetweenAppointments')?.hasError('min')){
+          <mat-error>
+            Must be a positive number
+          </mat-error>
+          }
         </mat-form-field>
 
-        <mat-form-field style="margin-bottom: 20px; width: 120px;">
-          <mat-label>To</mat-label>
-          <mat-select formControlName="to">
-            <mat-option *ngFor="let option of timeOptions" [value]="option">
-              {{option.label}}
-            </mat-option>
-          </mat-select>
-          <mat-hint *ngIf="dayControl.hasError('timeInvalid')" style="color:red;">*Invalid Time</mat-hint>
+        <mat-form-field class="w-full">
+          <mat-label>Booking Months Ahead</mat-label>
+          <input matInput type="number" (keypress)="numericOnly($event)" formControlName="bookMonthsAheadLimit">
+          <mat-hint class="w-full text-textColour">Months customers can book in advance</mat-hint>
+          @if(timeSpanForm.get('bookMonthsAheadLimit')?.hasError('required')){
+          <mat-error>
+            Months Ahead is required
+          </mat-error>
+          }
+          @if(timeSpanForm.get('bookMonthsAheadLimit')?.hasError('min')){
+          <mat-error>
+            Must be a positive number
+          </mat-error>
+          }
         </mat-form-field>
-      </div>
+      </form>
     </div>
-    <mat-card class="error-container" [ngClass]="{'visible': errorMessage, 'invisible': !errorMessage}"
-      style="background-color:red; color: white; margin-bottom:10px; margin-left: 100px;margin-right: auto; width: 200px; ">
-      <mat-card-content>{{errorMessage}}</mat-card-content>
-    </mat-card>
-    <button mat-raised-button color="primary" style="margin-left: 100px;margin-right: auto; width: 200px;"
-      (click)="saveSettings($event)">Save</button>
-  </form>
-  <ng-container *ngIf="loading" class="loading-settings-container">
-    <mat-spinner [diameter]="50" [strokeWidth]="5"></mat-spinner>
-  </ng-container>
+
+    <!-- Opening Hours Form -->
+    <div class="bg-primaryColour rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-semibold text-textColour mb-4">Opening Hours</h2>
+      <form [formGroup]="openingHoursForm">
+        <div formArrayName="openingTimes" class="space-y-4">
+          @for (dayControl of openingTimes.controls; track $index; let i = $index) {
+          <div [formGroupName]="i" class="bg-secondaryColour rounded-lg p-4 border border-gray-600">
+            <div class="flex flex-wrap items-center gap-4">
+              <mat-checkbox color="primary" formControlName="checked" class="w-full sm:w-auto min-w-[120px]">
+                <span class="text-textColour">
+                  {{dayControl.value.dayName}}
+                </span>
+              </mat-checkbox>
+              <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <mat-form-field class="flex-1 min-w-[120px]">
+                  <mat-label>From</mat-label>
+                  <mat-select formControlName="from">
+                    @for (option of timeOptions; track $index) {
+                    <mat-option [value]="option">
+                      {{option.label}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-1 min-w-[120px]">
+                  <mat-label>To</mat-label>
+                  <mat-select formControlName="to">
+                    @for (option of timeOptions; track $index) {
+                    <mat-option [value]="option">
+                      {{option.label}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+            </div>
+
+            @if(dayControl.hasError('timeInvalid')){
+            <div class="text-red-500 text-sm mt-2">
+              Invalid time range
+            </div>
+            }
+          </div>
+
+
+          }
+        </div>
+
+        @if(errorMessage){
+        <!-- Error Message -->
+        <div class="bg-red-600 text-white rounded-lg p-4 mt-6 max-w-md mx-auto">
+          {{errorMessage}}
+        </div>
+
+        }
+
+
+        <!-- Save Button -->
+        <div class="flex justify-center mt-8">
+          <button mat-raised-button color="primary" (click)="saveSettings($event)"
+            class="px-8 py-3 min-w-[200px] !bg-primaryColour hover:!bg-blue-600">
+            Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+
+    } @else {
+    <!-- Loading Spinner -->
+    <div class="flex justify-center items-center py-12">
+      <mat-spinner [diameter]="50" [strokeWidth]="5"></mat-spinner>
+    </div>
+
+    }
+
+  </div>
 </div>

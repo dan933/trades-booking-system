@@ -1,34 +1,39 @@
-<div class="flex-column-center">
-  <h1>Company Settings</h1>
-  <form class="flex-column-center" (ngSubmit)="save()" [formGroup]="companySettingsForm">
-    <div class="flex-row-center">
-      <mat-form-field style="width:250px;">
-        <mat-label>Company Name</mat-label>
-        <!-- <input matInput type="email" formControlName="gapBetweenAppointments"> -->
-        <input matInput type="text" formControlName="name">
-      </mat-form-field>
-      <mat-form-field style="width:250px;">
-        <mat-label>Company Email</mat-label>
-        <!-- <input matInput type="email" formControlName="gapBetweenAppointments"> -->
-        <input matInput type="email" autocomplete="email" formControlName="email">
-      </mat-form-field>
+<div class="bg-secondaryColour min-h-screen p-6">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-textColour mb-8">Company Settings</h1>
+    <div class="bg-primaryColour rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-semibold text-textColour mb-4">Company Information</h2>
+      <form [formGroup]="companySettingsForm" (ngSubmit)="save()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <mat-form-field class="w-full">
+          <mat-label>Company Name</mat-label>
+          <input matInput type="text" formControlName="name">
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Company Email</mat-label>
+          <input matInput type="email" autocomplete="email" formControlName="email">
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Company Number</mat-label>
+          <input matInput type="text" autocomplete="tel" formControlName="number">
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>ABN</mat-label>
+          <input matInput type="text" formControlName="ABN">
+        </mat-form-field>
+        <div class="col-span-1 md:col-span-2">
+          <mat-slide-toggle color="primary" formControlName="gst">
+            <span class="text-textColour">
+              Registered for GST
+            </span>
+          </mat-slide-toggle>
+        </div>
+        <div class="col-span-1 md:col-span-2 flex justify-center mt-4">
+          <button mat-raised-button color="primary" type="submit"
+            class="px-8 py-3 min-w-[200px] !bg-primaryColour hover:!bg-blue-600">
+            Save Settings
+          </button>
+        </div>
+      </form>
     </div>
-    <div class="flex-row-center">
-      <mat-form-field style="width:250px;">
-        <mat-label>Company Number</mat-label>
-        <!-- <input matInput type="email" formControlName="gapBetweenAppointments"> -->
-        <input matInput type="text" autocomplete="tel" formControlName="number">
-      </mat-form-field>
-      <mat-form-field style="width:250px;">
-        <mat-label>ABN</mat-label>
-        <!-- <input matInput type="email" formControlName="gapBetweenAppointments"> -->
-        <input matInput type="text" formControlName="ABN">
-      </mat-form-field>
-    </div>
-    <mat-slide-toggle style="margin: 15px;" color="primary" formControlName="gst">Registered for GST</mat-slide-toggle>
-
-    <button mat-raised-button color="primary" type="submit" style="width: 200px;">
-      Save
-    </button>
-  </form>
+  </div>
 </div>
