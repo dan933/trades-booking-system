@@ -111,8 +111,8 @@ const CalendarUtils = {
 
     const openingTimes = Object.entries(
       availabilityDoc?.openingTimes || {}
-    ).reduce((acc, [day, { start, end }]) => {
-      acc.push({ day: +day, start, end });
+    ).reduce((acc, [day, { start, end, open }]) => {
+      acc.push({ day: +day, start, end, open });
       return acc;
     }, []);
 
@@ -131,6 +131,8 @@ const CalendarUtils = {
 
     for (let index = 0; index < days; index++) {
       const dayIndex = currentDate.getDay();
+
+      console.log("openingTimes", openingTimes);
 
       const dayOpeningTimes = openingTimes.find(
         (openingTime) => openingTime.day === dayIndex
@@ -167,9 +169,9 @@ const CalendarUtils = {
 
       const currentHour = new Date().getHours();
 
-      if (dayOpeningTimes.start > 0) {
+      if (dayOpeningTimes?.open && dayOpeningTimes.start > 0) {
         unavailableSlots.push({
-          title: "Unavailable",
+          title: "Closed",
           start: `${currentDateString}T00:00:00`,
           end: `${currentDateString}T${dayOpeningTimes.start
             .toString()
@@ -182,7 +184,7 @@ const CalendarUtils = {
       }
 
       // // After opening hours (end to 24)
-      if (dayOpeningTimes.end < 24) {
+      if (dayOpeningTimes?.open && dayOpeningTimes.end < 24) {
         unavailableSlots.push({
           title: "Closed",
           start: `${currentDateString}T${dayOpeningTimes.end
@@ -196,11 +198,32 @@ const CalendarUtils = {
         });
       }
 
+      if (!dayOpeningTimes?.open) {
+        unavailableSlots.push({
+          title: "Closed",
+          start: `${currentDateString}T${(0)
+            .toString()
+            .padStart(2, "0")}:00:00`,
+          end: `${currentDateString}T24:00:00`,
+          editable: false,
+          startEditable: false,
+          durationEditable: false,
+          classNames: ["unavailable-event"],
+        });
+      }
+
+      console.log("dayOpeningTimes", dayOpeningTimes);
+
       for (
         let hourIndex = dayOpeningTimes.start;
         hourIndex < dayOpeningTimes.end;
 
       ) {
+        if (!dayOpeningTimes?.open) {
+          hourIndex = dayOpeningTimes.end;
+          continue;
+        }
+
         if (isPast) {
           let start = hourIndex;
 

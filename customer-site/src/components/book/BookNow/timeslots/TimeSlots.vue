@@ -162,94 +162,9 @@ export default {
 
       this.loading = false;
     },
-    async disabledUnavailableDates(
-      bookedOutDates,
-      businessClosedDays,
-    ) {
-      // Add 1 to get correct day for vuetify calendar
-      let closedDays = businessClosedDays.map((item) => item + 1);
-
-      // Set disabled dates
-      this.disabledDates = [
-        { repeat: { weekdays: closedDays } },
-        { start: bookMonthsAhead, end: null },
-      ];
-
-      // Set booked out dates
-      bookedOutDates.forEach((date) => {
-        let disableDate = {
-          start: new Date(date),
-          end: new Date(date),
-        };
-
-        // add date to disabled dates array
-        this.disabledDates.push(disableDate);
-      });
-    },
-    resetTimeStamp(inputDate) {
-      let outputDate = new Date(inputDate);
-
-      let startOfDay = new Date(
-        outputDate.getFullYear(),
-        outputDate.getMonth(),
-        outputDate.getDate()
-      );
-      return startOfDay;
-    },
-    getOrdinalSuffix(day) {
-      if (day >= 11 && day <= 13) {
-        return "th";
-      }
-      switch (day % 10) {
-        case 1:
-          return "st";
-        case 2:
-          return "nd";
-        case 3:
-          return "rd";
-        default:
-          return "th";
-      }
-    },
-    onCalendarClick(context) {
-      this.selectedDate = context.date;
-      this.selectedTimeSlot = "";
-      const clickedDate = new Date(context.date);
-      const day = clickedDate.getDate();
-      const suffix = this.getOrdinalSuffix(day);
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-      const month = monthNames[clickedDate.getMonth()];
-      const year = clickedDate.getFullYear();
-
-      this.IsAvailableDate = !context.isDisabled;
-      if (context.isDisabled) {
-        this.availabilityMessage = `No bookings available for ${day}${suffix} ${month} ${year}`;
-      } else {
-        this.availabilityMessage = `${day}${suffix} ${month} ${year}`;
-      }
-    },
     storeSelectedTimeSlotData(bookingTimeSlotData, selectedServices) {
       this.$emit("storeSelectedTimeSlotData", bookingTimeSlotData, selectedServices);
 
-    },
-    goToSelectServices() {
-      //todo check if timeslot is still availbale
-      this.getDateTimeslotData();
-
-      //todo emit
     },
   },
   watch: {
