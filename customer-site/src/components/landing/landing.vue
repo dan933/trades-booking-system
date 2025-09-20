@@ -7,7 +7,7 @@
           <p class="header-subtitle">Streamline customer scheduling and payments</p>
           <div class="demo-buttons-container">
             <a @click="() => { navigate('/org/Okq3IGUln18QM90ObeI4/auth') }" class="live-demo">Customer Demo</a>
-            <!-- <a @click="() => { navigate('/demo') }" class="live-demo">Admin Demo</a> -->
+            <a href="https://trades-booking-system-52dbc.web.app" class="live-demo">Admin Demo</a>
           </div>
         </div>
         <div class="header-image-container">
