@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-auth',
@@ -24,6 +25,8 @@ export class AuthComponent implements OnInit, OnDestroy {
   loading = false;
 
   view = 'login';
+
+  isDemoLogin = false;
 
   constructor(public router: Router, private fb: FormBuilder) {
     this.idTokenSubscription = this.idToken$.subscribe(
@@ -73,6 +76,13 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   login(event: Event) {
     event.preventDefault();
+
+    console.log('this.isDemoLogin', this.isDemoLogin);
+
+    if (this.isDemoLogin) {
+      this.loginForm.get('email')?.setValue(environment?.demoEmail || '');
+      this.loginForm.get('password')?.setValue(environment?.demoPassword || '');
+    }
 
     if (this.loginForm.valid) {
       this.loading = true;

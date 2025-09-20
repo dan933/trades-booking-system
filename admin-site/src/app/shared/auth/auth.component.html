@@ -4,7 +4,8 @@
       <h2>Easy Booking Admin</h2>
     </div>
     <!-- Login Form -->
-    <div *ngIf="view === 'login'">
+    @if(view === 'login'){
+    <div>
       <form [formGroup]="loginForm" class="login-container" (ngSubmit)="login($event)">
         <div class="mb-6">
           <label for="email" class="block text-base font-medium text-gray-700 mb-3">Email</label>
@@ -34,20 +35,31 @@
             </button>
           </div>
         </div>
-        <div *ngIf="loginForm.errors" class="text-red-600 mb-4">
+
+        @if(loginForm.errors){
+        <div class="text-red-600 mb-4">
           {{ loginForm.errors['incorrect'] ? "Invalid email or password" : "Too many attempts"}}
         </div>
+        }
+
         <a (click)="forgotPassword()" class="text-blue-600 hover:text-blue-800 mb-4 block cursor-pointer">Forgot
           password?</a>
-        <button type="submit" [disabled]="loading"
+        <button type="submit" [disabled]="loading" (click)="isDemoLogin = false"
           class="w-full bg-blue-600 text-white py-3 px-6 text-lg rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
           Login
+        </button>
+        <button type="submit" [disabled]="loading" (click)="isDemoLogin = true"
+          class="mt-5 w-full bg-blue-600 text-white py-3 px-6 text-lg rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          Demo Login
         </button>
       </form>
     </div>
 
+    }
+
+    @if(view === 'reset'){
     <!-- Reset Password Form -->
-    <div *ngIf="view === 'reset'">
+    <div>
       <form [formGroup]="loginForm" class="login-container" (ngSubmit)="resetPassword($event)">
         <div class="mb-6">
           <label for="email" class="block text-base font-medium text-gray-700 mb-3">Email</label>
@@ -68,5 +80,6 @@
         </button>
       </form>
     </div>
+    }
   </div>
 </section>

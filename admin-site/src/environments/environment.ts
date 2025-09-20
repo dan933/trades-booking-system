@@ -1,5 +1,7 @@
 export const environment = {
   production: false,
+  demoEmail: 'admin@easybook.com.au',
+  demoPassword: 'easyBook1234',
   firebaseConfig: {
     apiKey: 'AIzaSyAnaoFaml33VbAMKf4QLXJy6wT6bur9hi4',
     authDomain: 'trades-booking-system.firebaseapp.com',
