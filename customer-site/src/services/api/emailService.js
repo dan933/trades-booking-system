@@ -11,7 +11,7 @@ export const SendContactFormEmail = async (formRequest) => {
   };
 
   try {
-    const response = await fetch(`${apiUrl}/submitContactForm`, payload);
+    const response = await fetch(`${apiUrl}/contact/submitForm`, payload);
 
     const bodyResponse = await response.json();
 

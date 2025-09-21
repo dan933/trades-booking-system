@@ -24,7 +24,9 @@ const menuList = computed(() => {
 
   let menu = [
     { name: 'Home', link: '#home' },
-    { name: 'About', link: '#about' }
+    { name: 'Customer', link: '#customer' },
+    { name: 'Admin', link: '#admin' },
+    { name: 'Contact', link: '#contact' }
   ]
 
   return menu;
@@ -39,14 +41,15 @@ const scrollPosition = ref(0);
 const handleScroll = () => {
   scrollPosition.value = window.scrollY || window.pageYOffset;
 
-  const sections = ['home', 'about'];
+  const sections = ['home', 'customer', 'admin', 'contact'];
 
 
   for (const section of sections) {
     const element = document.getElementById(section);
     if (element) {
       const rect = element.getBoundingClientRect();
-      if (rect.top?.toFixed() <= 100 && rect.bottom?.toFixed() >= 100) {
+      const offset = 120;
+      if (rect.top?.toFixed() <= offset && rect.bottom?.toFixed() >= offset) {
         currentLink.value = section;
       }
     }

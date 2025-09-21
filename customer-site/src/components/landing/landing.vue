@@ -11,12 +11,14 @@
           </div>
         </div>
         <div class="header-image-container">
-          <img class="header-image" src="/laptop.png" alt="laptop"></img>
+          <img :class="`header-image ${scrollY > 30 ? 'header-image-active' : ''}`" src="/laptop.png"
+            alt="laptop"></img>
         </div>
       </div>
     </header>
-    <div class="content-container" id="about">
-      <section class="content-row left">
+    <div class="content-container" id="customer">
+      <h2 class="section-heading">Customer Features</h2>
+      <section class="content-row left animate-on-scroll">
         <div class="content-text">
           <div class="icon">
             <span class="material-symbols-outlined">
@@ -27,7 +29,8 @@
             Streamline Bookings
           </h3>
           <p class="section-description">
-            Effortlessly manage your bookings with our intuitive calendar system, designed to keep you organized and
+            Customers can effortlessly manage your bookings with our intuitive calendar system, designed to keep you
+            organized and
             efficient.
           </p>
         </div>
@@ -35,7 +38,7 @@
           <img src="/appointments.png" alt="appointments" style="background-size: cover; width: 100%; height: 100%;">
         </div>
       </section>
-      <section class="content-row right">
+      <section class="content-row right animate-on-scroll">
         <div class="content-image">
           <img src="/book-dates.png" alt="appointments" style="background-size: cover; width: 100%; height: 100%;">
         </div>
@@ -55,7 +58,7 @@
           </p>
         </div>
       </section>
-      <section class="content-row left">
+      <section class="content-row left animate-on-scroll">
         <div class="content-text">
           <div class="icon">
             <span class="material-symbols-outlined">
@@ -68,8 +71,7 @@
           <p class="section-description">
             Process payments seamlessly through our integrated platform. Customers select their preferred time slot,
             services,
-            and duration. Need to cancel? Simply click to cancel appointments and automatically process customer
-            refunds.
+            and duration.
           </p>
         </div>
         <div class="content-image">
@@ -78,24 +80,87 @@
         </div>
       </section>
     </div>
-
+    <div class="content-container" id="admin">
+      <h2 class="section-heading">Admin Features</h2>
+      <section class="content-row right animate-on-scroll">
+        <div class="content-image">
+          <img src="/dashboard.png" alt="appointments" style="background-size: cover; width: 100%; height: 100%;">
+        </div>
+        <div class="content-text">
+          <div class="icon">
+            <span class="material-symbols-outlined">
+              chart_data
+            </span>
+          </div>
+          <h3 class="section-header">
+            Analytics
+          </h3>
+          <p class="section-description">
+            Track your business performance, monitor the number of customers, upcoming
+            bookings, this month's revenue, and total revenue all in one dashboard.
+          </p>
+        </div>
+      </section>
+      <section class="content-row left animate-on-scroll">
+        <div class="content-text">
+          <div class="icon">
+            <span class="material-symbols-outlined">
+              event_note
+            </span>
+          </div>
+          <h3 class="section-header">
+            Booking Management
+          </h3>
+          <p class="section-description">
+            Easily view booking details, cancel appointments, and process customer refunds when plans change.
+          </p>
+        </div>
+        <div class="content-image">
+          <img src="/booking-detail.png" alt="appointments" style="background-size: cover; width: 100%; height: 100%;">
+        </div>
+      </section>
+    </div>
+    <div class="content-container" id="contact">
+      <h2 class="section-heading">Contact Us</h2>
+      <Contact />
+    </div>
   </div>
 
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, onBeforeUnmount, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import Contact from "../contact/Contact.vue";
 
+
+const scrollY = ref(0);
+const handleScroll = () => {
+  scrollY.value = window.scrollY;
+
+  // Animate sections on scroll
+  const sections = document.querySelectorAll('.animate-on-scroll');
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.8) {
+      section.classList.add('visible');
+    }
+  });
+};
 
 const store = useStore();
 const router = useRouter();
 
 onMounted(() => {
   store.commit("updateView", "landing");
+  window.addEventListener('scroll', handleScroll);
+  handleScroll(); // Check initial state
 });
 
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 
 const navigate = (path) => {
   store.commit("updateView", "auth");
@@ -128,7 +193,7 @@ const navigate = (path) => {
 
       .header-title {
         font-size: 60px;
-        margin: 0 0 15px;
+        margin: 80px 10px 20px;
         line-height: 1.3em;
         font-weight: 700;
         color: white;
@@ -138,7 +203,7 @@ const navigate = (path) => {
 
       .header-subtitle {
         font-size: 25px;
-        margin: 0 0 30px;
+        margin: 0 15px 30px;
         padding: 0 5px;
         color: rgba(255, 255, 255, 0.8);
         font-family: 'Josefin Sans', sans-serif;
@@ -209,20 +274,29 @@ const navigate = (path) => {
         transform: perspective(1000px) rotateY(15deg) translateY(-10px) scale(1.05);
       }
     }
+
+    .header-image-active {
+      transform: perspective(1000px) rotateY(15deg) translateY(-10px) scale(1.05);
+    }
   }
 
   .content-container {
-    padding-top: 200px;
-    padding-bottom: 100px;
-    position: absolute;
+    padding: 200px 20px 100px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    justify-self: center;
     gap: 40px;
-    max-width: 600px;
-    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .section-heading {
+      font-size: clamp(40px, 6vw, 70px);
+      font-weight: 700;
+      color: #0f1d46;
+      text-align: center;
+      margin-bottom: 60px;
+      font-family: 'Josefin Sans', sans-serif;
+    }
 
     .content-row {
       padding: 20px;
@@ -230,6 +304,18 @@ const navigate = (path) => {
       align-items: center;
       gap: 40px;
       width: 100%;
+      max-width: 800px;
+
+      &.animate-on-scroll {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+
+        &.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
       .content-text {
         flex: 1;
