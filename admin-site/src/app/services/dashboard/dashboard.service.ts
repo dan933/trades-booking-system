@@ -119,8 +119,19 @@ export class DashboardService {
     let orgId = userToken?.claims['org'];
 
     const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1); // January 1st
-    const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59); // December 31st
+    const startOfPast12Months = new Date(
+      now.getFullYear(),
+      now.getMonth() - 11,
+      1
+    );
+    const endOfPast12Months = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    );
 
     const bookingsCol = collection(
       this.firestore,
@@ -131,8 +142,8 @@ export class DashboardService {
       bookingsCol,
       where('status', '==', 'paid'),
       ...(userId ? [where('userId', '==', userId)] : []),
-      where('bookingDate', '>=', startOfYear),
-      where('bookingDate', '<=', endOfYear)
+      where('bookingDate', '>=', startOfPast12Months),
+      where('bookingDate', '<=', endOfPast12Months)
     );
 
     const bookingsSnapshot = await getDocs(bookingsQuery);
@@ -234,5 +245,26 @@ export class DashboardService {
 
     const pastCount = countAggregateQuery?.data()?.pastBookings || 0;
     return pastCount;
+  }
+
+  getPastYearCategories() {
+    const now = new Date();
+    const categories: string[] = [];
+    let currentMonth = now.getMonth();
+
+    while (categories?.length < 12) {
+      const monthName = new Date(0, currentMonth).toLocaleString('default', {
+        month: 'short',
+      });
+      categories.unshift(monthName);
+
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+      }
+    }
+
+    console.log('categories', categories);
+    return categories;
   }
 }

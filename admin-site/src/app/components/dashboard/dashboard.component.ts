@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   chart: any;
 
   async renderChart() {
+    this.dashboardService.getPastYearCategories();
     if (this.chart) {
       this.chart.destroy();
     }
@@ -77,20 +78,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         },
       },
       xaxis: {
-        categories: [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec',
-        ],
+        categories: this.dashboardService.getPastYearCategories(),
       },
     };
 
