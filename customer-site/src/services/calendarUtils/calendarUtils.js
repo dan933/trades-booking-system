@@ -26,14 +26,11 @@ const CalendarUtils = {
         continue;
       }
 
-      //   console.log("bookedSchedule", bookedSchedule);
-
       let bookingDate = new Date(
         bookedSchedule.bookingScheduleDate?.seconds * 1000
       );
       bookingDate = bookingDate.toISOString();
       bookingDate = bookingDate.split("T")[0]; //get only the date part
-      //   console.log("bookingDate", bookingDate);
 
       const eventsToAdd = Object.entries(
         bookedSchedule?.bookedTimes || []
@@ -63,8 +60,6 @@ const CalendarUtils = {
             durationEditable: false,
             classNames: ["unavailable-event"],
           };
-
-          //   console.log("newEvent", newEvent);
 
           acc.events.push(newEvent);
           acc.lastHourWasActive = active;
@@ -131,8 +126,6 @@ const CalendarUtils = {
 
     for (let index = 0; index < days; index++) {
       const dayIndex = currentDate.getDay();
-
-      console.log("openingTimes", openingTimes);
 
       const dayOpeningTimes = openingTimes.find(
         (openingTime) => openingTime.day === dayIndex
@@ -211,8 +204,6 @@ const CalendarUtils = {
           classNames: ["unavailable-event"],
         });
       }
-
-      console.log("dayOpeningTimes", dayOpeningTimes);
 
       for (
         let hourIndex = dayOpeningTimes.start;
@@ -329,8 +320,6 @@ const CalendarUtils = {
 
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
-    // console.log({ availableSlots, unavailableSlots });
 
     return {
       availableAppointments: availableSlots,

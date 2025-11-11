@@ -167,7 +167,7 @@ export class DashboardService {
         return acc;
       }
 
-      const monthNumber = item.bookingDate.getMonth();
+      const monthNumber = item.bookingDate.getMonth() + 1;
 
       if (!acc[monthNumber]) {
         acc[monthNumber] = item.amount / 100;
@@ -264,7 +264,6 @@ export class DashboardService {
       }
     }
 
-    console.log('categories', categories);
     return categories;
   }
 }

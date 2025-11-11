@@ -92,7 +92,6 @@ export class BookingDetailsComponent implements OnInit {
       await this.bookingService
         .getBooking(this.bookingId)
         .then((res) => {
-          console.log({ res });
           this.booking = res;
         })
         .catch((error) => {
@@ -129,7 +128,6 @@ export class BookingDetailsComponent implements OnInit {
     this.bookingService
       .getBooking(this.bookingId)
       .then((res) => {
-        console.log({ res });
         this.booking = res;
       })
       .catch((error) => {
@@ -144,8 +142,6 @@ export class BookingDetailsComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    // console.log('window.innerWidth', window.innerWidth);
-
     this.screenWidth = window.innerWidth;
   }
 }

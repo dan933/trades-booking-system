@@ -77,9 +77,6 @@ export class OpperatingSettingsComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    // console.log(this.timeSpanForm.value);
-    // console.log(this.openingHoursForm.value);
-
     //format data for firestore
     let response = await this.organisationService.updateOpperatingHours(
       this.timeSpanForm.value,
@@ -121,7 +118,6 @@ export class OpperatingSettingsComponent implements OnInit {
   async getOpperatingHours() {
     this.opperatingHoursData =
       (await this.organisationService.getOrganisationSettings()) as IOpperatingHours;
-    // console.log(this.opperatingHoursData);
   }
 
   //Helper functions

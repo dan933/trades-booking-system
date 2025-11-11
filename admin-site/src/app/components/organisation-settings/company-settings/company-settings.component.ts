@@ -4,10 +4,10 @@ import { OrganisationService } from 'src/app/services/organisation/organisation.
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-    selector: 'app-company-settings',
-    templateUrl: './company-settings.component.html',
-    styleUrls: ['./company-settings.component.scss'],
-    standalone: false
+  selector: 'app-company-settings',
+  templateUrl: './company-settings.component.html',
+  styleUrls: ['./company-settings.component.scss'],
+  standalone: false,
 })
 export class CompanySettingsComponent implements OnInit {
   companySettingsForm = this.fb.group({
@@ -33,7 +33,6 @@ export class CompanySettingsComponent implements OnInit {
 
   async getOrgSettings() {
     let orgSettings: any = await this.organisationService.getOrganisation();
-    console.log(orgSettings);
 
     this.companySettingsForm.patchValue({
       name: orgSettings.name,
@@ -45,8 +44,6 @@ export class CompanySettingsComponent implements OnInit {
   }
 
   async save() {
-    console.log(this.companySettingsForm.value);
-
     if (this.companySettingsForm.invalid) {
       return;
     }
@@ -54,7 +51,6 @@ export class CompanySettingsComponent implements OnInit {
     await this.organisationService
       .updateOrganisation(this.companySettingsForm.value)
       .then((res) => {
-        console.log(res);
         this.openSnackBar('Saved', 'Close');
       })
       .catch((err) => {

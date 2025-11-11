@@ -66,8 +66,6 @@ export class BookingsComponent implements OnInit {
       ...(this.lastDocument ? [this.lastDocument] : [])
     );
 
-    // console.log('this.lastDocument', this.lastDocument);
-
     if (this.lastDocument) {
       this.bookings = [...this.bookings, ...bookingsResp.bookings];
     } else {

@@ -133,8 +133,6 @@ export class BookingService {
     if (docSnapshot.exists()) {
       const data = docSnapshot.data();
 
-      console.log({ data });
-
       let bookingTotal = 0;
 
       const services: {

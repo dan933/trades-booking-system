@@ -22,8 +22,6 @@ let userId = user?.uid;
 
 const db = getFirestore();
 
-// console.log("userId", userId);
-
 const getAppointments = async (
   orgId,
   lastVisible = null,
@@ -57,7 +55,6 @@ const getAppointments = async (
 
   let stopAPICalls = false;
   if (lastVisible) {
-    console.log(newLastVisible, lastVisible);
     stopAPICalls = !newLastVisible;
   }
 
@@ -148,18 +145,12 @@ const getTimeSlotsForDate = (
 
   //filter the bookingSchedule for the selected date
   let bookingScheduleForSelectedDate = bookingSchedule.find((schedule) => {
-    // console.log("schedule.bookingScheduleDate", schedule.bookingScheduleDate);
     //convert timestamp to date
     let scheduleDate = schedule.bookingScheduleDate
       .toDate()
       .toLocaleDateString();
     return scheduleDate === selectedDate.toLocaleDateString();
   });
-
-  // console.log(
-  //   "line 133 bookingScheduleForSelectedDate",
-  //   bookingScheduleForSelectedDate
-  // );
 
   //if there is a booking schedule for the selected date
   if (bookingScheduleForSelectedDate) {

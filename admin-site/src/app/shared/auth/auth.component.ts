@@ -77,8 +77,6 @@ export class AuthComponent implements OnInit, OnDestroy {
   login(event: Event) {
     event.preventDefault();
 
-    console.log('this.isDemoLogin', this.isDemoLogin);
-
     if (this.isDemoLogin) {
       this.loginForm.get('email')?.setValue(environment?.demoEmail || '');
       this.loginForm.get('password')?.setValue(environment?.demoPassword || '');
@@ -92,10 +90,6 @@ export class AuthComponent implements OnInit, OnDestroy {
         this.loginForm.value['password']
       )
         .then((userCredential: any) => {
-          console.log(
-            this.loginForm.value['email'],
-            this.loginForm.value['password']
-          );
           //reset errors
           this.loginForm.setErrors(null);
           this.loading = false;

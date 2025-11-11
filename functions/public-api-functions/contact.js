@@ -3,8 +3,6 @@ const { onRequest } = require("firebase-functions/https");
 
 const express = require("express");
 
-const nodemailer = require("nodemailer");
-
 const cookieParser = require("cookie-parser")();
 const cors = require("cors")({ origin: true });
 
@@ -43,16 +41,14 @@ contactApi.post("/submitForm", async (req, res) => {
     return;
   }
 
-  let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: `${process.env.EMAIL}`,
-      pass: `${process.env.PASSWORD}`,
-    },
-  });
+  const sgMail = require("@sendgrid/mail");
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
   const mailOptions = {
-    from: "Daniel Albert <danielalbert3377@gmail.com>",
+    from: {
+      email: "no-reply@danalbertportfolio.com.au",
+      name: "Easy Booking",
+    },
     to: email,
     subject: "Thank you for contacting us",
     html: `<h1 style="font-size: 20px;">Thank you for contacting us</h1>
@@ -60,12 +56,15 @@ contactApi.post("/submitForm", async (req, res) => {
                 <p>We will get back to you as soon as possible.</p>
                 <img style="width:300px;" src="https://images.unsplash.com/photo-1633675253938-6e02ecfa75b6?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
                 <br/>
-                <p>From Daniel Albert</p>
+                <p>From the Easy Booking Team</p>
             `,
   };
 
   const mailOptionsForDan = {
-    from: "Daniel Albert <danielalbert3377@gmail.com>",
+    from: {
+      email: "no-reply@danalbertportfolio.com.au",
+      name: "Easy Booking",
+    },
     to: `${process.env.EMAIL}`,
     subject: `Trades System Message`,
     html: `<p>You have a new message from ${name}</p>
@@ -76,17 +75,17 @@ contactApi.post("/submitForm", async (req, res) => {
                     `,
   };
 
-  await transporter.sendMail(mailOptions).catch((error) => {
+  await sgMail.send(mailOptions).catch((error) => {
     return res.status(500).send(
       JSON.stringify({
-        message: "An error occured could not send email to website uer",
+        message: "An error occured could not send email to website user",
         success: false,
         error: error,
       })
     );
   });
 
-  await transporter.sendMail(mailOptionsForDan).catch((error) => {
+  await sgMail.send(mailOptionsForDan).catch((error) => {
     return res.status(500).send(
       JSON.stringify({
         message: "An error occured could not send email to owner",

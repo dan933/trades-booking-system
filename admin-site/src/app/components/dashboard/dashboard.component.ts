@@ -92,14 +92,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    // console.log('window.innerWidth', window.innerWidth);
-
     const currentWidth = +this.screenWidth;
 
     this.screenWidth = window.innerWidth;
 
     if (currentWidth < 1261 && window.innerWidth >= 1261) {
-      // console.log('render');
       this.renderChart();
     } else if (currentWidth >= 1261 && window.innerWidth < 1261) {
       this.renderChart();
@@ -114,7 +111,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dashboardService
       .getTotalRevenue()
       .then((resp) => {
-        // console.log('resp', resp);
         this.totalRevenue = resp;
       })
       .catch((err) => {
@@ -131,7 +127,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dashboardService
       .getCurrentMonthRevenue()
       .then((resp) => {
-        // console.log('resp', resp);
         this.totalMonthRevenue = resp;
       })
       .catch((err) => {
@@ -148,7 +143,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dashboardService
       .getTotalCustomers()
       .then((resp) => {
-        // console.log('resp', resp);
         this.totalCustomers = resp;
       })
       .catch((err) => {

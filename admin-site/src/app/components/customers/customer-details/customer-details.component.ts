@@ -116,14 +116,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    // console.log('window.innerWidth', window.innerWidth);
-
     const currentWidth = +this.screenWidth;
 
     this.screenWidth = window.innerWidth;
 
     if (currentWidth < 1261 && window.innerWidth >= 1261) {
-      // console.log('render');
       this.renderChart();
     } else if (currentWidth >= 1261 && window.innerWidth < 1261) {
       this.renderChart();
@@ -195,8 +192,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       this.bookings = bookingsResp.bookings;
     }
 
-    console.log('bookings', this.bookings);
-
     this.hasMore = bookingsResp.hasMore;
     this.lastDocument = bookingsResp.lastDocument;
 
@@ -246,7 +241,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.customerService
       .getCustomer(this.customerId)
       .then((resp) => {
-        console.log({ resp });
         this.customer = resp;
       })
       .finally(() => {

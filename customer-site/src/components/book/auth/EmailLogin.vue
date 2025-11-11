@@ -93,7 +93,7 @@ export default {
       let IsValidEmail = reg.test(this.user.email);
 
       if (this.resetForm || IsValidEmail) {
-        //todo make api call with nodemailer to reset password
+        //todo make api call with sendGrid to reset password
         //will make this more professional
         //just more work later on down the road.
         const response = await authService.resetPassword(this.user.email);
