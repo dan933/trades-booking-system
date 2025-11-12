@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^2.0.2",
     "@popperjs/core": "^2.11.7",
     "@stripe/stripe-js": "^1.52.1",
     "@vitejs/plugin-vue": "^5.2.4",

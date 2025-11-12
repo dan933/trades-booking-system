@@ -67,7 +67,7 @@ export default {
         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
         eventOverlap: false,
         eventStartEditable: true,
-        durationEditable: true,
+        // durationEditable: true,
         editable: true,
         allDaySlot: false,
         firstDay: 1,

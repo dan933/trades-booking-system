@@ -1,9 +1,11 @@
 <template>
   <v-card flat class="book-now-container">
     <v-window :touch="false" direction="vertical" v-model="onboarding" class="window-container">
+
       <v-window-item :key="`card-customer-details`" :value="0" class="window-container">
         <CustomerDetails @storeCustomerDetails="storeCustomerDetails" ref="customerDetailsRef"></CustomerDetails>
       </v-window-item>
+
 
       <v-window-item :key="`card-timeslots`" :value="1" class="window-container">
         <TimeSlots @storeSelectedTimeSlotData="storeSelectedTimeSlotData" :orgDoc="orgDoc"></TimeSlots>
@@ -22,7 +24,11 @@
     <v-card-actions class="justify-space-evenly">
       <v-item-group v-model="onboarding" class="text-center" mandatory>
         <v-item :key="`customer-details`" v-slot="{ isSelected, toggle }" :value="0">
-          <v-btn :variant="isSelected ? 'outlined' : 'text'" icon="mdi:mdi-account" @click="toggle"></v-btn>
+          <v-btn :variant="isSelected ? 'outlined' : 'text'" icon="mdi:mdi-account" @click="() => {
+            toggle();
+            this.$refs.customerDetailsRef.removeAutoComplete();
+            this.$refs.customerDetailsRef.initAutocomplete();
+          }"></v-btn>
         </v-item>
         <v-item v-if="customerInformation" :key="`timeslots`" v-slot="{ isSelected, toggle }" :value="1">
           <v-btn :variant="isSelected ? 'outlined' : 'text'" icon="mdi:mdi-calendar-clock" @click="toggle"></v-btn>
