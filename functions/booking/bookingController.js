@@ -248,12 +248,14 @@ exports.book = async (req, res) => {
 
     let chargeResponse;
 
+    let stripeTotal = 0;
+
     try {
       //Get the total amount to charge the customer
-      const { stripeTotal } = await bookingHelper.calculateInvoiceTotal(
+      ({ stripeTotal } = await bookingHelper.calculateInvoiceTotal(
         orgId,
         customerServices
-      );
+      ));
 
       //Attempt stripe payment
       const charge = await stripe.charges.create({
@@ -294,6 +296,7 @@ exports.book = async (req, res) => {
           //update the booking status to booked
           await t.update(bookingRef, {
             status: "paid",
+            amount: stripeTotal,
             stripeChargeId: chargeResponse.id,
           });
 

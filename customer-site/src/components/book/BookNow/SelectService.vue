@@ -10,9 +10,9 @@
               .getDate()
               .toString()
               .padStart(2, "0")}/${selectedDateTimeSlot?.date
-              .getMonth()
-              .toString()
-              .padStart(2, "0")}/${selectedDateTimeSlot?.date.getFullYear()}`
+                .getMonth()
+                .toString()
+                .padStart(2, "0")}/${selectedDateTimeSlot?.date.getFullYear()}`
           }}
         </p>
         <p>
@@ -24,46 +24,22 @@
           {{ remainingHoursAvailable }}
         </p>
       </div>
-      <v-form
-        @submit.prevent="storeSelectedServices"
-        class="service-form-container"
-        v-model="serviceForm"
-      >
+      <v-form @submit.prevent="storeSelectedServices" class="service-form-container" v-model="serviceForm">
         <!-- add v-for that adds input field -->
-        <v-container
-          v-for="(service, index) in selectedServices"
-          class="mb-3 border"
-        >
+        <v-container v-for="(service, index) in selectedServices" class="mb-3 border">
           <div class="service-item-container">
-            <v-autocomplete
-              v-model="service.selection"
-              style="width: 200px; height: 50px"
-              label="Service"
-              :items="services"
-              :item-title="
-                (item) => {
-                  return item?.name ? `${item.name}` : '';
-                }
-              "
-              :item-value="(item) => item"
-              :rules="[(v) => !!v || 'service required']"
-            ></v-autocomplete>
-            <v-text-field
-              v-model.number="service.hours"
-              style="width: 130px"
-              type="number"
-              label="Hours"
-              @input="() => roundToWholeHour(index)"
-              step="1"
-              min="0"
-              hide-details="auto"
-              :rules="[
+            <v-autocomplete v-model="service.selection" style="width: 200px; height: 50px" label="Service"
+              :items="services" :item-title="(item) => {
+                return item?.name ? `${item.name}` : '';
+              }
+                " :item-value="(item) => item" :rules="[(v) => !!v || 'service required']"></v-autocomplete>
+            <v-text-field v-model.number="service.hours" style="width: 130px" type="number" label="Hours"
+              @input="() => roundToWholeHour(index)" step="1" min="0" hide-details="auto" :rules="[
                 () =>
                   remainingHoursAvailable >= 0 || 'Hours Available Exceeded',
                 (v) => !!v || 'Hours Required',
                 (v) => v > 0 || 'Hours must be greater than 1',
-              ]"
-            ></v-text-field>
+              ]"></v-text-field>
           </div>
           <div class="d-flex align-center mt-6 flex-wrap">
             <p class="mr-5">
@@ -71,30 +47,21 @@
               {{
                 // if there are hours available, calculate the price
                 remainingHoursAvailable >= 0 &&
-                service?.selection?.rate &&
-                +service?.hours
+                  service?.selection?.rate &&
+                  +service?.hours
                   ? `$ ${service.selection.rate * +service?.hours}` //if there are no hours available, show N/A
                   : remainingHoursAvailable === "N/A"
-                  ? "N/A"
-                  : //if no hours are selected show 0
+                    ? "N/A"
+                    : //if no hours are selected show 0
                     "$ 0"
               }}
             </p>
-            <v-btn color="warning" @click="() => removeServiceItem(index)"
-              >Remove</v-btn
-            >
+            <v-btn color="warning" @click="() => removeServiceItem(index)">Remove</v-btn>
           </div>
         </v-container>
         <v-btn class="mt-5" width="150px" @click="addInput">Add Service</v-btn>
-        <v-btn
-          width="150px"
-          v-if="atLeastOneValidService"
-          elevation="4"
-          color="primary"
-          class="mt-5"
-          type="submit"
-          >Next</v-btn
-        >
+        <v-btn width="150px" v-if="atLeastOneValidService" elevation="4" color="primary" class="mt-5"
+          type="submit">Next</v-btn>
       </v-form>
     </v-container>
   </v-card>
@@ -128,7 +95,7 @@ export default {
       //check that hours is not already an integer
       let IsNotInteger = !Number.isInteger(
         Number(this.selectedServices[index].hours) ||
-          this.selectedServices[index].hours < 0
+        this.selectedServices[index].hours < 0
       );
 
       //if hours is not an integer, round to nearest whole number
@@ -161,9 +128,7 @@ export default {
       }
     },
     removeServiceItem(index) {
-      console.log("index", index);
       this.selectedServices.splice(index, 1);
-      console.log(this.selectedServices);
     },
   },
   async mounted() {
@@ -206,7 +171,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 .service-form-container {
   overflow: auto;
   display: flex;
@@ -214,10 +179,12 @@ export default {
   height: 100%;
   padding: 5px;
 }
+
 .border {
   border: black solid 2px !important;
   border-radius: 5px;
 }
+
 .service-item-container {
   display: flex;
   flex-wrap: wrap;

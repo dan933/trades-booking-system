@@ -4,9 +4,10 @@ import { OrganisationService } from 'src/app/services/organisation/organisation.
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-services-settings',
-  templateUrl: './services-settings.component.html',
-  styleUrls: ['./services-settings.component.scss']
+    selector: 'app-services-settings',
+    templateUrl: './services-settings.component.html',
+    styleUrls: ['./services-settings.component.scss'],
+    standalone: false
 })
 export class ServicesSettingsComponent implements OnInit {
   loading: boolean = false;

@@ -1,40 +1,83 @@
-<script setup>
-import NavBar from "./components/shared/NavBar.vue";
-</script>
-
 <template>
-  <v-app style="min-height: 100vh">
-    <v-parallax
-      class="parallax-container"
-      src="https://images.unsplash.com/photo-1481277542470-605612bd2d61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1406&q=80"
-    >
-      <div class="router-container">
-        <NavBar></NavBar>
-        <router-view></router-view>
-      </div>
-    </v-parallax>
-  </v-app>
+  <div class="app-container">
+    <NavBar :menu-list="menuList" :current-link="currentLink"></NavBar>
+
+    <RouterView></RouterView>
+
+  </div>
 </template>
 
-<style lang="scss">
-.router-container {
-  display: flex;
+<script setup>
+import NavBar from "./components/shared/NavBar.vue";
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { useStore } from "vuex";
+
+const store = useStore();
+
+const view = computed(() => store.state.navigation.view)
+
+const menuList = computed(() => {
+
+  if (view.value !== "landing") {
+    return [];
+  }
+
+  let menu = [
+    { name: 'Home', link: '#home' },
+    { name: 'Customer', link: '#customer' },
+    { name: 'Admin', link: '#admin' },
+    { name: 'Contact', link: '#contact' }
+  ]
+
+  return menu;
+})
+
+const currentLink = ref('home');
+
+
+const scrollPosition = ref(0);
+
+
+const handleScroll = () => {
+  scrollPosition.value = window.scrollY || window.pageYOffset;
+
+  const sections = ['home', 'customer', 'admin', 'contact'];
+
+
+  for (const section of sections) {
+    const element = document.getElementById(section);
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const offset = 120;
+      if (rect.top?.toFixed() <= offset && rect.bottom?.toFixed() >= offset) {
+        currentLink.value = section;
+      }
+    }
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+
+</script>
+
+<style scoped>
+.app-container {
+  display: block;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding-top: 60px;
-  column-gap: 10px;
-  // overflow: auto;
-  height: 100%;
-}
+  gap: 35px;
+  min-height: 100vh;
+  /* min-height: 200vh; */
+  height: fit-content;
+  background: url("/background-header-landing.png");
+  background-repeat: no-repeat;
+  background-position: top -300px center;
 
-.v-application__wrap {
-  min-height: 0vh !important;
-}
-
-.parallax-container {
-  overflow: auto;
-  width: 100vw;
-  max-height: 100vh;
 }
 </style>

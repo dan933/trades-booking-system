@@ -1,0 +1,20 @@
+<section class="bg-secondaryColour mt-20 w-full min-w-fit table-auto p-5 flex flex-col items-center">
+    <h1 class="text-textColour text-2xl mb-6">Settings</h1>
+
+    <div class="flex flex-wrap gap-4 mb-8 items-center justify-center">
+        <button routerLink="/settings/opperating" routerLinkActive="!bg-blue-600"
+            class="px-6 py-3 bg-primaryColour text-textColour rounded-lg hover:bg-blue-600 transition-colors">
+            Operating
+        </button>
+        <button routerLink="/settings/services" routerLinkActive="!bg-blue-600"
+            class="px-6 py-3 bg-primaryColour text-textColour rounded-lg hover:bg-blue-600 transition-colors">
+            Services
+        </button>
+        <button routerLink="/settings/company" routerLinkActive="!bg-blue-600"
+            class="px-6 py-3 bg-primaryColour text-textColour rounded-lg hover:bg-blue-600 transition-colors">
+            Company
+        </button>
+    </div>
+
+    <router-outlet></router-outlet>
+</section>

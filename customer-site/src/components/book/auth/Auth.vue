@@ -1,53 +1,48 @@
 const Auth = () => Promise.resolve({
 <template>
   <section class="container-center">
-    <v-card elevation="5" class="auth-section">
-      <EmailRegister
-        v-if="selectedForm === 'Register'"
-        @switchForm="switchForm"
-        @registerEmailUser="registerEmailUser"
-      ></EmailRegister>
+    <div elevation="5" class="auth-section">
+      <EmailRegister v-if="selectedForm === 'Register'" @switchForm="switchForm" @registerEmailUser="registerEmailUser">
+        <template #providers>
+          <span class="provider-or">or</span>
+          <div class="provider-container">
+            <button @click="() => signIn({ providerName: 'Google' })" class="provider-button text-subtitle-2">
+              <img class="google-logo" src="/icons/google-logo.png" alt="" srcset="" />
+              <span>Google</span>
+            </button>
+            <button @click="() => signIn({ providerName: 'Guest' })" class="provider-button text-subtitle-2">
+              <v-icon icon="mdi:mdi-account" size="20px" color="black"></v-icon>
+              <span>Guest</span>
+            </button>
+          </div>
+          <p @click="() => switchForm('Login')" class="register-text">Already have an account ? <span
+              class="register-bold">Login</span></p>
+        </template>
 
-      <EmailLogin
-        v-if="selectedForm === 'Login'"
-        :signInResponse="signInResponse"
-        @switchForm="switchForm"
-        @signIn="signIn"
-      ></EmailLogin>
+      </EmailRegister>
 
-      <v-container class="provider-container">
-        <v-btn
-          @click="() => signIn({ providerName: 'Google' })"
-          class="provider-button text-subtitle-2"
-        >
-          <img
-            class="google-logo"
-            src="../../../../public/icons/google-logo.png"
-            alt=""
-            srcset=""
-          />
-          Continue With Google
-        </v-btn>
-        <v-btn
-          @click="() => signIn({ providerName: 'Facebook' })"
-          class="provider-button text-subtitle-2"
-        >
-          <v-icon icon="mdi:mdi-facebook" size="50px" color="blue"></v-icon>
-          Continue With Facebook
-        </v-btn>
-        <v-btn
-          @click="() => signIn({ providerName: 'Guest' })"
-          class="provider-button text-subtitle-2"
-        >
-          <v-icon icon="mdi:mdi-account" size="50px" color="black"></v-icon>
-          Continue as Guest
-        </v-btn>
-      </v-container>
-    </v-card>
-    <LinkCredentialsDialog
-      ref="linkCredentialsDialogRef"
-      @resetSignInResponse="signInResponse = null"
-    ></LinkCredentialsDialog>
+      <EmailLogin v-if="selectedForm === 'Login'" :signInResponse="signInResponse" @signIn="signIn" :loading="loading">
+        <template #providers>
+          <span class="provider-or">or</span>
+          <div class="provider-container">
+            <button @click="() => signIn({ providerName: 'Google' })" class="provider-button text-subtitle-2">
+              <img class="google-logo" src="/icons/google-logo.png" alt="" srcset="" />
+              <span>Google</span>
+            </button>
+            <button @click="() => signIn({ providerName: 'Guest' })" class="provider-button text-subtitle-2">
+              <v-icon icon="mdi:mdi-account" size="20px" color="black"></v-icon>
+              <span>Guest</span>
+            </button>
+          </div>
+          <p @click="() => switchForm('Register')" class="register-text">Don't have an account ? <span
+              class="register-bold">Register</span></p>
+        </template>
+      </EmailLogin>
+
+
+    </div>
+    <LinkCredentialsDialog ref="linkCredentialsDialogRef" @resetSignInResponse="signInResponse = null">
+    </LinkCredentialsDialog>
   </section>
 </template>
 
@@ -57,12 +52,12 @@ import LinkCredentialsDialog from "./LinkCredentialsDialog.vue";
 import EmailRegister from "./EmailRegister.vue";
 import EmailLogin from "./EmailLogin.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
 export default {
   name: "Auth",
   components: { LinkCredentialsDialog, EmailRegister, EmailLogin },
   data() {
     return {
+      loading: false,
       selectedForm: "Login",
       provider: null,
       signInResponse: null,
@@ -73,13 +68,13 @@ export default {
   watch: {
     currentUser(newVal) {
       if (newVal && !this.signInResponse?.IsUserDifferentCredentials) {
-        // console.log(newVal);
         const orgId = this.$route.params.id;
         this.$router.push(`/org/${orgId}/book`);
       }
     },
   },
   mounted() {
+    this.$store.commit("updateView", "auth");
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -96,18 +91,20 @@ export default {
       //get the organisation Id
       const orgId = this.$route.params.id;
 
-      // console.log("org", orgId);
+      if (signInDetails?.providerName === "email") {
+        this.loading = true;
+      }
 
       //stops redirect to booking page
       //redirect too book happens if the user is already signed in on initial load
-      this.signInResponse = await authService.signIn(signInDetails, orgId);
+      this.signInResponse = await authService.signIn(signInDetails, orgId).finally(() => {
+        this.loading = false;
+      });
 
       //if the user is a Guest
       if (this.signInResponse?.IsGuest) {
         //update store of IsGuest
         this.$store.commit("setIsGuest", true);
-
-        console.log("this.$store.state.IsGuest", this.$store.state.IsGuest);
 
         //redirect to booking page
         this.$router.push(`/org/${orgId}/book`);
@@ -133,55 +130,92 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .container-center {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   overflow: auto;
 }
 
 .auth-section {
   display: block;
   overflow: auto;
-  width: 466px;
+  max-width: 100%;
+}
+
+.provider-or {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    position: relative;
+    top: -10px;
+    content: "-------------------";
+    flex: 1;
+    height: 1px;
+  }
+
+  &::before {
+    margin-right: 10px;
+  }
+
+  &::after {
+    margin-left: 10px;
+  }
 }
 
 .provider-container {
   padding: 15px;
-  background-color: lightgrey;
   height: auto;
-  width: 90%;
   min-width: 200px;
   display: flex;
-  row-gap: 30px;
+  gap: 10px;
   border-radius: 5px;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 15px 20px;
 }
 
 .provider-button {
-  padding: 15px;
-  width: 332px;
+  padding: 10px 24px;
+  width: 200px;
+  max-width: 60%;
+  border: solid gray 1px;
+  border-radius: 5px;
   height: auto;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
 }
+
 .google-logo {
-  margin-right: 10px;
-  height: 40px;
-  max-height: 10vh;
+  height: 1.25rem;
+
 }
 
 .card-title {
   margin-top: 10px;
   text-align: center;
+}
+
+.register-text {
+  text-align: center;
+  cursor: pointer;
+  font-weight: 100;
+
+  .register-bold {
+    font-weight: 900;
+  }
 }
 
 @media screen and (max-width: 400px) {

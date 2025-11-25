@@ -1,29 +1,53 @@
-<div class="service-settings-container">
-  <h1>Services</h1>
+<div class="bg-secondaryColour min-h-screen p-6">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-textColour mb-8">Services</h1>
+    @if(!loading){
+    <div class="bg-primaryColour rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-semibold text-textColour mb-4">Service Management</h2>
+      <form [formGroup]="servicesForm">
+        <div formArrayName="services" class="space-y-4">
+          @for (service of servicesData; track $index; let i = $index) {
+          <div [formGroupName]="i" class="bg-secondaryColour rounded-lg p-4 border border-gray-600">
+            <div class="flex flex-wrap items-center gap-4">
+              <mat-form-field class="flex-1 min-w-[200px]">
+                <mat-label>Service Name</mat-label>
+                <input matInput formControlName="name" placeholder="Enter service name">
+              </mat-form-field>
+              <mat-form-field class="flex-1 min-w-[120px]">
+                <mat-label>Rate</mat-label>
+                <input matInput formControlName="rate" placeholder="0.00" type="number" step="0.01">
+                <span matTextSuffix>$</span>
+              </mat-form-field>
+              <button mat-icon-button (click)="removeService(i)" [disabled]="servicesData.length === 1"
+                class="!text-red-500">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          </div>
+          }
+        </div>
 
-  <div *ngIf="loading" class="loading-spinner">
-    <!-- Use your preferred spinner component here -->
-  </div>
-  <div *ngIf="!loading">
-    <form [formGroup]="servicesForm">
-      <div formArrayName="services" class="services-form">
-        <div *ngFor="let service of servicesData; let i = index" [formGroupName]="i">
-          <mat-form-field class="example-full-width">
-            <mat-label>Service Name</mat-label>
-            <input matInput formControlName="name" placeholder="Service Name">
-          </mat-form-field>
-          <mat-form-field class="example-full-width">
-            <mat-label>Rate</mat-label>
-            <input matInput formControlName="rate" placeholder="Rate" type="number">
-          </mat-form-field>
-          <button mat-icon-button (click)="removeService(i)">
-            <mat-icon color="warn">delete</mat-icon>
+        @if(errorMessage){
+        <div class="bg-red-600 text-white rounded-lg p-4 mt-6 max-w-md mx-auto">
+          {{errorMessage}}
+        </div>
+        }
+
+        <div class="flex justify-center gap-4 mt-8">
+          <button mat-stroked-button color="primary" (click)="addService()" class="px-6 py-2">
+            Add Service
+          </button>
+          <button mat-raised-button color="primary" (click)="saveServices($event)"
+            class="px-8 py-3 min-w-[200px] !bg-primaryColour hover:!bg-blue-600">
+            Save Settings
           </button>
         </div>
-        <span style="color:red">{{errorMessage}}</span>
-        <button mat-raised-button color="primary" style="width: 200px;" (click)="addService()">Add</button>
-        <button mat-raised-button color="primary" style="width: 200px;" (click)="saveServices($event)">Save</button>
-      </div>
-    </form>
+      </form>
+    </div>
+    } @else {
+    <div class="flex justify-center items-center py-12">
+      <mat-spinner [diameter]="50" [strokeWidth]="5"></mat-spinner>
+    </div>
+    }
   </div>
 </div>

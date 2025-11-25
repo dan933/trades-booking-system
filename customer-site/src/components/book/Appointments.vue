@@ -1,7 +1,9 @@
 const Appointments = () => Promise.resolve({
 <template>
   <section class="appointment-section" @scroll.passive="handleScroll">
-    <h1 v-if="appointments.length <= 0">You currently have no appointments</h1>
+    <div v-if="appointments.length <= 0" class="no-appointments">
+      <h1>You currently have no appointments</h1>
+    </div>
     <table v-if="appointments.length > 0" class="table">
       <thead>
         <tr>
@@ -20,7 +22,7 @@ const Appointments = () => Promise.resolve({
             {{
               new Date(
                 appointment.bookingDate.seconds * 1000
-              ).toLocaleDateString()
+              ).toLocaleDateString('en-GB')
             }}
           </td>
           <td>{{ appointment.startHour }}:00</td>
@@ -64,8 +66,6 @@ export default {
       let lastVisible = pagination.value.lastVisible;
       let stopCalls = pagination.value.stopCalls;
 
-      console.log(stopCalls);
-
       const response = await getAppointments(
         orgId,
         lastVisible,
@@ -106,16 +106,26 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped>
+.no-appointments {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 600px;
+  padding: 10px;
+}
+
 .appointment-section {
-  // overflow: scroll;
   margin-top: 10px;
   display: block;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   width: 100%;
-  height: 100%;
+  min-height: 600px;
+  padding: 10px;
+  overflow: auto;
 }
 
 .table {
@@ -145,28 +155,6 @@ export default {
       border-bottom: 1px solid #e0e0e0;
     }
   }
-}
-
-.card {
-  width: 100%;
-  height: 100%;
-  margin-top: 5px;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.carousel-image {
-  width: 100%;
-  border-radius: 5px;
-}
-
-.carousel-container {
-  display: flex;
-  max-width: 90vw;
-  width: 700px;
-  min-height: 200px;
 }
 </style>
 

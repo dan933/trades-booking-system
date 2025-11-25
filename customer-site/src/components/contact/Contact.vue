@@ -5,33 +5,11 @@
         We would love to hear from you please leave us a message and we will get
         back to you as soon as possible.
       </div>
-      <v-form
-        ref="form"
-        class="contact-form"
-        v-model="valid"
-        @submit.prevent="submitForm"
-      >
-        <v-text-field
-          v-model="name"
-          :rules="nameRules"
-          label="Name"
-        ></v-text-field>
-        <v-text-field
-          v-model="email"
-          :rules="emailRules"
-          label="Email"
-        ></v-text-field>
-        <v-textarea
-          v-model="message"
-          :rules="messageRules"
-          label="Message"
-        ></v-textarea>
-        <v-btn
-          :disabled="formSending"
-          type="submit"
-          color="primary"
-          class="form-button"
-        >
+      <v-form ref="form" class="contact-form" v-model="valid" @submit.prevent="submitForm">
+        <v-text-field v-model="name" :rules="nameRules" label="Name"></v-text-field>
+        <v-text-field v-model="email" :rules="emailRules" label="Email"></v-text-field>
+        <v-textarea v-model="message" :rules="messageRules" label="Message"></v-textarea>
+        <v-btn :disabled="formSending" type="submit" color="primary" class="form-button">
           <span v-if="!formSending">Submit</span>
 
           <v-progress-circular v-else indeterminate></v-progress-circular>
@@ -42,12 +20,7 @@
       <div class="text-body text-left mb-3">
         Thank you your enquiry has been sent and we will get back to you soon.
       </div>
-      <v-btn
-        type="submit"
-        color="primary"
-        @click="resetForm"
-        class="form-button"
-      >
+      <v-btn type="submit" color="primary" @click="resetForm" class="form-button">
         <span>Send Another Enquiry</span>
       </v-btn>
     </v-card>
@@ -55,12 +28,7 @@
       <div class="text-body text-left mb-3 text-red">
         Sorry an error occured please try again.
       </div>
-      <v-btn
-        type="submit"
-        color="primary"
-        @click="resetForm"
-        class="form-button"
-      >
+      <v-btn type="submit" color="primary" @click="resetForm" class="form-button">
         <span>Send Another Enquiry</span>
       </v-btn>
     </v-card>
@@ -105,12 +73,8 @@ export default {
       this.formError = false;
     },
     async submitForm() {
-      console.log("this.valid", this.valid);
-
       if (this.valid) {
         this.formSending = true;
-
-        console.log("valid");
 
         const formData = {
           name: this.name,
@@ -132,7 +96,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style>
 .form-button {
   display: flex;
   align-items: center;
@@ -145,6 +109,7 @@ export default {
   flex-direction: column;
   row-gap: 10px;
 }
+
 .contact-container {
   margin-top: 10px;
   display: flex;

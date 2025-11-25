@@ -2,30 +2,26 @@ import { Injectable, inject } from '@angular/core';
 import { Auth, idToken } from '@angular/fire/auth';
 import {
   Firestore,
-  collection,
-  doc,
-  getDoc,
+  // collection,
+  // doc,
+  // getDoc,
   updateDoc,
-  setDoc,
+  // setDoc,
   DocumentReference,
   addDoc,
 } from '@angular/fire/firestore';
+
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OrganisationService {
-  private firestore: Firestore = inject(Firestore);
-  private auth: Auth = inject(Auth);
-
-  constructor() {}
+  constructor(private firestore: Firestore, private auth: Auth) {}
 
   async getOrganisation() {
-    console.log(this.auth.currentUser);
     let userToken = await this.auth.currentUser?.getIdTokenResult();
     let orgId = userToken?.claims['org'];
-
-    console.log('orgId', orgId);
 
     if (!orgId) {
       return {
@@ -78,6 +74,7 @@ export class OrganisationService {
       this.firestore,
       `organisations/${orgId}/availability/opperatingHours`
     );
+
     let orgSettingsData = (await getDoc(orgSettings)).data();
 
     return orgSettingsData;
@@ -85,12 +82,8 @@ export class OrganisationService {
 
   //format data for user
   formatOpperatingHours(gapSettings: any, opperatingHours: any) {
-    console.log(gapSettings);
-    console.log('opperatingHours', opperatingHours);
-
     const opperatingHoursData: any = opperatingHours.openingTimes.reduce(
       (acc: any, curr: any) => {
-        console.log('curr', curr);
         acc[curr.day] = {
           end: curr?.to?.value || 16,
           start: curr?.from?.value || 9,
@@ -118,8 +111,6 @@ export class OrganisationService {
     //get user claims
     let userToken = await this.auth.currentUser?.getIdTokenResult();
     let orgId = userToken?.claims['org'];
-
-    console.log('payload', payload);
 
     try {
       await setDoc(
@@ -163,8 +154,6 @@ export class OrganisationService {
     //get user claims
     let userToken = await this.auth.currentUser?.getIdTokenResult();
     let orgId = userToken?.claims['org'];
-
-    console.log('services', services);
 
     //if services do not have an Id then add one
     services = services.map((service: any) => {

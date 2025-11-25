@@ -1,5 +1,4 @@
 const { logger } = require("firebase-functions");
-const nodemailer = require("nodemailer");
 
 let generateBookingEmailData = (booking, gstEnabled) => {
   let serviceData = booking.services.map((service) => {
@@ -19,7 +18,7 @@ let generateBookingEmailData = (booking, gstEnabled) => {
     serviceHtml += `<tr style="background-color: ${color}">
     <td style="border: 1px solid #ddd; padding: 8px;">${service.name}</td>
     <td style="border: 1px solid #ddd; padding: 8px;">${service.hours}</td>
-    <td style="border: 1px solid #ddd; padding: 8px;">${service.rate}</td>
+    <td style="border: 1px solid #ddd; padding: 8px;">$${service.rate}</td>
     </tr>`;
   });
 
@@ -143,16 +142,14 @@ exports.createBookingEmail = async (booking, orgDoc) => {
     //Create Email html
     let emailHtml = generateBookingEmailData(booking, gstEnabled);
 
-    //create transporter
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: `${process.env.EMAIL}`,
-        pass: `${process.env.PASSWORD}`,
-      },
-    });
+    const sgMail = require("@sendgrid/mail");
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
     const mailOptions = {
-      from: "Daniel Albert <danielalbert3377@gmail.com>",
+      from: {
+        email: "no-reply@danalbertportfolio.com.au",
+        name: "Easy Booking",
+      },
       to: booking.email,
       subject: "Booking Confirmation",
       html: emailHtml,
@@ -166,19 +163,35 @@ exports.createBookingEmail = async (booking, orgDoc) => {
       };
     }
 
-    await transporter.sendMail(mailOptions).catch((error) => {
+    const customerEmailResponse = await sgMail
+      .send(mailOptions)
+      .catch((error) => {
+        return {
+          message: "An error occured could not send email to website uer",
+          success: false,
+          error: error,
+        };
+      });
+
+    if (
+      typeof customerEmailResponse?.success === "boolean" &&
+      customerEmailResponse?.success === false
+    ) {
       return {
         message: "An error occured could not send email to website uer",
         success: false,
         error: error,
       };
-    });
+    }
 
     let startTime = convertTo12HourTime(booking.startHour);
     let endTime = convertTo12HourTime(booking.endHour);
 
     const mailOptionsForDan = {
-      from: "Daniel Albert <danielalbert3377@gmail.com>",
+      from: {
+        email: "no-reply@danalbertportfolio.com.au",
+        name: "Easy Booking",
+      },
       to: `${orgEmail}`,
       subject: `New booking from ${booking.firstName}`,
       html: `<p>You have a new booking from ${booking.firstName}</p>
@@ -197,13 +210,26 @@ exports.createBookingEmail = async (booking, orgDoc) => {
         success: false,
       };
 
-    await transporter.sendMail(mailOptionsForDan).catch((error) => {
+    const adminEmailResult = await sgMail
+      .send(mailOptionsForDan)
+      .catch((error) => {
+        return {
+          message: "An error occured could not send email to owner",
+          success: false,
+          error: error,
+        };
+      });
+
+    if (
+      typeof adminEmailResult?.success === "boolean" &&
+      adminEmailResult?.success === false
+    ) {
       return {
         message: "An error occured could not send email to owner",
         success: false,
         error: error,
       };
-    });
+    }
 
     return {
       message: "Email sent to user and website owner",
@@ -240,17 +266,14 @@ exports.sendCancelBookingEmail = async (booking, refund) => {
     });
     const name = booking.firstName;
 
-    //create transporter
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: `${process.env.EMAIL}`,
-        pass: `${process.env.PASSWORD}`,
-      },
-    });
+    const sgMail = require("@sendgrid/mail");
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     const mailOptions = {
-      from: "Daniel Albert <danielalbert3377@gmail.com>",
+      from: {
+        email: "no-reply@danalbertportfolio.com.au",
+        name: "Easy Booking",
+      },
       to: booking.email,
       subject: `Booking Cancellation ${bookingDate}`,
       html: `<p>Hi ${name},</p>
@@ -261,13 +284,26 @@ exports.sendCancelBookingEmail = async (booking, refund) => {
       <p>Your Service Provider</p>`,
     };
 
-    await transporter.sendMail(mailOptions).catch((error) => {
+    const customerEmailResponse = await sgMail
+      .send(mailOptions)
+      .catch((error) => {
+        return {
+          message: "An error occured could not send email to website uer",
+          success: false,
+          error: error,
+        };
+      });
+
+    if (
+      typeof customerEmailResponse?.success === "boolean" &&
+      customerEmailResponse?.success === false
+    ) {
       return {
         message: "An error occured could not send email to website uer",
         success: false,
         error: error,
       };
-    });
+    }
 
     return {
       message: "Email sent to customer",

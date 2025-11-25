@@ -1,95 +1,65 @@
 <template>
-  <v-container>
-    <v-card class="mx-auto" min-width="150">
-      <v-card-text v-if="!IsShowResetForm">
-        <h1 class="card-title">Login</h1>
-        <v-form @submit.prevent="login" v-model="loginForm">
-          <v-text-field
-            v-model="user.email"
-            autocomplete="email"
-            label="Email"
-            required
-            :rules="emailRules"
-          ></v-text-field>
-          <v-text-field
-            v-model="user.password"
-            label="Password"
-            autocomplete="current-password"
-            type="password"
-            required
-            :rules="passwordRules"
-          ></v-text-field>
-          <v-alert
-            v-if="signInResponse?.IsPasswordIncorrect"
-            class="mb-3"
-            type="error"
-            :text="signInResponse?.errorMessage"
-            variant="outlined"
-            density="compact"
-          ></v-alert>
-          <div class="mb-5" @click="() => (IsShowResetForm = true)">
-            <a href="#">Forgot Password</a> <br />
-          </div>
-          <div class="card-button-container">
-            <v-btn size="small" type="submit" color="primary" class="mr-4 mb-4">
-              Login
-            </v-btn>
-            <v-btn
-              size="small"
-              class="mb-5"
-              @click="() => switchForm('Register')"
-              >Register Account</v-btn
-            >
-          </div>
-        </v-form>
-      </v-card-text>
-      <v-card-text v-if="IsShowResetForm">
-        <h1 class="card-title">Reset</h1>
-        <v-form @submit.prevent="resetPassword" v-model="resetForm">
-          <v-text-field
-            v-if="!IsPasswordEmailSent"
-            v-model="user.email"
-            autocomplete="email"
-            label="Email"
-            required
-            :rules="emailRules"
-          ></v-text-field>
-          <v-card-text v-if="IsPasswordEmailSent">
-            An Email has been sent to {{ this.user.email }} please check your
-            spam folder.
-          </v-card-text>
-          <div class="card-button-container">
-            <v-btn
-              v-if="!IsPasswordEmailSent"
-              size="small"
-              type="submit"
-              color="primary"
-              class="mr-4 mb-4"
-            >
-              Reset
-            </v-btn>
-            <v-btn
-              size="small"
-              class="mb-5"
-              @click="() => (IsShowResetForm = false)"
-              >Login</v-btn
-            >
-          </div>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-container>
+  <v-card class="login-card">
+    <template v-slot:title>
+      <h3 class="card-title">Easy Booking</h3>
+    </template>
+    <div v-if="!IsShowResetForm">
+      <h4 class="card-subtitle">Login</h4>
+      <v-form @submit.prevent="login" v-model="loginForm" class="form">
+        <v-text-field :disabled="loading" variant="outlined" v-model="user.email" autocomplete="email" label="Email"
+          required :rules="emailRules"></v-text-field>
+        <v-text-field :disable="loading" variant="outlined" v-model="user.password" label="Password"
+          autocomplete="current-password" :type="showPassword ? 'text' : 'password'" required :rules="passwordRules"
+          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          @click:append-inner="showPassword = !showPassword">
+        </v-text-field>
+        <v-alert v-if="signInResponse?.IsPasswordIncorrect" class="mb-3" type="error"
+          :text="signInResponse?.errorMessage" variant="outlined" density="compact"></v-alert>
+        <div class="mb-5" @click="() => (IsShowResetForm = true)">
+          <a href="#">Forgot Password</a> <br />
+        </div>
+        <div class="card-button-container">
+          <v-btn type="submit" :loading="loading" :disabled="loading" color="primary" class="mb-4 pa-5 w-100 d-flex">
+            Login
+          </v-btn>
+        </div>
+      </v-form>
+    </div>
+    <div v-if="IsShowResetForm">
+      <h4 class="card-subtitle">Reset Password</h4>
+      <v-form @submit.prevent="resetPassword" v-model="resetForm">
+        <v-text-field variant="outlined" v-if="!IsPasswordEmailSent" v-model="user.email" autocomplete="email"
+          label="Email" required :rules="emailRules"></v-text-field>
+        <div v-if="IsPasswordEmailSent" class="pa-4">
+          An Email has been sent to {{ this.user.email }} please check your
+          spam folder.
+        </div>
+        <div class="card-button-container">
+          <v-btn v-if="!IsPasswordEmailSent" type="submit" :disabled="!user.email" color="primary"
+            class="mt-4 mb-4 pa-5 w-100 d-flex">
+            Reset Password
+          </v-btn>
+          <v-btn class="mb-4 pa-5 w-100 d-flex" @click="() => {
+            IsShowResetForm = false;
+            IsPasswordEmailSent = false;
+          }">Back To Login</v-btn>
+        </div>
+      </v-form>
+    </div>
+    <slot v-if="!IsShowResetForm" name="providers"></slot>
+  </v-card>
 </template>
 
 <script>
 import { authService } from "../../../services/auth/auth-services.js";
 export default {
   name: "emailLogin",
-  props: ["signInResponse"],
+  props: ["signInResponse", "loading"],
   data() {
     return {
       resetForm: true,
       loginForm: false,
+      showPassword: false,
       user: {
         email: "",
         password: "",
@@ -107,9 +77,6 @@ export default {
     };
   },
   methods: {
-    switchForm(selectedForm) {
-      this.$emit("switchForm", selectedForm);
-    },
     login() {
       if (this.loginForm) {
         let request = {
@@ -126,7 +93,7 @@ export default {
       let IsValidEmail = reg.test(this.user.email);
 
       if (this.resetForm || IsValidEmail) {
-        //todo make api call with nodemailer to reset password
+        //todo make api call with sendGrid to reset password
         //will make this more professional
         //just more work later on down the road.
         const response = await authService.resetPassword(this.user.email);
@@ -136,7 +103,21 @@ export default {
   },
 };
 </script>
-<style type="scss">
+<style scoped>
+.login-card {
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  width: 464px;
+  max-width: 90%;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: white;
+  border: solid gray 1px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
 .card-button-container {
   width: 100%;
   display: flex;
@@ -146,7 +127,24 @@ export default {
 }
 
 .card-title {
+  margin-top: 10px;
+  text-align: center;
+  font-family: 'Rubik', sans-serif;
+  font-size: 25px;
+  color: #7a18f2;
+}
+
+.card-subtitle {
+  font-family: 'Rubik', sans-serif;
+  font-size: 25px;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 15px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 </style>

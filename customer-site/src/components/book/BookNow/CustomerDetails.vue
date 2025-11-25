@@ -1,92 +1,31 @@
 <template>
   <v-card flat rounded="0" class="service-card">
-    <h3>Your Details</h3>
     <v-container style="height: 100%">
-      <v-form
-        v-model="valid"
-        @submit.prevent="storeCustomerDetails"
-        ref="customerDetailsFormRef"
-        v-if="!loading"
-      >
+      <v-form v-model="valid" @submit.prevent="storeCustomerDetails" ref="customerDetailsFormRef" v-if="!loading">
         <v-container class="detail-container">
-          <v-text-field
-            style="width: 150px"
-            v-model="firstName"
-            label="First name"
-            :rules="[(v) => !!v || 'First name is required']"
-          ></v-text-field>
-          <v-text-field
-            style="width: 150px"
-            v-model="lastName"
-            label="Last name"
-            :rules="[(v) => !!v || 'Last name is required']"
-          ></v-text-field>
+          <v-text-field style="width: 150px" v-model="firstName" label="First name"
+            :rules="[(v) => !!v || 'First name is required']"></v-text-field>
+          <v-text-field style="width: 150px" v-model="lastName" label="Last name"
+            :rules="[(v) => !!v || 'Last name is required']"></v-text-field>
         </v-container>
-        <v-text-field
-          v-model="phoneNumber"
-          label="Phone number"
-          type="tel"
-          :rules="[(v) => !!v || 'Phone number is required']"
-        ></v-text-field>
-        <v-text-field
-          v-if="IsGuest"
-          v-model="email"
-          label="Email"
-          type="email"
-          :rules="emailRules"
-        ></v-text-field>
-        <!-- new address format -->
-        <!-- seperate inputs for street address, suburb, state and postcode -->
-        <v-container fluid style="padding: 0px">
-          <v-textarea
-            name="input-2-1"
-            rows="1"
-            variant="filled"
-            :model-value="address"
-            label="Street Address"
-            autocomplete="street-address"
-            :rules="[(v) => !!v || 'Street Address is required']"
-            auto-grow
-          ></v-textarea>
-        </v-container>
-        <v-container class="detail-container">
-          <v-text-field
-            style="width: 150px"
-            label="Suburb"
-            type="suburb"
-            :rules="[(v) => !!v || 'Suburb is required']"
-          ></v-text-field>
-          <v-autocomplete
-            style="width: 200px; height: 50px"
-            label="State"
-            autocomplete="country-name"
-            :items="['VIC', 'NSW', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']"
-          ></v-autocomplete>
-        </v-container>
-        <v-text-field
-          style="width: 150px; margin-top: 20px"
-          label="Postcode"
-          autocomplete="postal-code"
-          :rules="[(v) => !!v || 'Postcode is required']"
-        ></v-text-field>
-        <!-- <v-textarea
-          v-model="address"
-          label="Address"
-          :rules="[(v) => !!v || 'Address is required']"
-        ></v-textarea> -->
+        <v-text-field v-model="phoneNumber" label="Phone number" type="tel"
+          :rules="[(v) => !!v || 'Phone number is required']"></v-text-field>
+        <v-text-field v-if="IsGuest" v-model="email" label="Email" type="email" :rules="emailRules"></v-text-field>
+
+        <div ref="mapsAutoCompleteRef"></div>
+        <v-text-field v-model="address.streetAddress" label="Street Address"
+          :rules="[(v) => !!v || 'Address is required']"></v-text-field>
+        <v-text-field v-model="address.suburb" label="Suburb"
+          :rules="[(v) => !!v || 'Suburb is required']"></v-text-field>
+        <v-text-field v-model="address.postcode" label="Postcode"
+          :rules="[(v) => (!!v && !isNaN(v)) || 'Postcode Invalid']"></v-text-field>
+        <v-autocomplete v-model="address.state" label="State" :items="['VIC']"
+          :rules="[(v) => !!v || 'State is required']">
+        </v-autocomplete>
         <v-btn color="primary mt-4" type="submit">Next</v-btn>
       </v-form>
-      <v-container
-        v-else
-        class="d-flex justify-center align-center"
-        style="height: 100%"
-      >
-        <v-progress-circular
-          :width="10"
-          :size="80"
-          indeterminate
-          color="blue"
-        ></v-progress-circular>
+      <v-container v-else class="d-flex justify-center align-center" style="height: 100%">
+        <v-progress-circular :width="10" :size="80" indeterminate color="blue"></v-progress-circular>
       </v-container>
     </v-container>
   </v-card>
@@ -95,16 +34,24 @@
 <script>
 import { getCustomerDetails } from "../../../services/api/customerService.js";
 import { getAuth } from "firebase/auth";
+import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
+
 export default {
   name: "CustomerDetails",
   data() {
     return {
+      placeAutocomplete: null,
       loading: false,
       valid: true,
       firstName: "",
       lastName: "",
       phoneNumber: "",
-      address: "",
+      address: {
+        streetAddress: "",
+        suburb: "",
+        postcode: "",
+        state: "VIC",
+      },
       email: "",
       emailRules: [
         (v) => !!v || "Email is required",
@@ -126,8 +73,12 @@ export default {
     phoneNumber() {
       this.validateForm();
     },
-    address() {
-      this.validateForm();
+    address: {
+      handler() {
+        this.validateForm();
+
+      },
+      deep: true
     },
   },
   methods: {
@@ -143,16 +94,21 @@ export default {
     storeCustomerDetails() {
       // Store the customers details
       if (this.valid) {
+
+        let address = `${this.address.streetAddress}, ${this.address.suburb}, ${this.address.postcode}, ${this.address.state}`;
+
+
         let customerDetails = {
           firstName: this.firstName,
           lastName: this.lastName,
           email: this.email || this.currentUser?.email,
           phoneNumber: this.phoneNumber,
-          addressList: [this.address],
+          addressList: [address],
         };
 
-        console.log("line 120", customerDetails);
         this.$emit("storeCustomerDetails", customerDetails);
+
+        this.placeAutocomplete.remove();
       }
     },
     async getCustomer() {
@@ -167,21 +123,122 @@ export default {
 
       let customer = await this.getCustomer();
 
-      console.log(customer, "customer details");
-
       //if the details exist populate the form
       if (customer) {
         this.firstName = customer?.firstName || "";
         this.lastName = customer?.lastName || "";
         this.phoneNumber = customer?.phoneNumber || "";
-        this.address =
-          customer?.addressList?.length > 0 ? customer.addressList[0] : "";
+        // this.address =
+        //   customer?.addressList?.length > 0 ? customer.addressList[0] : "";
+
+        const addressSplit = customer.addressList[0]?.split(",");
+
+        this.address = {
+          streetAddress: addressSplit[0] || "",
+          suburb: addressSplit[1] || "",
+          postcode: addressSplit[2] || "",
+          state: addressSplit[3] || "VIC",
+        };
 
         this.valid = this.validateForm();
       }
 
       this.loading = false;
     },
+    async initAutocomplete() {
+      // 1. Get your API Key (Store this in a .env file!)
+      const apiKey = import.meta.env.VITE_APP_MAPS_API_KEY;
+      if (!apiKey) {
+        console.error("Google Maps API key is missing.");
+        return;
+      }
+
+      try {
+        if (!window.googleMapsInitialized) {
+          setOptions({
+            libraries: ["places"],
+            key: apiKey,
+          });
+          window.googleMapsInitialized = true;
+        }
+
+        const placesLibrary = await importLibrary("places", { apiKey });
+
+        this.placeAutocomplete = new placesLibrary.PlaceAutocompleteElement({
+          includedRegionCodes: ['au'],
+          locationBias: {
+            center: { lat: -37.8136, lng: 144.9631 },
+            radius: 10000
+          },
+          types: ['address'],
+        });
+
+        this.placeAutocomplete.style.colorScheme = 'light';
+        this.placeAutocomplete.style.marginBottom = '10px';
+
+        this.placeAutocomplete?.Dg?.setAttribute('placeholder', 'Search for an address');
+
+
+        this.placeAutocomplete.addEventListener('gmp-select', async ({ placePrediction }) => {
+          const place = placePrediction.toPlace();
+          await place.fetchFields({ fields: ['addressComponents'] });
+          let addressComponents = JSON.parse(JSON.stringify(place));
+          addressComponents = addressComponents?.addressComponents;
+
+
+          const streetNumber = addressComponents?.find(component => component?.types?.includes?.('street_number'));
+          const streetName = addressComponents?.find(component => component?.types?.includes?.('route'));
+
+          if (streetNumber && streetName) {
+            this.address.streetAddress = `${streetNumber.shortText} ${streetName.shortText}`;
+          }
+
+
+
+          const suburb = addressComponents?.find(component => component?.types?.includes?.('locality')) ||
+            addressComponents?.find(component => component?.types?.includes?.('sublocality')) ||
+            addressComponents?.find(component => component?.types?.includes?.('administrative_area_level_2'));
+
+          if (suburb) {
+            this.address.suburb = suburb.shortText;
+          }
+
+          const postcode = addressComponents?.find(component => component?.types?.includes?.('postal_code'));
+
+          if (postcode) {
+            this.address.postcode = postcode.shortText;
+          }
+
+          const state = addressComponents?.find(component => component?.types?.includes?.('administrative_area_level_1'));
+
+          if (state && state === "VIC") {
+            this.address.state = state.shortText;
+          }
+
+
+          this.$nextTick(() => {
+            if (this.placeAutocomplete) {
+              this.placeAutocomplete.remove();
+              this.initAutocomplete();
+            }
+          });
+        });
+
+        this.$refs.mapsAutoCompleteRef.appendChild(
+          this.placeAutocomplete
+        );
+
+
+
+      } catch (error) {
+        console.error("Error loading Google Maps Autocomplete:", error);
+      }
+    },
+    removeAutoComplete() {
+      if (this.placeAutocomplete) {
+        this.placeAutocomplete?.remove?.();
+      }
+    }
   },
   computed: {
     orgId() {
@@ -192,17 +249,27 @@ export default {
     },
     currentUser() {
       let user = getAuth().currentUser;
-      console.log(user, "user");
       return user;
     },
   },
   async mounted() {
     await this.init();
+    this.initAutocomplete();
   },
+  beforeUnmount() {
+    if (this.placeAutocomplete) {
+      this.placeAutocomplete.remove();
+    }
+  },
+  async activated() {
+    if (!this.placeAutocomplete) {
+      await this.initAutocomplete();
+    }
+  }
 };
 </script>
 
-<style lang="scss">
+<style>
 .detail-container {
   display: flex;
   flex-wrap: wrap;
@@ -210,32 +277,11 @@ export default {
   padding: 0px;
   margin: 0px;
 }
-.service-card {
-  overflow: auto;
-  height: 100%;
-  max-height: 700px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.service-form-container {
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 5px;
-  overflow: auto;
-}
+
+
+
 .border {
   border: black solid 2px !important;
   border-radius: 5px;
-}
-.service-item-container {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  column-gap: 10px;
-  row-gap: 30px;
-  margin-bottom: 10px;
 }
 </style>

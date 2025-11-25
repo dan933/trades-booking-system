@@ -1,27 +1,57 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row *ngIf="isUserLoggedIn">
-    <span>{{orgName}}</span>
-    <span class="spacer"></span>
-    <button mat-icon-button (click)="signOut()">
-      <mat-icon>logout</mat-icon>
+@if(isUserLoggedIn){
+<div class="fixed top-0 w-full z-[9999]">
+  <nav class="bg-primaryColour text-textColour nav">
+    <button class="burger" [class]="{'play': activeMenu}" (click)="toggleMenu()">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
     </button>
-  </mat-toolbar-row>
-  <mat-toolbar-row *ngIf="isUserLoggedIn" color="primary">
-    <!-- put company name here -->
-    <button mat-button routerLink="/schedule">Schedule</button>
-    <!-- <button mat-button routerLink="/customers">customers</button> -->
-    <span class="spacer"></span>
-    <div style="display: inline-block;">
-      <button mat-icon-button [matMenuTriggerFor]="menu">
-        <mat-icon>settings</mat-icon>
+    <span class="text-lg">Easy Book</span>
+  </nav>
+  <div class="nav-drawer" [class]="{'active-drawer': activeMenu}">
+    <div class="bg-primaryColour h-full overflow-auto relative flex flex-col" style="z-index: 9999;">
+      <button class="burger relative left-4" [class]="{'play': activeMenu}" (click)="toggleMenu()" style="top:10px;">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </button>
-      <mat-menu #menu="matMenu" xPosition="before" yPosition="below">
-        <button mat-menu-item routerLink="/settings/opperating">Opperating Settings</button>
-        <button mat-menu-item routerLink="/settings/services">Service Settings</button>
-        <button mat-menu-item routerLink="/settings/company">Company Settings</button>
-      </mat-menu>
+      <a routerLink="/dashboard" (click)="toggleMenu()" class=" mt-2 nav-item text-textColour hover:bg-primaryHover"
+        [class]="currentRoute.includes('dashboard') ? 'bg-primaryHover' : ''">
+        <mat-icon>dashboard</mat-icon>
+        <span>
+          Dashboard
+        </span>
+      </a>
+      <a routerLink="/bookings" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover"
+        [class]="currentRoute.includes('bookings') ? 'bg-primaryHover' : ''">
+        <mat-icon>event</mat-icon>
+        <span>
+          Bookings
+        </span>
+      </a>
+      <a routerLink="/customers" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover"
+        [class]="currentRoute.includes('customers') ? 'bg-primaryHover' : ''">
+        <mat-icon>people</mat-icon>
+        <span>
+          Customers
+        </span>
+      </a>
+      <a routerLink="/settings" (click)="toggleMenu()" class="nav-item text-textColour hover:bg-primaryHover">
+        <mat-icon>settings</mat-icon>
+        <span>
+          Settings
+        </span>
+      </a>
+      <div class="absolute bottom-0 w-full" *ngIf="isUserLoggedIn">
+        <button (click)="signOut()" class="w-full text-left logout-button text-textColour hover:bg-primaryHover">
+          <mat-icon>logout</mat-icon>
+          <span>
+            Logout
+          </span>
+        </button>
+      </div>
     </div>
-  </mat-toolbar-row>
-  <mat-toolbar-row *ngIf="!isUserLoggedIn" color="primary">
-    <span>Admin Dashboard</span>
-  </mat-toolbar-row>
+  </div>
+  <div [class]="{'nav-drawer-overlay': true, 'active-overlay': activeMenu}" (click)="toggleMenu()"></div>
+</div>
+}

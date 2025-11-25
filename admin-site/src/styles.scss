@@ -1,7 +1,61 @@
-/* You can add global styles to this file, and also import other style files */
+
+@use '@angular/material' as mat;
+
+// Include core styles
+@include mat.core();
+
+$custom-primary: mat.m2-define-palette(mat.$m2-blue-palette, 600);
+$custom-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+$custom-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$custom-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $custom-primary,
+    accent: $custom-accent,
+    warn: $custom-warn,
+  )
+));
+
+@include mat.all-component-themes($custom-theme);
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.snackbar-success.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: green;
+}
+.custom-snackbar-success.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  color: white;
+}
+.custom-snackbar-success.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: white; /* For action button text */
+}
+
+.snackbar-error.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: red;
+}
+.custom-snackbar-error.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  color: white;
+}
+.custom-snackbar-error.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: white; /* For action button text */
+}
+
+.snackbar-warn.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: yellow;
+}
+.custom-snackbar-warn.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  color: white;
+}
+.custom-snackbar-warn.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: white; /* For action button text */
+}
 
 // In styles.scss or styles.css
 .cdk-overlay-pane {
@@ -13,4 +67,3 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     width: max-content !important; // adjust as necessary
   }
 }
-

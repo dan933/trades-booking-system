@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,27 +15,38 @@ import { environment } from '../environments/environment';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { DialogScheduleDetailsComponent } from './components/schedule/dialog-schedule-details/dialog-schedule-details.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { BookingsComponent } from './components/bookings/bookings/bookings.component';
+import { BookingDetailsComponent } from './components/bookings/booking-details/booking-details.component';
+import { CustomersComponent } from './components/customers/customers/customers.component';
+import { CustomerDetailsComponent } from './components/customers/customer-details/customer-details.component';
+import { TableComponent } from './components/shared/table/table.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavBarComponent,
     AuthComponent,
-    DialogScheduleDetailsComponent,
+    DashboardComponent,
+    BookingsComponent,
+    BookingDetailsComponent,
+    CustomersComponent,
+    CustomerDetailsComponent,
+    TableComponent,
   ],
   imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FlexLayoutModule,
+    AngularMaterialsModule,
+    FormsModule,
+  ],
+  providers: [
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
     provideFunctions(() => getFunctions()),
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    FlexLayoutModule,
-    AngularMaterialsModule,
   ],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

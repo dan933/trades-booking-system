@@ -40,9 +40,9 @@ customerApi.get(
   customerController.getCustomerDetails
 );
 
-customerApi.patch(
-  "/:orgId/update-customer-details",
-  customerController.updateCustomerDetails
+customerApi.post(
+  "/:orgId/set-guest-details",
+  customerController.setGuestDetails
 );
 
 //----------------- Exports ------------------------------//

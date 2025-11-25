@@ -22,8 +22,6 @@ let userId = user?.uid;
 
 const db = getFirestore();
 
-// console.log("userId", userId);
-
 const getAppointments = async (
   orgId,
   lastVisible = null,
@@ -57,7 +55,6 @@ const getAppointments = async (
 
   let stopAPICalls = false;
   if (lastVisible) {
-    console.log(newLastVisible, lastVisible);
     stopAPICalls = !newLastVisible;
   }
 
@@ -70,7 +67,13 @@ const getAppointments = async (
   };
 };
 
-const getCalendarDatesAvailability = async (orgId) => {
+/**
+ * - dateInput is optional if not set date will be current date
+ * @param {string} orgId
+ * @param {Date} dateInput
+ * - returns the booked schedules for the date and the availability document of the organisation
+ */
+const getCalendarDatesAvailability = async (orgId, dateInput) => {
   //Get the companies availability document
   let availabilityDocRef = doc(
     db,
@@ -78,93 +81,48 @@ const getCalendarDatesAvailability = async (orgId) => {
   );
 
   //get the opperating hours gapBetweenAppointments settings and bookMonthsAhead limit
-  let availabilityDoc = await getDoc(availabilityDocRef);
+  let availabilityDocPromise = await getDoc(availabilityDocRef);
 
-  let { openingTimes, gapBetween, bookMonthsAheadLimit } =
-    availabilityDoc.data();
+  const servicesRef = doc(db, `organisations/${orgId}/availability/services`);
+  const servicesDocPromise = await getDoc(servicesRef);
 
-  // get the date for the bookMonthsAheadLimit
-  let bookMonthsAhead = new Date();
-  bookMonthsAhead.setMonth(bookMonthsAhead.getMonth() + bookMonthsAheadLimit);
+  const dateQuery = dateInput ? dateInput : new Date();
+  dateQuery.setHours(0, 0, 0, 0);
 
-  // console.log("bookMonthsAhead", bookMonthsAhead);
+  const endDateQuery = new Date(dateQuery);
+  endDateQuery.setDate(endDateQuery.getDate() + 7);
 
-  //query the bookedSchedules collection for dates in the future
-  //todo paginate based on month selected range
   let bookedSchedulesQuery = query(
     collection(db, `organisations/${orgId}/bookedSchedule`),
-    where("bookingScheduleDate", ">=", new Date())
+    where("bookingScheduleDate", ">=", dateQuery),
+    where("bookingScheduleDate", "<", endDateQuery)
   );
 
-  let bookedSchedules = await getDocs(bookedSchedulesQuery);
+  let bookedSchedulesPromise = await getDocs(bookedSchedulesQuery);
 
-  bookedSchedules = bookedSchedules.docs.map((doc) => doc.data());
-  //----------------------------------------------//
+  let [availabilityDocResult, bookedSchedulesResult, servicesDocResult] =
+    await Promise.allSettled([
+      availabilityDocPromise,
+      bookedSchedulesPromise,
+      servicesDocPromise,
+    ]);
 
-  //-------------- Adds the bookedout dates to the booked out dates array --------------//
+  let bookedSchedules = [];
 
-  let businessClosedDays = [];
+  if (bookedSchedulesResult?.status === "fulfilled") {
+    bookedSchedules = bookedSchedulesResult.value.docs.map((doc) => doc.data());
+  }
 
-  //------------------- Days the business is closed -------------//
-  Object.keys(openingTimes).forEach((day) => {
-    if (!openingTimes[day].open) {
-      businessClosedDays.push(+day);
-    }
-  });
-  //------------------------------------------------------------//
-
-  let bookedOutDates = [];
-
-  bookedSchedules.forEach((schedule) => {
-    //the day of the week 0 is sunday 6 is saturday
-    let scheduleDate = schedule.bookingScheduleDate.toDate();
-
-    let dayOfWeek = scheduleDate.getDay();
-
-    //check business is open that day
-    if (openingTimes[dayOfWeek].open) {
-      //get the start and end times for that day
-      let startTime = openingTimes[dayOfWeek].start;
-      let endTime = openingTimes[dayOfWeek].end;
-
-      //get the number of timeslots taken for that day
-      let numberOfSlotsTakenForTheDay = Object.keys(schedule.bookedTimes).map(
-        (key) => {
-          if (
-            !schedule.bookedTimes[+key] &&
-            gapBetweenCheck(+key, gapBetween, schedule.bookedTimes) &&
-            +key < endTime
-          ) {
-            return false;
-          } else {
-            return true;
-          }
-        }
-      );
-
-      //filter the booked out slots
-      numberOfSlotsTakenForTheDay = numberOfSlotsTakenForTheDay.filter(
-        (booking) => booking
-      );
-
-      //Get the available hours for that day
-      let availableHours = endTime - startTime;
-
-      //Check if the business is booked out for that day
-      let IsBookedOut = numberOfSlotsTakenForTheDay.length >= availableHours;
-
-      //If the business is Booked out for that day
-      if (IsBookedOut) {
-        bookedOutDates.push(scheduleDate);
-      }
-    }
-  });
   return {
-    bookedOutDates,
-    businessClosedDays,
-    bookMonthsAhead,
     bookedSchedules,
-    availabilityDoc: availabilityDoc.data(),
+    availabilityDoc:
+      availabilityDocResult.status === "fulfilled"
+        ? availabilityDocResult.value.data()
+        : null,
+    servicesDoc:
+      servicesDocResult.status === "fulfilled"
+        ? servicesDocResult.value.data()
+        : null,
   };
 };
 
@@ -187,18 +145,12 @@ const getTimeSlotsForDate = (
 
   //filter the bookingSchedule for the selected date
   let bookingScheduleForSelectedDate = bookingSchedule.find((schedule) => {
-    // console.log("schedule.bookingScheduleDate", schedule.bookingScheduleDate);
     //convert timestamp to date
     let scheduleDate = schedule.bookingScheduleDate
       .toDate()
       .toLocaleDateString();
     return scheduleDate === selectedDate.toLocaleDateString();
   });
-
-  // console.log(
-  //   "line 133 bookingScheduleForSelectedDate",
-  //   bookingScheduleForSelectedDate
-  // );
 
   //if there is a booking schedule for the selected date
   if (bookingScheduleForSelectedDate) {
@@ -231,8 +183,6 @@ const getTimeSlotsForDate = (
       }
     });
 
-    console.log("timeSlotArray", timeSlotArray);
-
     //convert times into time and available hours
     let availableTimes = timeSlotArray.filter(
       (timeSlot) => timeSlot.length > 0
@@ -249,8 +199,6 @@ const getTimeSlotsForDate = (
 
       return timeSlotHours;
     });
-
-    console.log("availableTimes", availableTimes);
 
     return availableTimes;
   } else {
@@ -272,14 +220,6 @@ const getTimeSlotsForDate = (
   }
 };
 
-const formatDate = (date) => {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
 const getServices = async (orgId) => {
   const servicesRef = doc(db, `organisations/${orgId}/availability/services`);
 
@@ -292,16 +232,12 @@ const getServices = async (orgId) => {
 
 //Creates booking payload to be sent to the server
 const createBookingPayload = (bookingData) => {
-  console.log(bookingData);
-
   //get the timeSlot
   let timeSlot = bookingData?.selectedDateTimeSlot;
-
-  //date in yyyy-mm-dd format
-  let bookingDate = formatDate(timeSlot?.date);
+  let bookingDate = timeSlot?.date;
 
   //get the start hour
-  let startHour = timeSlot?.date.getHours();
+  let startHour = timeSlot?.timeslot;
 
   //add the userId to customer information
   let payload = bookingData;
@@ -321,8 +257,6 @@ const createBookingPayload = (bookingData) => {
   } else {
     payload.customerInformation.userId = "Guest";
   }
-
-  console.log("payload", payload);
 
   return JSON.stringify(payload);
 };
@@ -349,8 +283,6 @@ const createBooking = async (bookingData, orgId) => {
       //if the user is a guest add guest to the payload
       payload.headers.Guest = "true";
     }
-
-    console.log("payload", payload);
 
     const resposne = await fetch(`${apiUrl}/booking/${orgId}/book`, payload);
 
@@ -383,8 +315,6 @@ const sendBookingConfirmationEmail = async (bookingData, orgId) => {
       //if the user is a guest add guest to the payload
       payload.headers.Guest = "true";
     }
-
-    console.log("payload send email", payload);
 
     const resposne = await fetch(
       `${apiUrl}/booking/${orgId}/send-confirmation-email`,

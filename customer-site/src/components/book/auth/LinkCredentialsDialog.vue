@@ -2,13 +2,11 @@
   <div class="text-center">
     <v-dialog v-model="dialog" width="auto">
       <!-- ------ provider sign in -------- -->
-      <v-card
-        v-if="
-          signInResponse?.firstSignInMethod &&
-          signInResponse?.firstSignInMethod !== 'password' &&
-          !IsSignedIn
-        "
-      >
+      <v-card v-if="
+        signInResponse?.firstSignInMethod &&
+        signInResponse?.firstSignInMethod !== 'password' &&
+        !IsSignedIn
+      ">
         <v-card-text>
           You already have an account with
           {{ signedInMessage().provider }} please sign in.
@@ -17,9 +15,7 @@
           <v-btn color="primary" block @click="signInWithExistingAccount">
             Sign in with {{ signedInMessage().button }}
           </v-btn>
-          <v-btn color="primary" block @click="dialog = false"
-            >Close Dialog</v-btn
-          >
+          <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
         </v-card-actions>
       </v-card>
       <!-- ------ Email sign in -------- -->
@@ -27,29 +23,12 @@
         <v-card-text>
           You already have an account with {{ signedInMessage().provider }}
           <v-form @submit.prevent="linkAccounts" v-model="loginForm">
-            <v-text-field
-              v-model="user.email"
-              autocomplete="email"
-              label="Email"
-              required
-              :rules="emailRules"
-            ></v-text-field>
-            <v-text-field
-              v-model="user.password"
-              label="Password"
-              autocomplete="current-password"
-              type="password"
-              required
-              :rules="passwordRules"
-            ></v-text-field>
-            <v-alert
-              v-if="!!message"
-              class="mb-3"
-              type="error"
-              :text="message"
-              variant="outlined"
-              density="compact"
-            ></v-alert>
+            <v-text-field v-model="user.email" autocomplete="email" label="Email" required
+              :rules="emailRules"></v-text-field>
+            <v-text-field v-model="user.password" label="Password" autocomplete="current-password" type="password"
+              required :rules="passwordRules"></v-text-field>
+            <v-alert v-if="!!message" class="mb-3" type="error" :text="message" variant="outlined"
+              density="compact"></v-alert>
             <div class="mb-5"><a href="#">Forgot Password</a> <br /></div>
             <v-card-actions class="flex-column">
               <v-btn color="primary" block type="submit"> Sign In </v-btn>
@@ -58,9 +37,7 @@
           </v-form>
         </v-card-text>
       </v-card>
-      <v-card
-        v-if="IsSignedIn && signInResponse?.firstSignInMethod !== 'password'"
-      >
+      <v-card v-if="IsSignedIn && signInResponse?.firstSignInMethod !== 'password'">
         <!-- ------ Link Accounts -------- -->
         <v-card-text>
           You are signed in with {{ signedInMessage().provider }}
@@ -147,8 +124,6 @@ export default {
         this.signInResponse
       );
 
-      console.log(response, "line 142");
-
       if (response?.IsSameToExistingEmailSignIn) {
         this.IsSignedIn = true;
       } else {
@@ -166,8 +141,6 @@ export default {
         };
 
         const response = await authService.linkAccounts(this.signInResponse);
-
-        console.log(response, "line 158");
 
         if (response?.IsError) {
           this.message = response?.message;
@@ -188,7 +161,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .flex-column {
   display: flex;
   flex-direction: column;

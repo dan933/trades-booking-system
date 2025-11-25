@@ -1,31 +1,85 @@
 <section class="auth-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Login</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+  <div class="login-card">
+    <div class="card-header">
+      <h2>Easy Booking Admin</h2>
+    </div>
+    <!-- Login Form -->
+    @if(view === 'login'){
+    <div>
       <form [formGroup]="loginForm" class="login-container" (ngSubmit)="login($event)">
-        <mat-form-field appearance="fill">
-          <mat-label>Email</mat-label>
-          <input autocomplete="emil" matInput type="email" formControlName="email" required>
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-          <mat-label>Password</mat-label>
-          <input autocomplete="current-password" formControlName="password" matInput [type]="hide ? 'password' : 'text'"
-            required>
-          <button mat-icon-button matSuffix (click)="toggleHide($event)" [attr.aria-label]="'Hide password'"
-            [attr.aria-pressed]="hide">
-            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-          </button>
-        </mat-form-field>
-        <div *ngIf="loginForm.errors" style="color:red; margin-bottom: 10px;">
-          {{this.loginForm.errors && this.loginForm.errors['incorrect'] ? 'Invalid email or password' : 'Too many
-          attempts'}}
+        <div class="mb-6">
+          <label for="email" class="block text-base font-medium text-gray-700 mb-3">Email</label>
+          <input id="email" autocomplete="email" type="email" formControlName="email" required
+            class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your email" />
         </div>
-        <a href="#" (click)="forgotPassword">Forgot password?</a>
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading">Login</button>
-      </form>
-    </mat-card-content>
-  </mat-card>
 
+        <div class="mb-6">
+          <label for="password" class="block text-base font-medium text-gray-700 mb-3">Password</label>
+          <div class="relative">
+            <input id="password" autocomplete="current-password" formControlName="password"
+              [type]="hide ? 'password' : 'text'" required
+              class="w-full px-4 py-3 pr-12 text-lg border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your password" />
+            <button type="button" (click)="toggleHide($event)"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+              [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+              <span class="material-symbols-outlined" *ngIf="!hide">
+                visibility
+              </span>
+
+              <span class="material-symbols-outlined" *ngIf="hide">
+                visibility_off
+              </span>
+
+            </button>
+          </div>
+        </div>
+
+        @if(loginForm.errors){
+        <div class="text-red-600 mb-4">
+          {{ loginForm.errors['incorrect'] ? "Invalid email or password" : "Too many attempts"}}
+        </div>
+        }
+
+        <a (click)="forgotPassword()" class="text-blue-600 hover:text-blue-800 mb-4 block cursor-pointer">Forgot
+          password?</a>
+        <button type="submit" [disabled]="loading" (click)="isDemoLogin = false"
+          class="w-full bg-blue-600 text-white py-3 px-6 text-lg rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          Login
+        </button>
+        <button type="submit" [disabled]="loading" (click)="isDemoLogin = true"
+          class="mt-5 w-full bg-blue-600 text-white py-3 px-6 text-lg rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          Demo Login
+        </button>
+      </form>
+    </div>
+
+    }
+
+    @if(view === 'reset'){
+    <!-- Reset Password Form -->
+    <div>
+      <form [formGroup]="loginForm" class="login-container" (ngSubmit)="resetPassword($event)">
+        <div class="mb-6">
+          <label for="email" class="block text-base font-medium text-gray-700 mb-3">Email</label>
+          <input id="email" autocomplete="email" type="email" formControlName="email" required
+            class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your email" />
+        </div>
+        <div *ngIf="loginForm.errors" class="text-red-600 mb-4">
+          Failed to send reset email. Please try again.
+        </div>
+        <button type="submit" [disabled]="loading"
+          class="w-full bg-blue-600 text-white py-3 px-6 text-lg rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed mb-4">
+          Send Reset Email
+        </button>
+        <button type="button" (click)="backToLogin()"
+          class="w-full bg-gray-600 text-white py-3 px-6 text-lg rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+          Back to Login
+        </button>
+      </form>
+    </div>
+    }
+  </div>
 </section>

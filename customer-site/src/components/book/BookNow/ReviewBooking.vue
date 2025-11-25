@@ -24,7 +24,7 @@
           <th class="text-left">Service</th>
           <th class="text-left">Rate</th>
           <th class="text-left">Hours</th>
-          <th class="text-left">lineTotal</th>
+          <th class="text-left">Line Total</th>
         </tr>
       </thead>
       <tbody>
@@ -49,10 +49,10 @@
         <strong>GST:</strong>
         $ {{ `${gst.toFixed(2)}` }}
       </p>
-      <p>
+      <!--<p>
         <strong>Total:</strong>
         $ {{ `${total.toFixed(2)}` }}
-      </p>
+      </p> -->
     </div>
     <div class="action-container">
       <v-btn color="primary" @click="confirmBooking">Next</v-btn>
@@ -63,6 +63,7 @@
 <script>
 export default {
   name: "ReviewBooking",
+  // emits: ["confirmDetails"],
   props: [
     "selectedDateTimeSlot",
     "selectedServices",
@@ -114,8 +115,6 @@ export default {
         total: this.total,
       };
 
-      console.log(bookingObject, "bookingObject");
-
       this.$store.commit("updateBooking", bookingObject);
     },
     confirmBooking() {
@@ -135,7 +134,6 @@ export default {
     gst() {
       //if the org is not registered for gst return 0
       if (!this.orgDoc?.gst) return 0;
-
       let gst = this.subtotal * 0.1;
       let roundedResult = parseFloat(gst.toFixed(2));
       return roundedResult;
@@ -151,13 +149,9 @@ export default {
       }, 0);
     },
     bookingDate() {
-      return `${this.selectedDateTimeSlot?.date
-        .getDate()
-        .toString()
-        .padStart(2, "0")}/${this.selectedDateTimeSlot?.date
-        .getMonth()
-        .toString()
-        .padStart(2, "0")}/${this.selectedDateTimeSlot?.date.getFullYear()}`;
+      const [year, month, day] = this.selectedDateTimeSlot?.date?.split("-");
+
+      return `${day}/${month}/${year}`;
     },
     name() {
       return `${this.customerInformation?.firstName} ${this.customerInformation?.lastName}`;
@@ -167,14 +161,16 @@ export default {
         return (acc += curr.hours);
       }, 0);
 
-      console.log("totalHours", totalHours);
+      const startTimeSlotHour = `${this.selectedDateTimeSlot.timeslot}`.padStart(2, "0");
 
-      let startTime = this.selectedDateTimeSlot.date.toLocaleTimeString([], {
+      const startDateTime = new Date(`${this.selectedDateTimeSlot.date}T${startTimeSlotHour}:00:00`);
+
+      const startTime = startDateTime.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       });
-      let endTime = new Date(this.selectedDateTimeSlot?.date);
-      endTime.setHours(this.selectedDateTimeSlot.date.getHours() + totalHours);
+      let endTime = new Date(startDateTime);
+      endTime.setHours(startDateTime.getHours() + totalHours);
       endTime = endTime.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -197,13 +193,14 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 .total-container {
   margin-top: 6px;
   display: flex;
   flex-direction: column;
   row-gap: 3px;
 }
+
 .time-container {
   display: flex;
   flex-direction: row;

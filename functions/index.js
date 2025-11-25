@@ -5,8 +5,8 @@ admin.initializeApp();
 //------------------------- Public API Functions -------------------------//
 
 //-------------------- Submit Contact Form ---------------------------//
-const contact = require("./public-api-functions/submitContactForm.js");
-exports.submitContactForm = contact.submitContactForm;
+const contact = require("./public-api-functions/contact.js");
+exports.contact = contact.contactApi;
 
 //-----------------------------------------------------------------------//
 

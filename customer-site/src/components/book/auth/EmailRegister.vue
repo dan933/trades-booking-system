@@ -1,58 +1,35 @@
 <template>
-  <v-container>
-    <v-card class="mx-auto" min-width="150">
-      <h1 class="card-title">Register</h1>
-      <v-card-text>
-        <v-form
-          @submit.prevent="register"
-          v-model="registrationForm"
-          ref="registrationFormRef"
-        >
-          <v-text-field
-            class="mb-2"
-            v-model="userRegister.email"
-            label="Email"
-            type="email"
-            autocomplete="email"
-            required
-            :rules="emailRules"
-          ></v-text-field>
-          <v-text-field
-            class="mb-2"
-            v-model="userRegister.password"
-            label="Password"
-            type="password"
-            autocomplete="new-password"
-            :rules="passwordRules"
-            required
-          ></v-text-field>
-          <v-text-field
-            class="mb-2"
-            v-model="userRegister.confirmPassword"
-            label="Confirm Password"
-            type="password"
-            autocomplete="new-password"
-            :rules="confirmPasswordRules"
-            required
-          ></v-text-field>
-          <div class="card-button-container">
-            <v-btn size="small" type="submit" color="primary" class="mr-4 mb-4">
-              Register
-            </v-btn>
-            <v-btn
-              size="small"
-              class="mr-4 mb-4"
-              @click="() => switchForm('Login')"
-            >
-              Have an account?
-            </v-btn>
-          </div>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-container>
-</template>
+  <v-card class="register-card">
+    <template v-slot:title>
+      <h3 class="card-title">Easy Booking</h3>
+    </template>
+    <h4 class="card-subtitle">Register</h4>
+    <div>
+      <v-form @submit.prevent="register" v-model="registrationForm" ref="registrationFormRef">
+        <v-text-field variant="outlined" class="mb-2" v-model="userRegister.email" label="Email" type="email"
+          autocomplete="email" required :rules="emailRules"></v-text-field>
 
+        <v-text-field variant="outlined" class="mb-2" v-model="userRegister.password" label="Password"
+          :type="showPassword ? 'text' : 'password'" autocomplete="new-password" :rules="passwordRules"
+          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" required
+          @click:append-inner="showPassword = !showPassword"></v-text-field>
+
+        <v-text-field variant="outlined" class="mb-2" v-model="userRegister.confirmPassword" label="Confirm Password"
+          :type="showPassword ? 'text' : 'password'" autocomplete="new-password" :rules="confirmPasswordRules"
+          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" required
+          @click:append-inner="showPassword = !showPassword"></v-text-field>
+
+        <div class="card-button-container">
+          <v-btn type="submit" color="primary" class="mb-4 pa-5 w-100 d-flex">
+            Register
+          </v-btn>
+        </div>
+      </v-form>
+    </div>
+    <slot name="providers"></slot>
+  </v-card>
+
+</template>
 <script>
 export default {
   name: "emailRegister",
@@ -60,10 +37,11 @@ export default {
     return {
       registrationForm: false,
       userRegister: {
-        email: "dnadistrictservices@gmail.com",
-        password: "daniel180",
-        confirmPassword: "daniel180",
+        email: "",
+        password: "",
+        confirmPassword: "",
       },
+      showPassword: false,
       emailRules: [
         (v) => !!v || "Email is required",
         (v) =>
@@ -78,7 +56,7 @@ export default {
       return [
         (value) => !!value || "Password Required",
         (value) =>
-          value?.length > 6 || "Password must be greater than 6 charecters",
+          value?.length > 8 || "Password must be greater than 8 charecters",
       ];
     },
     confirmPasswordRules() {
@@ -91,16 +69,12 @@ export default {
     },
   },
   methods: {
-    switchForm(selectedForm) {
-      this.$emit("switchForm", selectedForm);
-    },
     validateForm() {
       this.$nextTick(() => {
         this.registrationForm = !!this.$refs.registrationFormRef.validate();
       });
     },
     register() {
-      console.log(this.registrationForm);
       if (this.registrationForm) {
         let newUser = {
           email: this.userRegister.email,
@@ -125,7 +99,21 @@ export default {
   },
 };
 </script>
-<style type="scss">
+<style scoped>
+.register-card {
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  width: 464px;
+  max-width: 90%;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: white;
+  border: solid gray 1px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
 .card-button-container {
   width: 100%;
   display: flex;
@@ -133,8 +121,20 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 .card-title {
   margin-top: 10px;
   text-align: center;
+  font-family: 'Rubik', sans-serif;
+  font-size: 25px;
+  color: #7a18f2;
+}
+
+.card-subtitle {
+  font-family: 'Rubik', sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
 }
 </style>

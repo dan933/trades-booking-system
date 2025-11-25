@@ -101,9 +101,7 @@ var authService = {
           errorMessage: "Incorrect Password",
         };
       }
-      // console.log("error.code", error.code);
-      // console.log("error.code", error.message);
-      // console.log("error.code", error);
+
       if (error.code === "auth/user-not-found") {
         return {
           IsLoginSuccess: false,
@@ -139,11 +137,8 @@ var authService = {
 
     try {
       const response = await sendPasswordResetEmail(auth, email);
-      console.log("reset resposne", response);
       return true;
     } catch (error) {
-      console.log(error.code);
-      console.log(error.message);
       return true;
     }
   },
@@ -243,9 +238,6 @@ var authService = {
           IsSuccess: true,
         };
       }
-      console.log(error.code, "line 218");
-      console.log(error.message, "line 218");
-      console.log(error, "line 218");
     }
   },
 };

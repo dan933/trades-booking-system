@@ -6,25 +6,31 @@ import { OpperatingSettingsComponent } from './opperating-settings/opperating-se
 import { AngularMaterialsModule } from 'src/app/angular-materials/angular-materials.module';
 import { ServicesSettingsComponent } from './services-settings/services-settings.component';
 import { CompanySettingsComponent } from './company-settings/company-settings.component';
+import { SettingsComponent } from './settings/settings.component';
 // Define your routes
 const routes: Routes = [
   {
-    path: 'opperating', component: OpperatingSettingsComponent  },
-  { path: 'services', component: ServicesSettingsComponent },
-  { path: 'company', component: CompanySettingsComponent }
+    path: '',
+    component: SettingsComponent,
+    children: [
+      { path: '', redirectTo: 'opperating', pathMatch: 'full' },
+      { path: 'opperating', component: OpperatingSettingsComponent },
+      { path: 'services', component: ServicesSettingsComponent },
+      { path: 'company', component: CompanySettingsComponent },
+    ],
+  },
 ];
-
 
 @NgModule({
   declarations: [
     OpperatingSettingsComponent,
     ServicesSettingsComponent,
-    CompanySettingsComponent
+    CompanySettingsComponent,
   ],
   imports: [
     CommonModule,
     AngularMaterialsModule,
-    RouterModule.forChild(routes)
-  ]
+    RouterModule.forChild(routes),
+  ],
 })
-export class OrganisationSettingsModule { }
+export class OrganisationSettingsModule {}

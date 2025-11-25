@@ -7,8 +7,6 @@ const getOrganisationDoc = async (orgId) => {
 
   const orgDoc = (await getDoc(servicesRef)).data();
 
-  console.log(orgDoc, "orgDoc");
-
   return orgDoc;
 };
 

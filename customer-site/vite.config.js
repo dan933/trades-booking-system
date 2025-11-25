@@ -5,15 +5,11 @@ import mkcert from "vite-plugin-mkcert";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), mkcert()],
+  define: {
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "false",
+  },
   server: {
-    proxy: {
-      "/api": {
-        target:
-          "https://australia-southeast1-ajhomeservices-a31dd.cloudfunctions.net",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+    proxy: {},
   },
   build: {
     chunkSizeWarningLimit: 1000,

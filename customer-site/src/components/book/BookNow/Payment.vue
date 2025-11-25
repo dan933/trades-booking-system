@@ -6,39 +6,23 @@
       <p><strong>Number of Hours:</strong> {{ hoursBooked }}</p>
     </div>
 
-    <StripeElements
-      v-show="stripeLoaded && !loading"
-      v-slot="{ elements, instance }"
-      ref="elms"
-      :stripe-key="stripeKey"
-      :instance-options="instanceOptions"
-      :elements-options="elementsOptions"
-    >
+    <div v-show="stripeLoaded && !loading" class="demo-card-info" @click="copyToClipboard">
+      <p><strong>Demo Card:</strong> 4242 4242 4242 4242</p>
+      <p><strong>Expiry:</strong> Any future date | <strong>CVC:</strong> Any 3 digits</p>
+      <p class="copy-hint">Click to copy card number</p>
+    </div>
+
+
+    <StripeElements v-show="stripeLoaded && !loading" v-slot="{ elements, instance }" ref="elms" :stripe-key="stripeKey"
+      :instance-options="instanceOptions" :elements-options="elementsOptions">
       <StripeElement ref="card" :elements="elements" :options="cardOptions" />
     </StripeElements>
     <p v-show="!loading" class="mt-3 text-red">{{ errorMessage }}</p>
-    <v-btn
-      v-show="stripeLoaded && !loading"
-      color="primary"
-      elevation="3"
-      class="mt-4"
-      width="150px"
-      type="button"
-      @click="submitForm"
-      >Pay Now</v-btn
-    >
+    <v-btn v-show="stripeLoaded && !loading" color="primary" elevation="3" class="mt-4" width="150px" type="button"
+      @click="submitForm">Pay Now</v-btn>
 
-    <v-container
-      v-if="loading"
-      class="d-flex justify-center align-center"
-      style="height: 100%"
-    >
-      <v-progress-circular
-        :width="10"
-        :size="80"
-        indeterminate
-        color="blue"
-      ></v-progress-circular>
+    <v-container v-if="loading" class="d-flex justify-center align-center" style="height: 100%">
+      <v-progress-circular :width="10" :size="80" indeterminate color="blue"></v-progress-circular>
     </v-container>
   </v-container>
 </template>
@@ -84,6 +68,17 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+
+    const copyToClipboard = async () => {
+      try {
+        await navigator.clipboard.writeText('4242424242424242');
+        // Optional: show success feedback
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    };
+
+
     const stripeKey = ref(import.meta.env.VITE_APP_STRIPE_TEST_PUBLISHABLE_KEY); // test key
     const instanceOptions = ref({
       // https://stripe.com/docs/js/initializing#init_stripe_js-options
@@ -109,7 +104,6 @@ export default defineComponent({
     });
 
     const toggleLoading = (loadingValue) => {
-      console.log("run toggle loading");
       loading.value = loadingValue;
     };
 
@@ -130,7 +124,6 @@ export default defineComponent({
         emit("submitBooking", stripeResponse);
       } else {
         loading.value = false;
-        console.log("stripeResponse", stripeResponse?.error?.message);
         errorMessage.value = stripeResponse?.error?.message;
 
         console.log("errorMessage", errorMessage);
@@ -150,18 +143,30 @@ export default defineComponent({
       submitForm,
       toggleLoading,
       updateErrorMessage,
+      copyToClipboard,
     };
   },
 });
 </script>
 
-<style lang="scss">
+<style>
+.demo-card-info {
+  background-color: #f0f8ff;
+  border: 1px solid #d1ecf1;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #0c5460;
+}
+
 /* Stripe Elements Styles */
 .stripe-container {
   margin-left: auto;
   margin-right: auto;
   width: 90%;
 }
+
 .StripeElement {
   box-sizing: border-box;
   height: 40px;
@@ -185,11 +190,13 @@ export default defineComponent({
 .StripeElement--webkit-autofill {
   background-color: #fefde5 !important;
 }
+
 .payment-page-container {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
+
 .payment-summary-container {
   padding: 5px;
   border-radius: 5px;
@@ -198,11 +205,34 @@ export default defineComponent({
   row-gap: 5px;
   margin-bottom: 6px;
 }
+
 .expiry-container {
   display: flex;
   flex-direction: row;
   column-gap: 5px;
   flex-wrap: wrap;
   justify-content: space-between;
+}
+
+.demo-card-info {
+  background-color: #f0f8ff;
+  border: 1px solid #d1ecf1;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #0c5460;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.demo-card-info:hover {
+  background-color: #e6f3ff;
+}
+
+.copy-hint {
+  font-size: 12px;
+  font-style: italic;
+  margin-top: 5px;
 }
 </style>
