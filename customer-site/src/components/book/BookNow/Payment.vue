@@ -150,16 +150,6 @@ export default defineComponent({
 </script>
 
 <style>
-.demo-card-info {
-  background-color: #f0f8ff;
-  border: 1px solid #d1ecf1;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 15px;
-  font-size: 14px;
-  color: #0c5460;
-}
-
 /* Stripe Elements Styles */
 .stripe-container {
   margin-left: auto;
@@ -227,12 +217,13 @@ export default defineComponent({
 }
 
 .demo-card-info:hover {
-  background-color: #e6f3ff;
+  background-color: #b3d2ee;
+  translate: 0px 2px
 }
 
 .copy-hint {
-  font-size: 12px;
-  font-style: italic;
+  font-size: 14px;
   margin-top: 5px;
+  font-weight: bolder;
 }
 </style>
