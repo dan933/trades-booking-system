@@ -1,6 +1,6 @@
 # Easy Booking
 
-![Alt text](./admin-site/src/assets/favicon.ico)
+![Alt text](https://danalbertportfolio.com.au/_next/image?url=%2Freference%2FeasyBooking.gif&w=640&q=75)
 
 A booking schedule application, allowing customers to book a service and pay via stripe. This application has an admin panel allowing an admin user to cancel bookings, refund the customer. Set business hours and company settings, cancel/refund bookings and visulise revenue through the dashboard. Email notifications are sent to customers when bookings are created, cancelled or refunded.
 
